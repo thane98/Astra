@@ -1,0 +1,8 @@
+[package]
+name = "astra-types"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+astra_formats = { path = "../astra-formats", default_features = false }
+astra-derive = { path = "../astra-derive" }

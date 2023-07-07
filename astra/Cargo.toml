@@ -1,0 +1,36 @@
+[package]
+name = "astra"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+parking_lot = { workspace = true }
+indexmap = { workspace = true }
+itertools = { workspace = true }
+serde_yaml = { workspace = true }
+egui = { workspace = true }
+catppuccin-egui = { workspace = true }
+
+astra-core = { path = "../astra-core" }
+astra-types = { path = "../astra-types" }
+astra_formats = { path = "../astra-formats" }
+
+eframe = { version = "0.22.0", default-features = false, features = [
+    "accesskit",
+    "default_fonts",
+    "glow",
+] }
+directories = "4.0.1"
+rfd = "0.10.0"
+egui_extras = { version = "0.22.0", features = ["image"] }
+egui_grid = { git = "https://github.com/thane98/egui-grid" }
+egui-modal = "0.2.4"
+egui_dock = "0.6.2"
+paste = "1.0.12"
+egui-notify = "0.7.0"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+tracing-subscriber = "0.3"
+

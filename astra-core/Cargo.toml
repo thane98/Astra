@@ -1,0 +1,19 @@
+[package]
+name = "astra-core"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = { workspace = true }
+quick-xml = { workspace = true, features=["serialize"] }
+image = { workspace = true }
+parking_lot = { workspace = true }
+indexmap = { workspace = true }
+
+astra-types = { path = "../astra-types" }
+astra_formats = { path = "../astra-formats" }
+
+glob = "0.3.1"
+normpath = "1.1.0"
+walkdir = "2.3.2"
+chrono = "0.4.26"

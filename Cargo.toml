@@ -1,0 +1,25 @@
+[workspace]
+members = [
+  "astra",
+  "astra-core",
+  "astra-types",
+  "astra-derive",
+]
+
+[workspace.dependencies]
+anyhow = "1.0.65"
+indexmap = "2.0.0"
+maplit = "1.0.2"
+itertools = "0.10.5"
+serde = "1.0.152"
+quick-xml = "0.29.0"
+image = "0.24.5"
+parking_lot = "0.12.1"
+serde_yaml = "0.8.26"
+
+egui = "0.22.0"
+catppuccin-egui = "3.0.0"
+
+syn = "2.0.13"
+darling = "0.20.1"
+quote = "^1.0.23"
