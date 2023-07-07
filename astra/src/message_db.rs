@@ -88,13 +88,14 @@ impl MessageDb {
             return;
         }
 
-        if let Some(data) = self.retrieve_data(key, default_archive) {
+        if let Some(mut data) = self.retrieve_data(key, default_archive) {
             let changed = consumer(Some(&mut data.value));
             if changed {
                 let data = data.clone();
                 if let Some(archive) = self.archives.get(data.archive) {
                     archive.write(|message_map| {
-                        message_map.insert(key.to_string(), data.value);
+                        message_map.insert(key.to_string(), data.value.clone());
+                        self.messages.insert(key.to_string(), data);
                         true
                     });
                 }
@@ -104,7 +105,7 @@ impl MessageDb {
         }
     }
 
-    fn retrieve_data(&mut self, key: &str, default_archive: &str) -> Option<&mut KeyData> {
+    fn retrieve_data(&mut self, key: &str, default_archive: &str) -> Option<KeyData> {
         if !self.messages.contains_key(key) {
             let data = KeyData {
                 archive: *self
@@ -114,8 +115,8 @@ impl MessageDb {
                     .or_else(|| self.archives_by_name.get(default_archive))?,
                 value: String::new(),
             };
-            self.messages.insert(key.to_string(), data);
+            return Some(data);
         }
-        return self.messages.get_mut(key);
+        self.messages.get_mut(key).cloned()
     }
 }
