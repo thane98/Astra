@@ -8,7 +8,7 @@ use crate::widgets::{
     skill_timing_drop_down, u8_drag, weapon_rank_numbered_drop_down,
 };
 use crate::{
-    editable_list, i8_drag, model_drop_down, msbt_key_value_multiline, msbt_key_value_singleline,
+    editable_list, model_drop_down, msbt_key_value_multiline, msbt_key_value_singleline,
     CachedView, DefaultWidget, EditorState, ListEditorContent, PropertyGrid, SkillSheet,
     SkillSheetRetriever,
 };

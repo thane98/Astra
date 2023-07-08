@@ -118,7 +118,7 @@ impl GodEditor {
 
     fn god_property_grid(cache: &IndexMap<String, CacheItem<GodData>>, ui: &mut Ui, data: &mut GodData, state: &EditorState) -> bool {
         PropertyGrid::new("gods", data)
-            .new_section("data")
+            .new_section("Data")
             .field("GID", |ui, god| ui.add(id_field(&mut god.gid)))
             .field("MID", |ui, god| {
                 msbt_key_value_singleline!(ui, state, "gamedata", god.mid)

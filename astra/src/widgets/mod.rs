@@ -1,3 +1,4 @@
+mod about_modal;
 mod add_modals;
 mod bit_grid;
 mod color_picker;
@@ -19,6 +20,7 @@ mod property_grid;
 mod stats;
 mod terrain_grid;
 
+pub use about_modal::*;
 pub use add_modals::*;
 pub use bit_grid::*;
 pub use color_picker::*;
