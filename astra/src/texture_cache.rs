@@ -5,7 +5,7 @@ use astra_formats::image::DynamicImage;
 use egui::{ColorImage, TextureHandle, TextureOptions};
 
 pub struct TextureCache {
-    system_cache: HashMap<String, TextureHandle>,
+    // system_cache: HashMap<String, TextureHandle>,
     facethumb_cache: HashMap<String, TextureHandle>,
     item_icon_cache: HashMap<String, TextureHandle>,
     skill_icon_cache: HashMap<String, TextureHandle>,
@@ -15,11 +15,11 @@ pub struct TextureCache {
 impl TextureCache {
     pub fn new(ctx: egui::Context, astra: &mut Astra) -> Self {
         Self {
-            system_cache: Self::build_cache(
-                &ctx,
-                astra.consume_sprite_atlas("system").unwrap_or_default(),
-                TextureOptions::LINEAR,
-            ),
+            // system_cache: Self::build_cache(
+            //     &ctx,
+            //     astra.consume_sprite_atlas("system").unwrap_or_default(),
+            //     TextureOptions::LINEAR,
+            // ),
             facethumb_cache: Self::build_cache(
                 &ctx,
                 astra.consume_sprite_atlas("facethumb").unwrap_or_default(),
@@ -66,9 +66,9 @@ impl TextureCache {
             .collect()
     }
 
-    pub fn get_system(&mut self, key: &str) -> Option<TextureHandle> {
-        self.system_cache.get(key).cloned()
-    }
+    // pub fn get_system(&mut self, key: &str) -> Option<TextureHandle> {
+    //     self.system_cache.get(key).cloned()
+    // }
 
     pub fn get_facethumb(&mut self, key: &str) -> Option<TextureHandle> {
         self.facethumb_cache

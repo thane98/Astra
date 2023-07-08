@@ -8,7 +8,7 @@ use parking_lot::RwLock;
 
 use astra_core::Astra;
 
-use crate::widgets::about_modal;
+use crate::widgets::{about_modal, config_editor_modal};
 use crate::{
     AccessoryEditor, AccessorySheetRetriever, AccessoryShopSheetRetriever, AnimSetEditor,
     AnimSetSheetRetriever, AppConfig, AppState, ArmoryShopSheetRetriever, AssetTableEditor,
@@ -163,6 +163,7 @@ pub fn main_window(
     ctx: &egui::Context,
 ) {
     let about_modal = about_modal(ctx);
+    let config_editor_modal = config_editor_modal(ctx, config);
 
     egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
         ui.set_enabled(!matches!(state.active_screen, Screens::Save));
@@ -171,6 +172,11 @@ pub fn main_window(
                 if ui.button("Save").clicked() {
                     state.save_screen.set_return_screen(state.active_screen);
                     state.active_screen = Screens::Save;
+                    ui.close_menu();
+                }
+                ui.separator();
+                if ui.button("Preferences").clicked() {
+                    config_editor_modal.open();
                     ui.close_menu();
                 }
                 ui.separator();

@@ -1,7 +1,20 @@
 use catppuccin_egui::{FRAPPE, LATTE, MACCHIATO, MOCHA};
-use egui::{Grid, Ui};
+use egui::{Grid, Ui, TextEdit};
+use egui_modal::Modal;
 
 use crate::{AppConfig, Theme};
+
+pub fn config_editor_modal(ctx: &egui::Context, config: &mut AppConfig) -> Modal {
+    let modal = Modal::new(ctx, "config_editor_modal");
+    modal.show(|ui| {
+        modal.title(ui, "Preferences");
+        config_editor(ui, config);
+        modal.buttons(ui, |ui| {
+            modal.button(ui, "Close");
+        });
+    });
+    modal
+}
 
 pub fn config_editor(ui: &mut Ui, config: &mut AppConfig) {
     Grid::new("config_editor").num_columns(2).show(ui, |ui| {
@@ -36,12 +49,12 @@ pub fn config_editor(ui: &mut Ui, config: &mut AppConfig) {
         });
         ui.end_row();
 
-        ui.label("Script Editor Process");
-        ui.text_edit_singleline(&mut config.script_editor_process);
+        ui.label("Script Editor Program");
+        ui.add_sized([300., 0.], TextEdit::singleline(&mut config.script_editor_process));
         ui.end_row();
 
         ui.label("Script Editor Command Args");
-        ui.text_edit_singleline(&mut config.script_editor_command_args);
+        ui.add_sized([300., 0.], TextEdit::singleline(&mut config.script_editor_command_args));
         ui.end_row();
     });
 }

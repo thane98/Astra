@@ -14,7 +14,7 @@ impl AtlasSystem {
     pub fn load(file_system: &LocalizedFileSystem) -> Result<Self> {
         let entries =
             vec![
-            ("system", "StreamingAssets/aa/Switch/fe_assets_ui/icon/system/system.bundle"),
+            // ("system", "StreamingAssets/aa/Switch/fe_assets_ui/icon/system/system.bundle"),
             ("item", "StreamingAssets/aa/Switch/fe_assets_ui/icon/item/item.bundle"),
             ("skill", "StreamingAssets/aa/Switch/fe_assets_ui/icon/skill/skill.bundle"),
             (

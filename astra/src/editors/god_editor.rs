@@ -17,32 +17,6 @@ const FLAG_LABELS: &[&str] = &[
     "Gauge Darkness",
     "Only Engage Weapon",
     "Armlet",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "???",
-    "Hero",
 ];
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -124,7 +98,7 @@ impl GodEditor {
                 msbt_key_value_singleline!(ui, state, "gamedata", god.mid)
             })
             .field("Nickname", |ui, god| {
-                msbt_key_value_singleline!(ui, state, "gamedata", god.nickname)
+                ui.text_edit_singleline(&mut god.nickname)
             })
             .field("ASCII Name", |ui, god| {
                 ui.text_edit_singleline(&mut god.ascii_name)
@@ -152,7 +126,7 @@ impl GodEditor {
             })
             .field("Changed", |ui, god| {
                 ui.add(editable_list(&mut god.change, |_, value, ui| {
-                    ui.text_edit_singleline(value)
+                    ui.add(model_drop_down(cache, &(), value))
                 }))
             })
             .field("Link", |ui, god| ui.add(model_drop_down(cache, &(), &mut god.link)))

@@ -12,7 +12,7 @@ pub fn project_selector(
     egui::CentralPanel::default().show(ctx, |ui| {
         let settings_modal = Modal::new(ui.ctx(), "select_project_settings_modal");
         settings_modal.show(|ui| {
-            settings_modal.title(ui, "Settings");
+            settings_modal.title(ui, "Preferences");
             config_editor(ui, config);
             settings_modal.button(ui, "Close");
         });
