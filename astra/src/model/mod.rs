@@ -123,7 +123,7 @@ where
 
     fn copy(&mut self, a: usize, b: usize) {
         if a < self.len() && b < self.len() {
-            self[a] = self[b].clone();
+            self[b] = self[a].clone();
         }
     }
 }
