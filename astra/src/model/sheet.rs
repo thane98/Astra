@@ -263,14 +263,14 @@ impl GroupViewItem for IndexMap<String, Vec<ForgeImproveData>> {
         })
     }
 
-    fn decorated(kind: DecorationKind) -> bool {
+    fn decorated(kind: DecorationKind<'_>) -> bool {
         matches!(kind, DecorationKind::List)
     }
 
     fn decoration(
         key: &str,
         dependencies: &Self::Dependencies,
-        kind: DecorationKind,
+        kind: DecorationKind<'_>,
     ) -> Option<(TextureHandle, f32)> {
         dependencies.item.read(|data| {
             data.get(&key.replace("RID_", "IID_"))
@@ -307,14 +307,14 @@ impl GroupViewItem for IndexMap<String, Vec<ForgeEvolveData>> {
         })
     }
 
-    fn decorated(kind: DecorationKind) -> bool {
+    fn decorated(kind: DecorationKind<'_>) -> bool {
         matches!(kind, DecorationKind::List)
     }
 
     fn decoration(
         key: &str,
         dependencies: &Self::Dependencies,
-        kind: DecorationKind,
+        kind: DecorationKind<'_>,
     ) -> Option<(TextureHandle, f32)> {
         dependencies.item.read(|data| {
             data.get(&key.replace("EID_", "IID_"))
@@ -335,14 +335,14 @@ impl ViewItem for ForgeEvolveData {
         })
     }
 
-    fn decorated(kind: DecorationKind) -> bool {
+    fn decorated(kind: DecorationKind<'_>) -> bool {
         matches!(kind, DecorationKind::List)
     }
 
     fn decoration(
         &self,
         dependencies: &Self::Dependencies,
-        kind: DecorationKind,
+        kind: DecorationKind<'_>,
     ) -> Option<(TextureHandle, f32)> {
         if matches!(kind, DecorationKind::List) {
             dependencies.item.read(|data| {
@@ -436,14 +436,14 @@ impl ViewItem for Item {
         standard_keyed_display!(self, dependencies, iid)
     }
 
-    fn decorated(_: DecorationKind) -> bool {
+    fn decorated(_: DecorationKind<'_>) -> bool {
         true
     }
 
     fn decoration(
         &self,
         dependencies: &Self::Dependencies,
-        kind: DecorationKind,
+        kind: DecorationKind<'_>,
     ) -> Option<(TextureHandle, f32)> {
         let mut texture_cache = dependencies.texture_cache.borrow_mut();
         let decoration = texture_cache
@@ -475,14 +475,14 @@ impl ViewItem for Job {
         standard_keyed_display!(self, dependencies, jid)
     }
 
-    fn decorated(_: DecorationKind) -> bool {
+    fn decorated(_: DecorationKind<'_>) -> bool {
         true
     }
 
     fn decoration(
         &self,
         dependencies: &Self::Dependencies,
-        kind: DecorationKind,
+        kind: DecorationKind<'_>,
     ) -> Option<(TextureHandle, f32)> {
         let mut texture_cache = dependencies.texture_cache.borrow_mut();
         let decoration = texture_cache
@@ -536,14 +536,14 @@ impl ViewItem for Person {
         standard_keyed_display!(self, dependencies, pid)
     }
 
-    fn decorated(kind: DecorationKind) -> bool {
+    fn decorated(kind: DecorationKind<'_>) -> bool {
         matches!(kind, DecorationKind::List)
     }
 
     fn decoration(
         &self,
         dependencies: &Self::Dependencies,
-        kind: DecorationKind,
+        kind: DecorationKind<'_>,
     ) -> Option<(TextureHandle, f32)> {
         match kind {
             DecorationKind::List => {
@@ -675,7 +675,7 @@ impl ViewItem for ShopInventory {
         })
     }
 
-    fn decorated(kind: DecorationKind) -> bool {
+    fn decorated(kind: DecorationKind<'_>) -> bool {
         if matches!(kind, DecorationKind::List) {
             true
         } else {
@@ -686,7 +686,7 @@ impl ViewItem for ShopInventory {
     fn decoration(
         &self,
         dependencies: &Self::Dependencies,
-        kind: DecorationKind,
+        kind: DecorationKind<'_>,
     ) -> Option<(TextureHandle, f32)> {
         matches!(kind, DecorationKind::List)
             .then(|| {
@@ -731,14 +731,14 @@ impl ViewItem for Skill {
         standard_keyed_display!(self, dependencies, sid)
     }
 
-    fn decorated(_: DecorationKind) -> bool {
+    fn decorated(_: DecorationKind<'_>) -> bool {
         true
     }
 
     fn decoration(
         &self,
         dependencies: &Self::Dependencies,
-        kind: DecorationKind,
+        kind: DecorationKind<'_>,
     ) -> Option<(TextureHandle, f32)> {
         let mut texture_cache = dependencies.texture_cache.borrow_mut();
         let decoration = texture_cache
@@ -784,7 +784,7 @@ impl ViewItem for Spawn {
             .unwrap_or(Cow::Borrowed("{unknown PID}"))
     }
 
-    fn decorated(kind: DecorationKind) -> bool {
+    fn decorated(kind: DecorationKind<'_>) -> bool {
         match kind {
             DecorationKind::Other(kind) if kind == "spawn_grid" => true,
             _ => false,
@@ -794,7 +794,7 @@ impl ViewItem for Spawn {
     fn decoration(
         &self,
         dependencies: &Self::Dependencies,
-        kind: DecorationKind,
+        kind: DecorationKind<'_>,
     ) -> Option<(TextureHandle, f32)> {
         match kind {
             DecorationKind::Other(kind) if kind == "spawn_grid" => dependencies

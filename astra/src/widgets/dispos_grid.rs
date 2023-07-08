@@ -82,7 +82,7 @@ impl<'a> SpawnDataMap<'a> {
         })
     }
 
-    pub fn get_spawn(&self, row: usize, col: usize) -> Option<&SpawnData> {
+    pub fn get_spawn(&self, row: usize, col: usize) -> Option<&SpawnData<'_>> {
         self.spawns_by_position
             .get(&(col, row))
             .and_then(|group| group.last())

@@ -28,7 +28,7 @@ pub trait ViewItem: Clone {
     /// Indicates whether ANY item of this type could be decorated.
     /// If not, widgets may skip allocating space for decorations and use a simpler layout.
     #[allow(unused)]
-    fn decorated(kind: DecorationKind) -> bool {
+    fn decorated(kind: DecorationKind<'_>) -> bool {
         false
     }
 
@@ -42,7 +42,7 @@ pub trait ViewItem: Clone {
     fn decoration(
         &self,
         dependencies: &Self::Dependencies,
-        kind: DecorationKind,
+        kind: DecorationKind<'_>,
     ) -> Option<(TextureHandle, f32)> {
         None
     }
@@ -248,7 +248,7 @@ impl FilterProxyBuilder {
         requires_refresh: bool,
         model: &'a M,
         dependencies: &D,
-    ) -> FilterProxyModel<M>
+    ) -> FilterProxyModel<'_, M>
     where
         M: ListModel<I>,
         I: ViewItem<Dependencies = D>,
@@ -333,12 +333,12 @@ pub trait GroupViewItem {
     /// Indicates whether ANY item of this type could be decorated.
     /// If not, widgets may skip allocating space for decorations and use a simpler layout.
     #[allow(unused)]
-    fn decorated(kind: DecorationKind) -> bool {
+    fn decorated(kind: DecorationKind<'_>) -> bool {
         false
     }
 
     #[allow(unused)]
-    fn decoration(key: &str, dependencies: &Self::Dependencies, kind: DecorationKind) -> Option<(TextureHandle, f32)> {
+    fn decoration(key: &str, dependencies: &Self::Dependencies, kind: DecorationKind<'_>) -> Option<(TextureHandle, f32)> {
         None
     }
 }

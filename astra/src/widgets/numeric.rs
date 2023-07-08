@@ -9,7 +9,7 @@ macro_rules! numeric_get_set {
             }
         }
 
-        pub fn $widget_name(value: &mut Option<$target>) -> egui::DragValue {
+        pub fn $widget_name(value: &mut Option<$target>) -> egui::DragValue<'_> {
             egui::DragValue::from_get_set($get_set_name(value))
         }
     };

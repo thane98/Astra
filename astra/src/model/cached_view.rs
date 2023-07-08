@@ -39,14 +39,14 @@ where
         Cow::Borrowed(&self.text)
     }
 
-    fn decorated(kind: DecorationKind) -> bool {
+    fn decorated(kind: DecorationKind<'_>) -> bool {
         I::decorated(kind)
     }
 
     fn decoration(
         &self,
         _: &Self::Dependencies,
-        kind: DecorationKind,
+        kind: DecorationKind<'_>,
     ) -> Option<(TextureHandle, f32)> {
         if let DecorationKind::DropDown = kind {
             self.drop_down_decoration.clone()
