@@ -13,10 +13,13 @@ use astra_types::{
     Person, PersonBook, RelianceBonusData, RelianceBook, RelianceData, RelianceExpData, ShopBook,
     ShopInventory, Skill, SkillBook, Spawn, TerrainBook, TerrainData,
 };
+use egui::TextureHandle;
 use indexmap::IndexMap;
 use parking_lot::RwLock;
 
 use crate::{DecorationKind, KeyedViewItem, MessageDbWrapper, TextureCache, ViewItem};
+
+use super::GroupViewItem;
 
 pub struct EditorState {
     pub message_db: MessageDbWrapper,
@@ -248,8 +251,36 @@ impl KeyedViewItem for Chapter {
 
 sheet_retriever!(ForgeImproveData, ItemBook, improve_data, IndexMap<String, Vec<ForgeImproveData>>);
 
+impl GroupViewItem for IndexMap<String, Vec<ForgeImproveData>> {
+    type Dependencies = EditorState;
+
+    fn text<'a>(key: &'a str, dependencies: &'a Self::Dependencies) -> Cow<'a, str> {
+        dependencies.item.read(|data| {
+            data.get(&key.replace("RID_", "IID_"))
+                .and_then(|item| dependencies.message_db.message(&item.name))
+                .map(|name| Cow::Owned(format!("{} ({})", name, key)))
+                .unwrap_or_else(|| key.into())
+        })
+    }
+
+    fn decorated(kind: DecorationKind) -> bool {
+        matches!(kind, DecorationKind::List)
+    }
+
+    fn decoration(
+        key: &str,
+        dependencies: &Self::Dependencies,
+        kind: DecorationKind,
+    ) -> Option<(TextureHandle, f32)> {
+        dependencies.item.read(|data| {
+            data.get(&key.replace("RID_", "IID_"))
+                .and_then(|item| item.decoration(dependencies, kind))
+        })
+    }
+}
+
 impl ViewItem for ForgeImproveData {
-    type Dependencies = ();
+    type Dependencies = EditorState;
 
     fn text(&self, _: &Self::Dependencies) -> Cow<'_, str> {
         Cow::Owned(format!(
@@ -264,6 +295,34 @@ impl ViewItem for ForgeImproveData {
 
 sheet_retriever!(ForgeEvolveData, ItemBook, evolve_data, IndexMap<String, Vec<ForgeEvolveData>>);
 
+impl GroupViewItem for IndexMap<String, Vec<ForgeEvolveData>> {
+    type Dependencies = EditorState;
+
+    fn text<'a>(key: &'a str, dependencies: &'a Self::Dependencies) -> Cow<'a, str> {
+        dependencies.item.read(|data| {
+            data.get(&key.replace("EID_", "IID_"))
+                .and_then(|item| dependencies.message_db.message(&item.name))
+                .map(|name| Cow::Owned(format!("{} ({})", name, key)))
+                .unwrap_or_else(|| key.into())
+        })
+    }
+
+    fn decorated(kind: DecorationKind) -> bool {
+        matches!(kind, DecorationKind::List)
+    }
+
+    fn decoration(
+        key: &str,
+        dependencies: &Self::Dependencies,
+        kind: DecorationKind,
+    ) -> Option<(TextureHandle, f32)> {
+        dependencies.item.read(|data| {
+            data.get(&key.replace("EID_", "IID_"))
+                .and_then(|item| item.decoration(dependencies, kind))
+        })
+    }
+}
+
 // TODO: Can we make this keyed even though it's in a group
 impl ViewItem for ForgeEvolveData {
     type Dependencies = EditorState;
@@ -274,6 +333,25 @@ impl ViewItem for ForgeEvolveData {
                 .map(|item| item.text(dependencies).into_owned().into())
                 .unwrap_or_else(|| Cow::Borrowed("{unknown item}"))
         })
+    }
+
+    fn decorated(kind: DecorationKind) -> bool {
+        matches!(kind, DecorationKind::List)
+    }
+
+    fn decoration(
+        &self,
+        dependencies: &Self::Dependencies,
+        kind: DecorationKind,
+    ) -> Option<(TextureHandle, f32)> {
+        if matches!(kind, DecorationKind::List) {
+            dependencies.item.read(|data| {
+                data.get(&self.iid)
+                    .and_then(|item| item.decoration(dependencies, kind))
+            })
+        } else {
+            None
+        }
     }
 }
 
@@ -314,8 +392,20 @@ impl KeyedViewItem for GodData {
 
 sheet_retriever!(GodLevelData, GodBook, level_data, IndexMap<String, Vec<GodLevelData>>);
 
+impl GroupViewItem for IndexMap<String, Vec<GodLevelData>> {
+    type Dependencies = EditorState;
+
+    fn text<'a>(key: &'a str, dependencies: &'a Self::Dependencies) -> Cow<'a, str> {
+        dependencies.god.read(|data| {
+            data.get(&key.replace("GGID_", "GID_"))
+                .map(|item| item.text(dependencies).into_owned().into())
+                .unwrap_or_else(|| Cow::Borrowed("{unknown item}"))
+        })
+    }
+}
+
 impl ViewItem for GodLevelData {
-    type Dependencies = ();
+    type Dependencies = EditorState;
 
     fn text(&self, _: &Self::Dependencies) -> Cow<'_, str> {
         Cow::Owned(format!("Level {}", self.level.unwrap_or_default()))
@@ -354,7 +444,7 @@ impl ViewItem for Item {
         &self,
         dependencies: &Self::Dependencies,
         kind: DecorationKind,
-    ) -> Option<(egui::TextureHandle, f32)> {
+    ) -> Option<(TextureHandle, f32)> {
         let mut texture_cache = dependencies.texture_cache.borrow_mut();
         let decoration = texture_cache
             .get_item(&self.icon)
@@ -393,7 +483,7 @@ impl ViewItem for Job {
         &self,
         dependencies: &Self::Dependencies,
         kind: DecorationKind,
-    ) -> Option<(egui::TextureHandle, f32)> {
+    ) -> Option<(TextureHandle, f32)> {
         let mut texture_cache = dependencies.texture_cache.borrow_mut();
         let decoration = texture_cache
             .get_unit(
@@ -454,7 +544,7 @@ impl ViewItem for Person {
         &self,
         dependencies: &Self::Dependencies,
         kind: DecorationKind,
-    ) -> Option<(egui::TextureHandle, f32)> {
+    ) -> Option<(TextureHandle, f32)> {
         match kind {
             DecorationKind::List => {
                 let mut texture_cache = dependencies.texture_cache.borrow_mut();
@@ -543,6 +633,14 @@ impl KeyedViewItem for RelianceExpData {
 
 sheet_retriever!(RelianceBonusData, RelianceBook, relianace_bonus_data, IndexMap<String, Vec<RelianceBonusData>>);
 
+impl GroupViewItem for IndexMap<String, Vec<RelianceBonusData>> {
+    type Dependencies = ();
+
+    fn text<'a>(key: &'a str, _: &'a Self::Dependencies) -> Cow<'a, str> {
+        key.into()
+    }
+}
+
 impl ViewItem for RelianceBonusData {
     type Dependencies = ();
 
@@ -557,6 +655,14 @@ sheet_retriever!(ItemShop, ShopBook, item_shop_inventory, IndexMap<String, Vec<S
 
 sheet_retriever!(FleaMarket, ShopBook, flea_market_shop_inventory, IndexMap<String, Vec<ShopInventory>>);
 
+impl GroupViewItem for IndexMap<String, Vec<ShopInventory>> {
+    type Dependencies = EditorState;
+
+    fn text<'a>(key: &'a str, _: &'a Self::Dependencies) -> Cow<'a, str> {
+        key.into()
+    }
+}
+
 // TODO: Make this keyed after adding keyed group support.
 impl ViewItem for ShopInventory {
     type Dependencies = EditorState;
@@ -568,9 +674,40 @@ impl ViewItem for ShopInventory {
                 .unwrap_or_else(|| Cow::Borrowed("{unknown item}"))
         })
     }
+
+    fn decorated(kind: DecorationKind) -> bool {
+        if matches!(kind, DecorationKind::List) {
+            true
+        } else {
+            false
+        }
+    }
+
+    fn decoration(
+        &self,
+        dependencies: &Self::Dependencies,
+        kind: DecorationKind,
+    ) -> Option<(TextureHandle, f32)> {
+        matches!(kind, DecorationKind::List)
+            .then(|| {
+                dependencies.item.read(|data| {
+                    data.get(&self.iid)
+                        .and_then(|item| item.decoration(dependencies, kind))
+                })
+            })
+            .flatten()
+    }
 }
 
 sheet_retriever!(AccessoryShop, ShopBook, accessory_shop_inventory, IndexMap<String, Vec<AccessoryShopInventory>>);
+
+impl GroupViewItem for IndexMap<String, Vec<AccessoryShopInventory>> {
+    type Dependencies = EditorState;
+
+    fn text<'a>(key: &'a str, _: &'a Self::Dependencies) -> Cow<'a, str> {
+        key.into()
+    }
+}
 
 // TODO: Make this keyed after adding keyed group support.
 impl ViewItem for AccessoryShopInventory {
@@ -602,7 +739,7 @@ impl ViewItem for Skill {
         &self,
         dependencies: &Self::Dependencies,
         kind: DecorationKind,
-    ) -> Option<(egui::TextureHandle, f32)> {
+    ) -> Option<(TextureHandle, f32)> {
         let mut texture_cache = dependencies.texture_cache.borrow_mut();
         let decoration = texture_cache
             .get_skill(&self.icon_label)
@@ -625,6 +762,14 @@ impl KeyedViewItem for Skill {
 }
 
 sheet_retriever!(Spawn, DisposBook, spawns, IndexMap<String, Vec<Spawn>>);
+
+impl GroupViewItem for IndexMap<String, Vec<Spawn>> {
+    type Dependencies = EditorState;
+
+    fn text<'a>(key: &'a str, _: &'a Self::Dependencies) -> Cow<'a, str> {
+        key.into()
+    }
+}
 
 impl ViewItem for Spawn {
     type Dependencies = EditorState;
@@ -650,7 +795,7 @@ impl ViewItem for Spawn {
         &self,
         dependencies: &Self::Dependencies,
         kind: DecorationKind,
-    ) -> Option<(egui::TextureHandle, f32)> {
+    ) -> Option<(TextureHandle, f32)> {
         match kind {
             DecorationKind::Other(kind) if kind == "spawn_grid" => dependencies
                 .person

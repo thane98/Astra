@@ -1,7 +1,7 @@
 use astra_types::AnimSet;
 use indexmap::IndexMap;
 
-use crate::widgets::keyed_add_modal_content;
+use crate::widgets::{keyed_add_modal_content, id_field};
 use crate::{AnimSetSheet, EditorState, ListEditorContent, PropertyGrid};
 
 pub struct AnimSetEditor {
@@ -25,7 +25,7 @@ impl AnimSetEditor {
             self.content.content(ctx, data, |ui, animset| {
                 PropertyGrid::new("anim_set", animset)
                     .new_section("Data")
-                    .default_field("Name", |anim_set| &mut anim_set.name) // TODO: This should be disabled
+                    .field("Name", |ui, anim_set| ui.add(id_field(&mut anim_set.name)))
                     .default_field("Attack 1", |anim_set| &mut anim_set.attack_1)
                     .default_field("Attack 2", |anim_set| &mut anim_set.attack_2)
                     .default_field("Attack 3", |anim_set| &mut anim_set.attack_3)

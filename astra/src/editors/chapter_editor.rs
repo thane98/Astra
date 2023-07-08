@@ -2,19 +2,70 @@ use std::sync::Arc;
 
 use astra_core::{Astra, OpenMessageScript, OpenTerrain};
 use astra_types::{Chapter, ChapterBook, Spawn};
-use egui::{Button, CentralPanel, ComboBox, TextEdit, Ui};
+use egui::{Button, CentralPanel, ComboBox, Ui};
 use egui_modal::{Icon, Modal};
 use indexmap::IndexMap;
 use parking_lot::RwLock;
 
-use crate::widgets::keyed_add_modal_content;
+use crate::widgets::{
+    bitgrid_i32, chapter_encount_type, chapter_spot_state, keyed_add_modal_content, bitgrid_u16, id_field,
+};
 use crate::{
-    blank_slate, dispos_grid, editor_tab_strip, f32_drag, i32_drag, i8_drag,
+    blank_slate, dispos_grid, editor_tab_strip, f32_drag, i8_drag,
     indexed_model_drop_down, model_drop_down, msbt_key_value_singleline, msbt_script_editor,
-    terrain_grid, u16_drag, u32_drag, u8_drag, AppConfig, CacheItem, CachedView, ChapterSheet,
+    terrain_grid, u32_drag, u8_drag, AppConfig, CacheItem, CachedView, ChapterSheet,
     ChapterSheetRetriever, EditorState, GroupEditorContent, ListEditorContent, ListModel,
     PropertyGrid, SpawnSheet,
 };
+
+const CHAPTER_FLAG_LABELS: &[&str] = &[
+    "Sortie",
+    "Can Back Out",
+    "Sight",
+    "Kizuna",
+    "Hub",
+    "GMap",
+    "Continue",
+    "Serious",
+    "Casual",
+    "Challenge",
+    "Relay",
+    "Versus",
+    "Test Map",
+    "Opposition",
+    "High Rank Item",
+    "Can Slope",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "Paralogue",
+    "Scenario",
+];
+
+const SPAWN_FLAG_LABELS: &[&str] = &[
+    "Normal",
+    "Hard",
+    "Lunatic",
+    "Create",
+    "Boss",
+    "Cannot Move",
+    "Edge",
+    "Deployment Slot",
+    "Must Deploy",
+    "Fixed",
+    "Guest",
+];
 
 fn can_open_script(script_name: &str, config: &AppConfig) -> bool {
     !(script_name.is_empty()
@@ -322,9 +373,7 @@ impl ChapterEditor {
     ) -> bool {
         PropertyGrid::new("chapter", chapter)
             .new_section("Core")
-            .field("CID", |ui, chapter| {
-                ui.add_enabled(false, TextEdit::singleline(&mut chapter.cid))
-            })
+            .field("CID", |ui, chapter| ui.add(id_field(&mut chapter.cid)))
             .field("Name", |ui, chapter| {
                 msbt_key_value_singleline!(ui, state, "gamedata", chapter.name)
             })
@@ -371,7 +420,9 @@ impl ChapterEditor {
             .field("Dispos", |ui, chapter| {
                 ui.text_edit_singleline(&mut chapter.dispos)
             })
-            .field("Flags", |ui, chapter| ui.add(i32_drag(&mut chapter.flag)))
+            .field("Flags", |ui, chapter| {
+                ui.add(bitgrid_i32(CHAPTER_FLAG_LABELS, 3, &mut chapter.flag))
+            })
             .new_section("GMap")
             .field("Spot", |ui, chapter| {
                 ui.text_edit_singleline(&mut chapter.gmap_spot)
@@ -380,10 +431,10 @@ impl ChapterEditor {
                 ui.text_edit_singleline(&mut chapter.gmap_spot_open_condition)
             })
             .field("State", |ui, chapter| {
-                ui.add(i8_drag(&mut chapter.gmap_spot_state))
+                ui.add(chapter_spot_state(&mut chapter.gmap_spot_state))
             })
             .field("Encount", |ui, chapter| {
-                ui.add(i8_drag(&mut chapter.gmap_spot_encount))
+                ui.add(chapter_encount_type(&mut chapter.gmap_spot_encount))
             })
             .new_section("Sound")
             .field("Field Situation", |ui, chapter| {
@@ -493,9 +544,15 @@ impl ChapterEditor {
                     .read(|data| ui.add(model_drop_down(data, state, &mut spawn.sid)))
             })
             .field("BID", |ui, spawn| ui.text_edit_singleline(&mut spawn.bid))
-            .field("GID", |ui, spawn| ui.text_edit_singleline(&mut spawn.gid))
+            .field("GID", |ui, spawn| {
+                state.god.read(|data| {
+                    ui.add(model_drop_down(data, state, &mut spawn.gid))
+                })
+            })
             .field("Force", |ui, spawn| ui.add(i8_drag(&mut spawn.force)))
-            .field("Flag", |ui, spawn| ui.add(u16_drag(&mut spawn.flag)))
+            .field("Flag", |ui, spawn| {
+                ui.add(bitgrid_u16(SPAWN_FLAG_LABELS, 1, &mut spawn.flag))
+            })
             .field("Appear X", |ui, spawn| ui.add(i8_drag(&mut spawn.appear_x)))
             .field("Appear Y", |ui, spawn| ui.add(i8_drag(&mut spawn.appear_y)))
             .field("Dispos X", |ui, spawn| ui.add(i8_drag(&mut spawn.dispos_x)))

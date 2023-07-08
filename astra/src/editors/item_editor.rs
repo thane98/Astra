@@ -1,8 +1,8 @@
 use astra_types::{Item, ItemBook};
-use egui::{Grid, TextEdit, Ui};
+use egui::{Grid, Ui};
 use indexmap::IndexMap;
 
-use crate::widgets::keyed_add_modal_content;
+use crate::widgets::{keyed_add_modal_content, id_field};
 use crate::{
     bitgrid_i32, editable_list, item_kind_drop_down, item_use_type_drop_down, model_drop_down,
     msbt_key_value_multiline, msbt_key_value_singleline, optional_image, staff_type_drop_down,
@@ -74,7 +74,7 @@ impl ItemEditor {
                                         [ui.available_width() - 12., 90.],
                                     ));
                                 });
-                                ui.add_enabled(false, TextEdit::singleline(&mut item.iid));
+                                ui.add(id_field(&mut item.iid));
                             });
                             ui.label("");
                         })
@@ -83,8 +83,9 @@ impl ItemEditor {
                     ui.group(|ui| {
                         Grid::new("item_grid").show(ui, |ui| {
                             stat_column_headers_no_sight(ui);
-                            // TODO: Forgot to add row headers...
+                            ui.label("Bonuses");
                             stats_row_no_sight!(ui, item, enhance, changed);
+                            ui.label("Growth Ratios");
                             stats_row_no_sight!(ui, item, grow_ratio, changed);
                         });
                     });

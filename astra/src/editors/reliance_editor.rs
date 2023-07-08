@@ -2,7 +2,7 @@ use astra_types::{RelianceBonusData, RelianceExpData};
 use egui::Ui;
 use indexmap::IndexMap;
 
-use crate::widgets::keyed_add_modal_content;
+use crate::widgets::{keyed_add_modal_content, id_field};
 use crate::{
     editor_tab_strip, i8_drag, u8_drag, EditorState, GroupEditorContent, ListEditorContent,
     PropertyGrid, RelianceBonusDataSheet, RelianceExpDataSheet,
@@ -62,6 +62,7 @@ impl RelianceEditor {
     fn exp_data_property_grid(ui: &mut Ui, data: &mut RelianceExpData) -> bool {
         PropertyGrid::new("reliance_exp_data", data)
             .new_section("Data")
+            .field("REXID", |ui, data| ui.add(id_field(&mut data.rexid)))
             .field("C", |ui, data| ui.add(u8_drag(&mut data.exp_c)))
             .field("B", |ui, data| ui.add(u8_drag(&mut data.exp_b)))
             .field("A", |ui, data| ui.add(u8_drag(&mut data.exp_a)))

@@ -1,5 +1,6 @@
 use astra_types::AssetDef;
 
+use crate::widgets::model_drop_down;
 use crate::{
     editable_list, f32_drag, i8_drag, rgb_color_picker, AssetTableSheet, EditorState,
     ListEditorContent, PropertyGrid,
@@ -18,7 +19,7 @@ impl AssetTableEditor {
         }
     }
 
-    pub fn show(&mut self, ctx: &egui::Context) {
+    pub fn show(&mut self, ctx: &egui::Context, state: &EditorState) {
         self.content.side_panel(ctx, &self.asset_table, &());
 
         self.asset_table.write(|data| {
@@ -165,19 +166,29 @@ impl AssetTableEditor {
                     })
                     .new_section("Animation")
                     .field("Body Anim", |ui, def| {
-                        ui.text_edit_singleline(&mut def.body_anim)
+                        state.anim_set.read(|data| {
+                            ui.add(model_drop_down(data, &(), &mut def.body_anim))
+                        })
                     })
                     .field("Info Anim", |ui, def| {
-                        ui.text_edit_singleline(&mut def.info_anim)
+                        state.anim_set.read(|data| {
+                            ui.add(model_drop_down(data, &(), &mut def.info_anim))
+                        })
                     })
                     .field("Talk Anim", |ui, def| {
-                        ui.text_edit_singleline(&mut def.talk_anim)
+                        state.anim_set.read(|data| {
+                            ui.add(model_drop_down(data, &(), &mut def.talk_anim))
+                        })
                     })
                     .field("Demo Anim", |ui, def| {
-                        ui.text_edit_singleline(&mut def.demo_anim)
+                        state.anim_set.read(|data| {
+                            ui.add(model_drop_down(data, &(), &mut def.demo_anim))
+                        })
                     })
                     .field("Hub Anim", |ui, def| {
-                        ui.text_edit_singleline(&mut def.hub_anim)
+                        state.anim_set.read(|data| {
+                            ui.add(model_drop_down(data, &(), &mut def.hub_anim))
+                        })
                     })
                     .new_section("Scale")
                     .field("Scale (All)", |ui, def| {
@@ -229,6 +240,7 @@ impl AssetTableEditor {
                     .field("Volume Scale (Legs)", |ui, def| {
                         ui.add(f32_drag(&mut def.volume_scale_legs))
                     })
+                    .new_section("Map Scale")
                     .field("Map Scale (All)", |ui, def| {
                         ui.add(f32_drag(&mut def.map_scale_all))
                     })

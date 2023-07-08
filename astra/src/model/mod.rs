@@ -322,3 +322,23 @@ where
         unimplemented!("modify the source model instead")
     }
 }
+
+/// A trait to retrieve display info for a group.
+pub trait GroupViewItem {
+    type Dependencies;
+
+    /// Retrieve the display text for a group item with the given key.
+    fn text<'a>(key: &'a str, dependencies: &'a Self::Dependencies) -> Cow<'a, str>;
+
+    /// Indicates whether ANY item of this type could be decorated.
+    /// If not, widgets may skip allocating space for decorations and use a simpler layout.
+    #[allow(unused)]
+    fn decorated(kind: DecorationKind) -> bool {
+        false
+    }
+
+    #[allow(unused)]
+    fn decoration(key: &str, dependencies: &Self::Dependencies, kind: DecorationKind) -> Option<(TextureHandle, f32)> {
+        None
+    }
+}

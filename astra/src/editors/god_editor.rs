@@ -1,13 +1,49 @@
-use astra_types::{GodBondLevelData, GodData, GodLevelData};
+use astra_types::{GodBondLevelData, GodData, GodLevelData, GodBook};
 use egui::Ui;
 use indexmap::IndexMap;
 
-use crate::widgets::keyed_add_modal_content;
+use crate::model::{CachedView, GodDataSheetRetriever, CacheItem};
+use crate::widgets::{id_field, keyed_add_modal_content, bitgrid_i32};
 use crate::{
-    editable_list, editor_tab_strip, i16_drag, i32_drag, i8_drag, model_drop_down, u16_drag,
-    u8_drag, EditorState, GodBondLevelDataSheet, GodDataSheet, GodLevelDataSheet,
-    GroupEditorContent, ListEditorContent, PropertyGrid,
+    editable_list, editor_tab_strip, i16_drag, i32_drag, i8_drag, model_drop_down,
+    msbt_key_value_singleline, u16_drag, u8_drag, EditorState, GodBondLevelDataSheet, GodDataSheet,
+    GodLevelDataSheet, GroupEditorContent, ListEditorContent, PropertyGrid, msbt_key_value_multiline,
 };
+
+const FLAG_LABELS: &[&str] = &[
+    "No Added Exp",
+    "Enable Ring List",
+    "Unit Icon Darkness",
+    "Gauge Darkness",
+    "Only Engage Weapon",
+    "Armlet",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "???",
+    "Hero",
+];
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 enum Tab {
@@ -19,6 +55,7 @@ enum Tab {
 pub struct GodEditor {
     tab: Tab,
     god: GodDataSheet,
+    cache: CachedView<GodDataSheetRetriever, GodBook, GodData>,
     level_data: GodLevelDataSheet,
     bond_data: GodBondLevelDataSheet,
     main_content: ListEditorContent<IndexMap<String, GodData>, GodData>,
@@ -31,6 +68,7 @@ impl GodEditor {
         Self {
             tab: Tab::Main,
             god: state.god.clone(),
+            cache: CachedView::new(state.god.clone(), state),
             level_data: state.god_level_data.clone(),
             bond_data: state.god_bond_level_data.clone(),
             main_content: ListEditorContent::new("gods")
@@ -53,14 +91,17 @@ impl GodEditor {
             Tab::Main => self.main_content.side_panel(ctx, &self.god, state),
             Tab::LevelData => self
                 .level_data_content
-                .left_panel(ctx, &self.level_data, &()),
+                .left_panel(ctx, &self.level_data, state),
             Tab::BondLevelData => self.bond_data_content.side_panel(ctx, &self.bond_data, &()),
         }
 
+        self.cache.refresh(state);
+
         match self.tab {
             Tab::Main => self.god.write(|data| {
-                self.main_content
-                    .content(ctx, data, |ui, data| Self::god_property_grid(ui, data))
+                self.main_content.content(ctx, data, |ui, data| {
+                    Self::god_property_grid(self.cache.get(), ui, data, state)
+                })
             }),
             Tab::LevelData => self.level_data.write(|data| {
                 self.level_data_content.content(ctx, data, |ui, data| {
@@ -75,13 +116,15 @@ impl GodEditor {
         }
     }
 
-    fn god_property_grid(ui: &mut Ui, data: &mut GodData) -> bool {
+    fn god_property_grid(cache: &IndexMap<String, CacheItem<GodData>>, ui: &mut Ui, data: &mut GodData, state: &EditorState) -> bool {
         PropertyGrid::new("gods", data)
             .new_section("data")
-            .field("GID", |ui, god| ui.text_edit_singleline(&mut god.gid))
-            .field("MID", |ui, god| ui.text_edit_singleline(&mut god.mid))
+            .field("GID", |ui, god| ui.add(id_field(&mut god.gid)))
+            .field("MID", |ui, god| {
+                msbt_key_value_singleline!(ui, state, "gamedata", god.mid)
+            })
             .field("Nickname", |ui, god| {
-                ui.text_edit_singleline(&mut god.nickname)
+                msbt_key_value_singleline!(ui, state, "gamedata", god.nickname)
             })
             .field("ASCII Name", |ui, god| {
                 ui.text_edit_singleline(&mut god.ascii_name)
@@ -99,10 +142,10 @@ impl GodEditor {
                 ui.text_edit_singleline(&mut god.face_icon_name_darkness)
             })
             .field("Ring Name", |ui, god| {
-                ui.text_edit_singleline(&mut god.ringname)
+                msbt_key_value_singleline!(ui, state, "gamedata", god.ringname)
             })
             .field("Ring Help", |ui, god| {
-                ui.text_edit_singleline(&mut god.ringhelp)
+                msbt_key_value_multiline!(ui, state, "gamedata", god.ringhelp)
             })
             .field("Unit Icon ID", |ui, god| {
                 ui.text_edit_singleline(&mut god.unit_icon_id)
@@ -112,7 +155,7 @@ impl GodEditor {
                     ui.text_edit_singleline(value)
                 }))
             })
-            .field("Link", |ui, god| ui.text_edit_singleline(&mut god.link))
+            .field("Link", |ui, god| ui.add(model_drop_down(cache, &(), &mut god.link)))
             .field("Engage Haunt", |ui, god| {
                 ui.text_edit_singleline(&mut god.engage_haunt)
             })
@@ -127,16 +170,22 @@ impl GodEditor {
                 ui.add(u8_drag(&mut god.engage_count))
             })
             .field("Engage Attack", |ui, god| {
-                ui.text_edit_singleline(&mut god.engage_attack)
+                state.skill.read(|data| {
+                    ui.add(model_drop_down(data, state, &mut god.engage_attack))
+                })
             })
             .field("Engage Attack Rampage", |ui, god| {
-                ui.text_edit_singleline(&mut god.engage_attack_rampage)
+                state.skill.read(|data| {
+                    ui.add(model_drop_down(data, state, &mut god.engage_attack_rampage))
+                })
             })
             .field("Engage Attack Link", |ui, god| {
-                ui.text_edit_singleline(&mut god.engage_attack_link)
+                state.skill.read(|data| {
+                    ui.add(model_drop_down(data, state, &mut god.engage_attack_link))
+                })
             })
-            .field("Link Gbid", |ui, god| {
-                ui.text_edit_singleline(&mut god.link_gid)
+            .field("Link Emblem", |ui, god| {
+                ui.add(model_drop_down(cache, &(), &mut god.link_gid))
             })
             .field("Gbid", |ui, god| ui.text_edit_singleline(&mut god.gbid))
             .field("Grow Table", |ui, god| {
@@ -197,7 +246,7 @@ impl GodEditor {
             .field("Synchro MOV Bonus", |ui, god| {
                 ui.add(i8_drag(&mut god.synchro_enhance_move))
             })
-            .field("Flag", |ui, god| ui.add(i32_drag(&mut god.flag)))
+            .field("Flag", |ui, god| ui.add(bitgrid_i32(FLAG_LABELS, 3, &mut god.flag)))
             .field("Net Ranking Index", |ui, god| {
                 ui.add(u8_drag(&mut god.net_ranking_index))
             })

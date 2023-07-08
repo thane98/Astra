@@ -1,13 +1,108 @@
 use astra_types::{Skill, SkillBook};
-use egui::{TextEdit, Ui};
 use indexmap::IndexMap;
 
-use crate::widgets::keyed_add_modal_content;
+use crate::widgets::{
+    bitgrid_i32, bitgrid_u64, id_field, keyed_add_modal_content, skill_around_centers_drop_down,
+    skill_around_targets_drop_down, skill_cycle_drop_down, skill_frequencies_drop_down,
+    skill_give_targets_drop_down, skill_stance_drop_down, skill_targets_drop_down,
+    skill_timing_drop_down, u8_drag, weapon_rank_numbered_drop_down,
+};
 use crate::{
     editable_list, i8_drag, model_drop_down, msbt_key_value_multiline, msbt_key_value_singleline,
-    optional_image, CachedView, DecorationKind, DefaultWidget, EditorState, ListEditorContent,
-    PropertyGrid, SkillSheet, SkillSheetRetriever, ViewItem,
+    CachedView, DefaultWidget, EditorState, ListEditorContent, PropertyGrid, SkillSheet,
+    SkillSheetRetriever,
 };
+
+const WEAPON_LABELS: &[&str] = &[
+    "None", "Swords", "Lances", "Axes", "Bows", "Daggers", "Magic", "Staves", "Fists",
+];
+
+const STATE_FLAG_LABELS: &[&str] = &[
+    "Poison",
+    "Deadly Poison",
+    "Severe Poison",
+    "Heal",
+    "Sleep",
+    "Silence",
+    "Charm",
+    "Confusion",
+    "Freeze",
+    "Weakness",
+    "Stun",
+    "Interact",
+    "Decoy",
+    "Not Enhance",
+    "Enhance",
+    "Immovable",
+    "Not Move",
+    "Not Weapon Weight",
+    "Not Chain Attack",
+];
+
+const SKILL_FLAG_LABELS: &[&str] = &[
+    "Invisible",
+    "Engage Attack",
+    "Engage Charge",
+    "Engage Link",
+    "Engage Wait",
+    "Engage Summon",
+    "Ignore Engage Attack",
+    "Ignore No Engage Attack",
+    "Enable Chaining",
+    "Enable Destroy",
+    "Enable Cannon",
+    "Enable Rod",
+    "Ignore Alone",
+    "Ignore Multi Attacking",
+    "Ignore Training",
+    "Ignore Trial",
+    "Ignore Sim",
+    "Exclusive Dance",
+    "Revenge Auto Equip",
+    "Swap Order",
+    "Interrupt Order",
+    "Continue Battle",
+    "Force Late Order",
+    "Each Support",
+    "Reactable",
+    "Remagicable",
+    "Before Move",
+    "Allow Chain Attack",
+    "Allow Chain Guard",
+    "Allow Engage Guard",
+    "Force Chain Attack",
+    "Join Chain Attack",
+    "Range Reliance",
+    "Pickup Reliance",
+    "Move Cost Free",
+    "Move Enemy Pass",
+    "Reset Disorder",
+    "Item Heal Around",
+    "Item Heal Give",
+    "Self Heal Rod",
+    "Only Recover Rod",
+    "Decay Enhance",
+    "Sub Engage Count Limit",
+    "Reverse Count",
+    "Re Cooking",
+    "Basis Skill",
+    "Unstoppable",
+    "Hide Change God",
+    "Over Exp Change",
+    "Move Fly",
+    "View Restriction",
+    "Has Icon BMap",
+    "Has Contract",
+    "Haunt Chain Attack",
+    "Has Root Command",
+    "Has ZOC",
+    "Has Work",
+    "Has Vision",
+    "Not Condition",
+    "Has Condition",
+    "Has Enhance",
+    "Has Range Target",
+];
 
 pub struct SkillEditor {
     skill: SkillSheet,
@@ -32,24 +127,9 @@ impl SkillEditor {
 
         self.skill.write(|data| {
             self.content.content(ctx, data, |ui, skill| {
-                let mut changed = false;
-                ui.add_sized([200., 0.], |ui: &mut Ui| {
-                    ui.group(|ui| {
-                        ui.vertical_centered_justified(|ui| {
-                            ui.group(|ui| {
-                                ui.add(optional_image(
-                                    skill.decoration(state, DecorationKind::Other("portrait")),
-                                    [ui.available_width() - 12., 40.],
-                                ));
-                            });
-                            ui.add_enabled(false, TextEdit::singleline(&mut skill.sid));
-                        });
-                    })
-                    .response
-                });
-
-                changed |= PropertyGrid::new("skill", skill)
+                PropertyGrid::new("skill", skill)
                     .new_section("Core")
+                    .field("SID", |ui, skill| ui.add(id_field(&mut skill.sid)))
                     .field("Name", |ui, skill| {
                         msbt_key_value_singleline!(ui, state, "skill", skill.name)
                     })
@@ -66,15 +146,34 @@ impl SkillEditor {
                     .default_field("Priority", |skill| &mut skill.priority)
                     .default_field("Layer", |skill| &mut skill.layer)
                     .default_field("Order", |skill| &mut skill.order)
-                    .default_field("Cycle", |skill| &mut skill.cycle)
-                    .default_field("Life", |skill| &mut skill.life)
-                    .default_field("Timing", |skill| &mut skill.timing)
-                    .default_field("Target", |skill| &mut skill.target)
-                    .default_field("Frequency", |skill| &mut skill.frequency)
-                    .default_field("Stand", |skill| &mut skill.stand)
+                    .field("Duration", |ui, skill| {
+                        ui.horizontal(|ui| {
+                            let mut response = ui.add(skill_cycle_drop_down(&mut skill.cycle));
+                            ui.label("x");
+                            response = response.union(ui.add(u8_drag(&mut skill.life)));
+                            response
+                        })
+                        .inner
+                    })
+                    .field("Timing", |ui, skill| {
+                        ui.add(skill_timing_drop_down(&mut skill.timing))
+                    })
+                    .field("Target", |ui, skill| {
+                        ui.add(skill_targets_drop_down(&mut skill.target))
+                    })
+                    .field("Frequency", |ui, skill| {
+                        ui.add(skill_frequencies_drop_down(&mut skill.frequency))
+                    })
+                    .field("Stance", |ui, skill| {
+                        ui.add(skill_stance_drop_down(&mut skill.stand))
+                    })
                     .default_field("Action", |skill| &mut skill.action)
-                    // TODO: FLAG
-                    .default_field("Prohibit Weapons", |skill| &mut skill.weapon_prohibit)
+                    .field("Flags", |ui, skill| {
+                        ui.add(bitgrid_u64(SKILL_FLAG_LABELS, 3, &mut skill.flag))
+                    })
+                    .field("Prohibit Weapons", |ui, skill| {
+                        ui.add(bitgrid_i32(WEAPON_LABELS, 3, &mut skill.weapon_prohibit))
+                    })
                     .default_field("Attack Range", |skill| &mut skill.attack_range)
                     .default_field("Power", |skill| &mut skill.power)
                     .default_field("Rewarp", |skill| &mut skill.rewarp)
@@ -158,34 +257,44 @@ impl SkillEditor {
                     .default_field("Mov", |skill| &mut skill.enhance_value_move)
                     .new_section("Weapon Levels")
                     .field("None", |ui, skill| {
-                        ui.add(i8_drag(&mut skill.weapon_level_none))
+                        ui.add(weapon_rank_numbered_drop_down(&mut skill.weapon_level_none))
                     })
                     .field("Sword", |ui, skill| {
-                        ui.add(i8_drag(&mut skill.weapon_level_sword))
+                        ui.add(weapon_rank_numbered_drop_down(
+                            &mut skill.weapon_level_sword,
+                        ))
                     })
                     .field("Axe", |ui, skill| {
-                        ui.add(i8_drag(&mut skill.weapon_level_axe))
+                        ui.add(weapon_rank_numbered_drop_down(&mut skill.weapon_level_axe))
                     })
                     .field("Lance", |ui, skill| {
-                        ui.add(i8_drag(&mut skill.weapon_level_lance))
+                        ui.add(weapon_rank_numbered_drop_down(
+                            &mut skill.weapon_level_lance,
+                        ))
                     })
                     .field("Bow", |ui, skill| {
-                        ui.add(i8_drag(&mut skill.weapon_level_bow))
+                        ui.add(weapon_rank_numbered_drop_down(&mut skill.weapon_level_bow))
                     })
                     .field("Dagger", |ui, skill| {
-                        ui.add(i8_drag(&mut skill.weapon_level_dagger))
+                        ui.add(weapon_rank_numbered_drop_down(
+                            &mut skill.weapon_level_dagger,
+                        ))
                     })
                     .field("Magic", |ui, skill| {
-                        ui.add(i8_drag(&mut skill.weapon_level_magic))
+                        ui.add(weapon_rank_numbered_drop_down(
+                            &mut skill.weapon_level_magic,
+                        ))
                     })
                     .field("Staff", |ui, skill| {
-                        ui.add(i8_drag(&mut skill.weapon_level_rod))
+                        ui.add(weapon_rank_numbered_drop_down(&mut skill.weapon_level_rod))
                     })
                     .field("Fist", |ui, skill| {
-                        ui.add(i8_drag(&mut skill.weapon_level_fist))
+                        ui.add(weapon_rank_numbered_drop_down(&mut skill.weapon_level_fist))
                     })
                     .field("Special", |ui, skill| {
-                        ui.add(i8_drag(&mut skill.weapon_level_special))
+                        ui.add(weapon_rank_numbered_drop_down(
+                            &mut skill.weapon_level_special,
+                        ))
                     })
                     .new_section("Command")
                     // TODO
@@ -210,10 +319,16 @@ impl SkillEditor {
                     .default_field("Name", |skill| &mut skill.around_name)
                     .default_field("Operation", |skill| &mut skill.around_operation)
                     .default_field("Value", |skill| &mut skill.around_value)
-                    .default_field("Center", |skill| &mut skill.around_center)
-                    .default_field("Target", |skill| &mut skill.around_target)
+                    .field("Center", |ui, skill| {
+                        ui.add(skill_around_centers_drop_down(&mut skill.around_center))
+                    })
+                    .field("Target", |ui, skill| {
+                        ui.add(skill_around_targets_drop_down(&mut skill.around_target))
+                    })
                     .new_section("Give")
-                    .default_field("Target", |skill| &mut skill.give_target)
+                    .field("Target", |ui, skill| {
+                        ui.add(skill_give_targets_drop_down(&mut skill.give_target))
+                    })
                     .default_field("Condition", |skill| &mut skill.give_condition)
                     .field("Skills", |ui, skill| {
                         ui.add(editable_list(&mut skill.act_values, |_, value, ui| {
@@ -222,7 +337,11 @@ impl SkillEditor {
                     })
                     .new_section("Overlap")
                     .default_field("Range", |skill| &mut skill.overlap_range)
-                    .default_field("Terrain", |skill| &mut skill.overlap_terrain)
+                    .field("Terrain", |ui, skill| {
+                        state.terrain.read(|data| {
+                            ui.add(model_drop_down(data, state, &mut skill.overlap_terrain))
+                        })
+                    })
                     .new_section("ZOC")
                     .default_field("Range", |skill| &mut skill.zoc_range)
                     .default_field("Type", |skill| &mut skill.zoc_type)
@@ -244,15 +363,17 @@ impl SkillEditor {
                     .default_field("Value", |skill| &mut skill.efficacy_value)
                     .default_field("Ignore", |skill| &mut skill.efficacy_ignore)
                     .new_section("Bad")
-                    .default_field("State", |skill| &mut skill.bad_state)
-                    .default_field("Ignore", |skill| &mut skill.bad_ignore)
+                    .field("State", |ui, skill| {
+                        ui.add(bitgrid_i32(STATE_FLAG_LABELS, 3, &mut skill.bad_state))
+                    })
+                    .field("Ignore", |ui, skill| {
+                        ui.add(bitgrid_i32(STATE_FLAG_LABELS, 3, &mut skill.bad_ignore))
+                    })
                     .new_section("Inheritance")
                     .default_field("Cost", |skill| &mut skill.inheritance_cost)
                     .default_field("Sort", |skill| &mut skill.inheritance_sort)
                     .show(ui)
-                    .changed();
-
-                changed
+                    .changed()
             })
         });
     }

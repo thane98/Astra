@@ -44,9 +44,9 @@ macro_rules! bitgrid {
 
 bitgrid!(bitgrid_u8, u8);
 // bitgrid!(bitgrid_i8, i8);
-// bitgrid!(bitgrid_u16, u16);
+bitgrid!(bitgrid_u16, u16);
 // bitgrid!(bitgrid_i16, i16);
 // bitgrid!(bitgrid_u32, u32);
 bitgrid!(bitgrid_i32, i32);
-// bitgrid!(bitgrid_u64, u64);
+bitgrid!(bitgrid_u64, u64);
 // bitgrid!(bitgrid_i64, i64);

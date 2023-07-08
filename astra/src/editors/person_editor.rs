@@ -1,8 +1,8 @@
 use astra_types::{Person, PersonBook};
-use egui::{Grid, TextEdit, Ui};
+use egui::{Grid, Ui};
 use indexmap::IndexMap;
 
-use crate::widgets::keyed_add_modal_content;
+use crate::widgets::{exist_die_timing_drop_down, keyed_add_modal_content, id_field};
 use crate::{
     bitgrid_i32, bitgrid_u8, editable_list, gender_drop_down, i8_drag, model_drop_down,
     msbt_key_value_multiline, msbt_key_value_singleline, nation_drop_down, optional_image,
@@ -72,7 +72,7 @@ impl PersonEditor {
             self.content.content(ctx, data, |ui, person| {
                 let mut changed = false;
                 ui.horizontal_top(|ui| {
-                    ui.add_sized([250., 0.], |ui: &mut Ui| {
+                    ui.add_sized([300., 0.], |ui: &mut Ui| {
                         ui.group(|ui| {
                             ui.vertical_centered_justified(|ui| {
                                 ui.group(|ui| {
@@ -81,7 +81,7 @@ impl PersonEditor {
                                         [ui.available_width() - 12., 90.],
                                     ));
                                 });
-                                ui.add_enabled(false, TextEdit::singleline(&mut person.pid));
+                                ui.add(id_field(&mut person.pid));
                             });
                             ui.label("");
                         })
@@ -103,6 +103,8 @@ impl PersonEditor {
                         });
                     });
                 });
+
+                ui.separator();
 
                 changed |= PropertyGrid::new("person", person)
                     .new_section("Core")
@@ -212,8 +214,14 @@ impl PersonEditor {
                     .default_field("Die", |p| &mut p.die)
                     .default_field("Support Category", |p| &mut p.support_category)
                     .default_field("Combat Music", |p| &mut p.combat_bgm)
-                    .default_field("Exist Die Chapter", |p| &mut p.exist_die_cid)
-                    .default_field("Exist Die Timing", |p| &mut p.exist_die_timing)
+                    .field("Exist Die Chapter", |ui, p| {
+                        state
+                            .chapter
+                            .read(|data| ui.add(model_drop_down(data, state, &mut p.exist_die_cid)))
+                    })
+                    .field("Exist Die Timing", |ui, p| {
+                        ui.add(exist_die_timing_drop_down(&mut p.exist_die_timing))
+                    })
                     .default_field("Talk Pause Speed", |p| &mut p.talk_pause_speed)
                     .default_field("Talk Pause Min Delay", |p| &mut p.talk_pause_delay_min)
                     .default_field("Talk Pause Max Delay", |p| &mut p.talk_pause_delay_max)

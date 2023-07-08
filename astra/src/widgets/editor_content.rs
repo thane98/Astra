@@ -68,12 +68,13 @@ where
             });
         }
 
-        let copy_modal = Modal::new(ctx, format!("{}_copy_modal", self.id_source));
+        let copy_modal_id = format!("{}_copy_modal", self.id_source);
+        let copy_modal = Modal::new(ctx, &copy_modal_id);
         if let Some(source_index) = self.copy_index {
             copy_modal.show(|ui| {
                 model.write(|data| {
                     list_select_modal(
-                        self.id_source,
+                        &copy_modal_id,
                         &copy_modal,
                         ui,
                         data,
@@ -84,139 +85,141 @@ where
             });
         }
 
-        SidePanel::new(Side::Left, Id::new(self.id_source).with("side_panel")).show(ctx, |ui| {
-            ui.horizontal(|ui| {
-                ui.menu_button("…", |ui| {
-                    if ui.button("➕ Add Item").clicked() {
-                        if let Some(_) = &self.add_modal_fn {
-                            self.add_command = Some(AddModalCommand::Add);
-                            modal.open();
-                        } else {
-                            model.write(|data| {
-                                data.add(I::default());
-                                true
-                            });
-                        }
-                        ui.close_menu();
-                    }
-
-                    let has_selection = self.selection.is_some();
-                    if ui
-                        .add_enabled(has_selection, Button::new("⮩ Insert Below"))
-                        .clicked()
-                    {
-                        let selection = self.selection.unwrap();
-                        if let Some(_) = &self.add_modal_fn {
-                            self.add_command = Some(AddModalCommand::Insert(selection + 1));
-                            modal.open();
-                        } else {
-                            model.write(|data| {
-                                data.insert(selection + 1, I::default());
-                                true
-                            });
-                        }
-                        ui.close_menu();
-                    }
-                    if ui
-                        .add_enabled(has_selection, Button::new("🗐 Duplicate"))
-                        .clicked()
-                    {
-                        let selection = self.selection.unwrap();
-                        if let Some(_) = &self.add_modal_fn {
-                            self.add_command = Some(AddModalCommand::Duplicate(selection));
-                            modal.open();
-                        } else {
-                            model.write(|data| {
-                                if let Some(item) = data.item(selection).cloned() {
-                                    data.insert(selection + 1, item);
+        SidePanel::new(Side::Left, Id::new(self.id_source).with("side_panel"))
+            .default_width(300.)
+            .show(ctx, |ui| {
+                ui.horizontal(|ui| {
+                    ui.menu_button("…", |ui| {
+                        if ui.button("➕ Add Item").clicked() {
+                            if let Some(_) = &self.add_modal_fn {
+                                self.add_command = Some(AddModalCommand::Add);
+                                modal.open();
+                            } else {
+                                model.write(|data| {
+                                    data.add(I::default());
                                     true
-                                } else {
-                                    false
-                                }
-                            })
+                                });
+                            }
+                            ui.close_menu();
                         }
-                        ui.close_menu();
-                    }
-                    ui.separator();
-                    if ui
-                        .add_enabled(has_selection, Button::new("🗐 Copy To"))
-                        .clicked()
-                    {
-                        self.copy_index = self.selection;
-                        copy_modal.open();
-                        ui.close_menu();
-                    }
-                    ui.separator();
-                    if ui
-                        .add_enabled(has_selection, Button::new("⏶ Move Up"))
-                        .clicked()
-                    {
-                        model.write(|data| {
+
+                        let has_selection = self.selection.is_some();
+                        if ui
+                            .add_enabled(has_selection, Button::new("⮩ Insert Below"))
+                            .clicked()
+                        {
                             let selection = self.selection.unwrap();
-                            if selection > 0 && selection < data.len() {
-                                data.swap(selection, selection - 1);
-                                self.selection = Some(selection - 1);
-                                return true;
+                            if let Some(_) = &self.add_modal_fn {
+                                self.add_command = Some(AddModalCommand::Insert(selection + 1));
+                                modal.open();
+                            } else {
+                                model.write(|data| {
+                                    data.insert(selection + 1, I::default());
+                                    true
+                                });
                             }
-                            false
-                        });
-                        ui.close_menu();
-                    }
-                    if ui
-                        .add_enabled(has_selection, Button::new("⏷ Move Down"))
-                        .clicked()
-                    {
-                        model.write(|data| {
+                            ui.close_menu();
+                        }
+                        if ui
+                            .add_enabled(has_selection, Button::new("🗐 Duplicate"))
+                            .clicked()
+                        {
                             let selection = self.selection.unwrap();
-                            if selection < data.len() - 1 {
-                                data.swap(selection, selection + 1);
-                                self.selection = Some(selection + 1);
-                                return true;
+                            if let Some(_) = &self.add_modal_fn {
+                                self.add_command = Some(AddModalCommand::Duplicate(selection));
+                                modal.open();
+                            } else {
+                                model.write(|data| {
+                                    if let Some(item) = data.item(selection).cloned() {
+                                        data.insert(selection + 1, item);
+                                        true
+                                    } else {
+                                        false
+                                    }
+                                })
                             }
-                            false
-                        });
-                        ui.close_menu();
-                    }
-                    ui.separator();
-                    if ui
-                        .add_enabled(has_selection, Button::new("❎ Delete Item"))
-                        .clicked()
-                    {
-                        model.write(|data| {
-                            data.remove(self.selection.unwrap());
-                            if self.selection.unwrap() >= data.len() {
-                                self.selection = None;
-                            }
-                            true
-                        });
-                        ui.close_menu();
-                    }
+                            ui.close_menu();
+                        }
+                        ui.separator();
+                        if ui
+                            .add_enabled(has_selection, Button::new("🗐 Copy To"))
+                            .clicked()
+                        {
+                            self.copy_index = self.selection;
+                            copy_modal.open();
+                            ui.close_menu();
+                        }
+                        ui.separator();
+                        if ui
+                            .add_enabled(has_selection, Button::new("⏶ Move Up"))
+                            .clicked()
+                        {
+                            model.write(|data| {
+                                let selection = self.selection.unwrap();
+                                if selection > 0 && selection < data.len() {
+                                    data.swap(selection, selection - 1);
+                                    self.selection = Some(selection - 1);
+                                    return true;
+                                }
+                                false
+                            });
+                            ui.close_menu();
+                        }
+                        if ui
+                            .add_enabled(has_selection, Button::new("⏷ Move Down"))
+                            .clicked()
+                        {
+                            model.write(|data| {
+                                let selection = self.selection.unwrap();
+                                if selection < data.len() - 1 {
+                                    data.swap(selection, selection + 1);
+                                    self.selection = Some(selection + 1);
+                                    return true;
+                                }
+                                false
+                            });
+                            ui.close_menu();
+                        }
+                        ui.separator();
+                        if ui
+                            .add_enabled(has_selection, Button::new("❎ Delete Item"))
+                            .clicked()
+                        {
+                            model.write(|data| {
+                                data.remove(self.selection.unwrap());
+                                if self.selection.unwrap() >= data.len() {
+                                    self.selection = None;
+                                }
+                                true
+                            });
+                            ui.close_menu();
+                        }
+                    });
+                    self.filter_proxy.with_filter_expr(|filter| {
+                        ui.add(TextEdit::singleline(filter).desired_width(f32::INFINITY))
+                            .changed()
+                    });
                 });
-                self.filter_proxy.with_filter_expr(|filter| {
-                    ui.add(TextEdit::singleline(filter).desired_width(f32::INFINITY))
-                        .changed()
-                });
-            });
-            let changed = if let Some(revision) = self.prev_model_revision {
-                if revision < model.revision_number() {
+                let changed = if let Some(revision) = self.prev_model_revision {
+                    if revision < model.revision_number() {
+                        self.prev_model_revision = Some(model.revision_number());
+                        true
+                    } else {
+                        false
+                    }
+                } else {
                     self.prev_model_revision = Some(model.revision_number());
                     true
-                } else {
-                    false
-                }
-            } else {
-                self.prev_model_revision = Some(model.revision_number());
-                true
-            };
-            model.read(|data| {
-                ui.add(list_view(
-                    20.,
-                    &self.filter_proxy.model(changed, data, dependencies),
-                    dependencies,
-                    &mut self.selection,
-                ));
+                };
+                model.read(|data| {
+                    ui.add(list_view(
+                        20.,
+                        &self.filter_proxy.model(changed, data, dependencies),
+                        dependencies,
+                        &mut self.selection,
+                    ));
+                });
             });
-        });
     }
 
     pub fn content(

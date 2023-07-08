@@ -1,8 +1,8 @@
 use astra_types::{Job, JobBook};
-use egui::{Grid, TextEdit, Ui};
+use egui::{Grid, Ui};
 use indexmap::IndexMap;
 
-use crate::widgets::keyed_add_modal_content;
+use crate::widgets::{keyed_add_modal_content, id_field};
 use crate::{
     bitgrid_i32, bitgrid_u8, editable_list, job_rank_drop_down, model_drop_down,
     msbt_key_value_multiline, msbt_key_value_singleline, optional_image,
@@ -84,7 +84,7 @@ impl JobEditor {
                                         [ui.available_width() - 12., 90.],
                                     ));
                                 });
-                                ui.add_enabled(false, TextEdit::singleline(&mut job.jid));
+                                ui.add(id_field(&mut job.jid));
                             });
                             ui.label("");
                         })

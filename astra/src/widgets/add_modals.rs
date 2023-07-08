@@ -224,14 +224,14 @@ where
     I: ViewItem<Dependencies = D> + Clone,
 {
     let mut changed = false;
-    let id = Id::new(id_source).with("list_select_modal");
+    let id = Id::new(id_source).with("group_copy_modal");
     let mut selection = ui.memory_mut(|mem| {
         mem.data
             .get_persisted_mut_or_default::<Option<(String, usize)>>(id)
             .clone()
     });
     modal.title(ui, "Select an entry");
-    ComboBox::from_id_source(id.with("combo_box"))
+    ComboBox::from_id_source(id.with("group_copy_modal_combo_box"))
         .width(400.)
         .selected_text(
             selection

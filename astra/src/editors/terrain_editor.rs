@@ -1,8 +1,9 @@
 use astra_types::{TerrainBook, TerrainData};
-use egui::TextEdit;
 use indexmap::IndexMap;
 
-use crate::widgets::keyed_add_modal_content;
+use crate::widgets::{
+    id_field, keyed_add_modal_content, terrain_destroyer_drop_down, terrain_prohibition_drop_down,
+};
 use crate::{
     f32_drag, i8_drag, model_drop_down, msbt_key_value_singleline, rgb_color_picker, u8_drag,
     CachedView, EditorState, ListEditorContent, PropertyGrid, TerrainDataSheet,
@@ -34,9 +35,7 @@ impl TerrainDataEditor {
             self.content.content(ctx, data, |ui, terraindata| {
                 PropertyGrid::new("terrain", terraindata)
                     .new_section("Data")
-                    .field("TID", |ui, tile| {
-                        ui.add_enabled(false, TextEdit::singleline(&mut tile.tid))
-                    })
+                    .field("TID", |ui, tile| ui.add(id_field(&mut tile.tid)))
                     .field("Name", |ui, tile| {
                         msbt_key_value_singleline!(ui, state, "gamedata", tile.name)
                     })
@@ -45,10 +44,12 @@ impl TerrainDataEditor {
                     })
                     .field("Layer", |ui, tile| ui.add(i8_drag(&mut tile.layer)))
                     .field("Prohibition", |ui, tile| {
-                        ui.add(i8_drag(&mut tile.prohibition))
+                        ui.add(terrain_prohibition_drop_down(&mut tile.prohibition))
                     })
                     .field("Sight", |ui, tile| ui.add(u8_drag(&mut tile.sight)))
-                    .field("Destroyer", |ui, tile| ui.add(i8_drag(&mut tile.destroyer)))
+                    .field("Destroyer", |ui, tile| {
+                        ui.add(terrain_destroyer_drop_down(&mut tile.destroyer))
+                    })
                     .field("HP (N)", |ui, tile| ui.add(u8_drag(&mut tile.hp_n)))
                     .field("HP (H)", |ui, tile| ui.add(u8_drag(&mut tile.hp_h)))
                     .field("HP (L)", |ui, tile| ui.add(u8_drag(&mut tile.hp_l)))
@@ -78,7 +79,9 @@ impl TerrainDataEditor {
                         ui.text_edit_singleline(&mut tile.minimap)
                     })
                     .field("Cannon Skill", |ui, tile| {
-                        ui.text_edit_singleline(&mut tile.cannon_skill)
+                        state.skill.read(|data| {
+                            ui.add(model_drop_down(data, state, &mut tile.cannon_skill))
+                        })
                     })
                     .field("Cannon Shells (N)", |ui, tile| {
                         ui.add(u8_drag(&mut tile.cannon_shells_n))
@@ -93,7 +96,11 @@ impl TerrainDataEditor {
                         ui.add(model_drop_down(self.cache.get(), &(), &mut tile.change_tid))
                     })
                     .field("Change Encount", |ui, tile| {
-                        ui.text_edit_singleline(&mut tile.change_encount)
+                        ui.add(model_drop_down(
+                            self.cache.get(),
+                            &(),
+                            &mut tile.change_encount,
+                        ))
                     })
                     .field("Command", |ui, tile| ui.add(i8_drag(&mut tile.command)))
                     .field("Height", |ui, tile| ui.add(f32_drag(&mut tile.height)))

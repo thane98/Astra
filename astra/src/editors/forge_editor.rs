@@ -54,7 +54,7 @@ impl ForgeEditor {
         self.cache.refresh(state);
 
         match self.tab {
-            Tab::Refine => self.refine_content.left_panel(ctx, &self.refine, &()),
+            Tab::Refine => self.refine_content.left_panel(ctx, &self.refine, state),
             Tab::Evolve => self.evolve_content.left_panel(ctx, &self.evolve, state),
             Tab::Exchange => self.exchange_content.side_panel(ctx, &self.exchange, &()),
         }

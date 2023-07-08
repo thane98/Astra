@@ -1,11 +1,10 @@
 use astra_types::{Accessory, ItemBook};
-use egui::TextEdit;
 use indexmap::IndexMap;
 
-use crate::widgets::keyed_add_modal_content;
 use crate::{
     model_drop_down, msbt_key_value_multiline, msbt_key_value_singleline, AccessorySheet,
     AccessorySheetRetriever, CachedView, EditorState, ListEditorContent, PropertyGrid,
+    keyed_add_modal_content, id_field
 };
 
 pub struct AccessoryEditor {
@@ -34,7 +33,7 @@ impl AccessoryEditor {
                 PropertyGrid::new("accessory", accessory)
                     .new_section("Data")
                     .field("AID", |ui, acc| {
-                        ui.add_enabled(false, TextEdit::singleline(&mut acc.aid))
+                        ui.add(id_field(&mut acc.aid))
                     })
                     .field("Name", |ui, acc| {
                         msbt_key_value_singleline!(ui, state, "accessory", acc.name)

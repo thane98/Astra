@@ -3,9 +3,12 @@ use egui::{Button, CentralPanel, Id, ScrollArea, SidePanel, TextEdit, Ui};
 use egui_modal::Modal;
 use indexmap::IndexMap;
 
+use crate::model::{DecorationKind, GroupViewItem};
 use crate::{blank_slate, SheetHandle, SheetRetriever, ViewItem};
 
-use super::{group_add_modal_content, group_copy_modal_content, GroupModalCommand};
+use super::{group_add_modal_content, group_copy_modal_content, optional_image, GroupModalCommand};
+
+type Group<I> = IndexMap<String, Vec<I>>;
 
 struct GroupCommand {
     group: String,
@@ -138,14 +141,15 @@ impl GroupEditorContent {
         &mut self.selection
     }
 
-    pub fn left_panel<R, B, I>(
+    pub fn left_panel<R, B, I, D>(
         &mut self,
         ctx: &egui::Context,
-        model: &SheetHandle<R, B, IndexMap<String, Vec<I>>>,
-        dependencies: &I::Dependencies,
+        model: &SheetHandle<R, B, Group<I>>,
+        dependencies: &D,
     ) where
-        R: SheetRetriever<B, IndexMap<String, Vec<I>>>,
-        I: ViewItem + Default + Clone,
+        Group<I>: GroupViewItem<Dependencies = D>,
+        R: SheetRetriever<B, Group<I>>,
+        I: ViewItem<Dependencies = D> + Default + Clone,
     {
         let modal = Modal::new(ctx, self.id_source);
         if let Some(modal_command) = self.modal_command {
@@ -156,12 +160,13 @@ impl GroupEditorContent {
             });
         }
 
-        let copy_modal = Modal::new(ctx, self.id_source);
+        let copy_modal_id = format!("{}_copy_modal", self.id_source);
+        let copy_modal = Modal::new(ctx, &copy_modal_id);
         if let Some(copy_source) = &self.copy_source {
             copy_modal.show(|ui| {
                 model.write(|data| {
                     group_copy_modal_content(
-                        &format!("{}_copy_modal", self.id_source),
+                        &copy_modal_id,
                         &copy_modal,
                         ui,
                         data,
@@ -172,100 +177,137 @@ impl GroupEditorContent {
             });
         }
 
-        SidePanel::left(Id::new(self.id_source).with("left_panel")).show(ctx, |ui| {
-            ui.horizontal(|ui| {
-                if ui
-                    .add(Button::new("+").min_size([30., 0.].into()))
-                    .clicked()
-                {
-                    self.modal_command = Some(GroupModalCommand::Add);
-                    modal.open();
-                }
-                ui.add(TextEdit::singleline(&mut self.search).desired_width(f32::INFINITY))
-                    .changed();
-            });
-
-            let mut group_command = None;
-            let mut group_entry_command = None;
-
-            let search = self.search.to_lowercase();
-            ScrollArea::both()
-                .auto_shrink([false, false])
-                .show(ui, |ui| {
-                    model.read(|data| {
-                        for (i, (group, items)) in data.iter().enumerate() {
-                            if !group.to_lowercase().contains(&search) {
-                                continue;
-                            }
-                            let id =
-                                ui.make_persistent_id(format!("{}_{}", &self.id_source, group));
-                            CollapsingState::load_with_default_open(ctx, id, false)
-                                .show_header(ui, |ui| {
-                                    ui.label(group);
-                                    if !group_command.is_some() {
-                                        group_command =
-                                            self.group_command_menu(&modal, ui, group, i);
-                                    }
-                                })
-                                .body(|ui| {
-                                    for (i, entry) in items.iter().enumerate() {
-                                        let selected =
-                                            self.selection.as_ref().map(|(g, i)| (g.as_str(), *i))
-                                                == Some((&group, i));
-                                        ui.horizontal_top(|ui| {
-                                            // TODO: Show decorations
-                                            if ui
-                                                .selectable_label(
-                                                    selected,
-                                                    entry.text(dependencies),
-                                                )
-                                                .clicked()
-                                            {
-                                                self.selection = Some((group.clone(), i));
-                                            }
-                                            if !group_entry_command.is_some() {
-                                                group_entry_command = self
-                                                    .group_entry_command_menu(
-                                                        ui,
-                                                        &copy_modal,
-                                                        group,
-                                                        i,
-                                                    );
-                                            }
-                                        });
-                                    }
-                                });
-                        }
-                    });
+        SidePanel::left(Id::new(self.id_source).with("left_panel"))
+            .default_width(300.)
+            .show(ctx, |ui| {
+                ui.horizontal(|ui| {
+                    if ui
+                        .add(Button::new("+").min_size([30., 0.].into()))
+                        .clicked()
+                    {
+                        self.modal_command = Some(GroupModalCommand::Add);
+                        modal.open();
+                    }
+                    ui.add(TextEdit::singleline(&mut self.search).desired_width(f32::INFINITY))
+                        .changed();
                 });
 
-            model.write(|data| {
-                let mut changed = false;
-                if let Some(command) = group_command {
-                    changed |= command.act(data);
-                }
-                if let Some(command) = group_entry_command {
-                    changed |= command.act(data);
-                }
-                changed
-            });
+                let mut group_command = None;
+                let mut group_entry_command = None;
 
-            self.selection = std::mem::take(&mut self.selection).and_then(|(group, index)| {
-                model.read(|data| {
-                    if let Some(group_items) = data.get(&group) {
-                        if group_items.is_empty() {
-                            None
-                        } else if index >= group_items.len() {
-                            Some((group, index - 1))
-                        } else {
-                            Some((group, index))
-                        }
-                    } else {
-                        None
+                let search = self.search.to_lowercase();
+                ScrollArea::both()
+                    .auto_shrink([false, false])
+                    .show(ui, |ui| {
+                        model.read(|data| {
+                            for (i, (group, items)) in data.iter().enumerate() {
+                                if !group.to_lowercase().contains(&search) {
+                                    continue;
+                                }
+                                let id =
+                                    ui.make_persistent_id(format!("{}_{}", &self.id_source, group));
+                                CollapsingState::load_with_default_open(ctx, id, false)
+                                    .show_header(ui, |ui| {
+                                        if <Group<I> as GroupViewItem>::decorated(
+                                            DecorationKind::List,
+                                        ) {
+                                            ui.add(optional_image(
+                                                <Group<I> as GroupViewItem>::decoration(
+                                                    group,
+                                                    dependencies,
+                                                    DecorationKind::List,
+                                                ),
+                                                [0., 0.],
+                                            ));
+                                        }
+                                        ui.label(<Group<I> as GroupViewItem>::text(
+                                            group,
+                                            dependencies,
+                                        ));
+                                        if !group_command.is_some() {
+                                            group_command =
+                                                self.group_command_menu(&modal, ui, group, i);
+                                        }
+                                    })
+                                    .body(|ui| {
+                                        let command = self.group_list(
+                                            &copy_modal,
+                                            ui,
+                                            dependencies,
+                                            group,
+                                            items,
+                                        );
+                                        if !group_entry_command.is_some() {
+                                            group_entry_command = command;
+                                        }
+                                    });
+                            }
+                        });
+                    });
+
+                model.write(|data| {
+                    let mut changed = false;
+                    if let Some(command) = group_command {
+                        changed |= command.act(data);
                     }
-                })
+                    if let Some(command) = group_entry_command {
+                        changed |= command.act(data);
+                    }
+                    changed
+                });
+
+                self.selection = std::mem::take(&mut self.selection).and_then(|(group, index)| {
+                    model.read(|data| {
+                        if let Some(group_items) = data.get(&group) {
+                            if group_items.is_empty() {
+                                None
+                            } else if index >= group_items.len() {
+                                Some((group, index - 1))
+                            } else {
+                                Some((group, index))
+                            }
+                        } else {
+                            None
+                        }
+                    })
+                });
             });
-        });
+    }
+
+    fn group_list<I>(
+        &mut self,
+        copy_modal: &Modal,
+        ui: &mut Ui,
+        dependencies: &I::Dependencies,
+        group: &str,
+        items: &[I],
+    ) -> Option<GroupEntryCommand>
+    where
+        I: ViewItem + Default + Clone,
+    {
+        let mut command = None;
+        for (i, entry) in items.iter().enumerate() {
+            let selected =
+                self.selection.as_ref().map(|(g, i)| (g.as_str(), *i)) == Some((&group, i));
+            ui.horizontal(|ui| {
+                if I::decorated(DecorationKind::List) {
+                    ui.add(optional_image(
+                        entry.decoration(dependencies, DecorationKind::List),
+                        [0., 0.],
+                    ));
+                }
+                if ui
+                    .selectable_label(selected, entry.text(dependencies))
+                    .clicked()
+                {
+                    self.selection = Some((group.to_owned(), i));
+                }
+                if !command.is_some() {
+                    command = self.group_entry_command_menu(ui, &copy_modal, group, i);
+                }
+            });
+        }
+        command
     }
 
     fn group_command_menu(

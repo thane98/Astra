@@ -143,6 +143,137 @@ enum_combo_box!(weapon_rank_numbered_drop_down, i8,
     6 => "S",
 );
 
+enum_combo_box!(chapter_spot_state, i8,
+    0 => "Reserve Hide",
+    1 => "Hide",
+    2 => "Reserve Active",
+    3 => "Active",
+    4 => "Reserve Cannot Enter",
+    5 => "Cannot Enter",
+    6 => "Reserve Broken",
+    7 => "Broken",
+    8 => "Can Search",
+);
+
+enum_combo_box!(chapter_encount_type, i8,
+    0 => "None",
+    1 => "Corrupted",
+    2 => "Firene Soldiers",
+    3 => "Brodia Soldiers",
+    4 => "Solm Soldiers",
+    5 => "Elusia Soldiers",
+);
+
+enum_combo_box!(exist_die_timing_drop_down, i8,
+    0 => "None",
+    1 => "Begin",
+    2 => "End",
+    3 => "Chapter",
+    4 => "Eternal",
+);
+
+enum_combo_box!(terrain_prohibition_drop_down, i8,
+    0 => "None",
+    1 => "All",
+    2 => "Ground",
+    3 => "Near",
+);
+
+enum_combo_box!(terrain_destroyer_drop_down, i8,
+    0 => "None",
+    1 => "Player",
+    2 => "Enemy",
+);
+
+enum_combo_box!(skill_cycle_drop_down, i8,
+    0 => "None",
+    1 => "Map",
+    2 => "Phase Before",
+    3 => "Phase After",
+    4 => "Fixed",
+    5 => "Engaged",
+    6 => "Battled",
+    7 => "Battle (Offense)",
+    8 => "Battle (Defense",
+);
+
+enum_combo_box!(skill_timing_drop_down, i8,
+    0 => "None",
+    1 => "Always",
+    2 => "Battle Before",
+    3 => "Battle Detail",
+    4 => "Battle Invoke",
+    5 => "Battle Start",
+    6 => "Order Start",
+    7 => "Action Start",
+    8 => "Attack Start",
+    9 => "Attack Branch",
+    10 => "Hit Before",
+    11 => "Hit After",
+    12 => "Hit Effect",
+    13 => "Attack End",
+    14 => "Action End",
+    15 => "Order End",
+    16 => "Battle End",
+    17 => "Battle Result",
+    18 => "Battle After",
+    19 => "Around",
+    20 => "Support",
+    21 => "Battle Command",
+    22 => "Action Command",
+    23 => "Overlap Command",
+    24 => "Support Command",
+    25 => "Fixed None",
+    26 => "Fixed Done",
+    27 => "Phase Start",
+);
+
+enum_combo_box!(skill_targets_drop_down, i8,
+    0 => "Target",
+    1 => "Enemy",
+    2 => "Friend",
+    3 => "Destroy",
+    4 => "Pierce",
+    5 => "Range",
+    6 => "Around",
+    7 => "Overlap",
+);
+
+enum_combo_box!(skill_frequencies_drop_down, i8,
+    0 => "None",
+    1 => "Every",
+    2 => "First",
+    3 => "Last",
+);
+
+enum_combo_box!(skill_stance_drop_down, i8,
+    0 => "None",
+    1 => "Offense",
+    2 => "Defense",
+);
+
+enum_combo_box!(skill_around_centers_drop_down, i8,
+    0 => "None",
+    1 => "Self",
+    2 => "Target",
+    3 => "Link",
+);
+
+enum_combo_box!(skill_around_targets_drop_down, i8,
+    0 => "None",
+    1 => "Friend",
+    2 => "Enemy",
+    3 => "Both",
+);
+
+enum_combo_box!(skill_give_targets_drop_down, i8,
+    0 => "Target",
+    1 => "Self",
+    2 => "Chain",
+    3 => "Around",
+    4 => "Dance",
+);
+
 macro_rules! string_combo_box {
     ($name:ident, $($key:expr => $label:expr,)+) => {
         pub fn $name<'a>(value: &'a mut String) -> impl egui::Widget + 'a {

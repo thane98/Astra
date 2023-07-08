@@ -241,7 +241,7 @@ pub fn main_window(
     match &mut state.active_screen {
         Screens::Accessory => state.accessory_editor.show(ctx, &mut state.editor_state),
         Screens::AnimSet => state.anim_set_editor.show(ctx),
-        Screens::AssetTable => state.asset_table_editor.show(ctx),
+        Screens::AssetTable => state.asset_table_editor.show(ctx, &mut state.editor_state),
         Screens::Chapter => state
             .chapter_editor
             .show(ctx, &mut state.editor_state, config),
