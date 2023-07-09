@@ -5,6 +5,7 @@ mod theme;
 
 pub use cached_view::*;
 pub use config::*;
+use itertools::Itertools;
 pub use sheet::*;
 pub use theme::*;
 
@@ -102,7 +103,7 @@ where
     fn add(&mut self, item: I) {
         self.push(item);
     }
-    
+
     fn insert(&mut self, index: usize, item: I) {
         if index <= self.len() {
             self.insert(index, item);
@@ -150,7 +151,7 @@ where
             self.insert(key.into_owned(), item);
         }
     }
-    
+
     fn insert(&mut self, index: usize, item: I) {
         if index <= self.len() {
             self.add(item);
@@ -229,6 +230,14 @@ impl FilterProxyBuilder {
         self.proxy_indices
             .get(index)
             .and_then(|real_index| (*real_index < source_model.len()).then_some(*real_index))
+    }
+
+    /// Retrieve the proxy index of an item from its index in the source model.
+    pub fn proxy_index(&self, source_index: usize) -> Option<usize> {
+        self.proxy_indices
+            .iter()
+            .find_position(|index| **index == source_index)
+            .map(|(proxy_index, _)| proxy_index)
     }
 
     /// Access this proxy's filter expression. The function must return true if the filter changes.
@@ -338,7 +347,11 @@ pub trait GroupViewItem {
     }
 
     #[allow(unused)]
-    fn decoration(key: &str, dependencies: &Self::Dependencies, kind: DecorationKind<'_>) -> Option<(TextureHandle, f32)> {
+    fn decoration(
+        key: &str,
+        dependencies: &Self::Dependencies,
+        kind: DecorationKind<'_>,
+    ) -> Option<(TextureHandle, f32)> {
         None
     }
 }

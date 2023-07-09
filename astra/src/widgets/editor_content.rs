@@ -212,12 +212,18 @@ where
                     true
                 };
                 model.read(|data| {
+                    let mut proxy_index = self
+                        .selection
+                        .and_then(|source_index| self.filter_proxy.proxy_index(source_index));
+                    println!("{:?}", proxy_index);
                     ui.add(list_view(
                         20.,
                         &self.filter_proxy.model(changed, data, dependencies),
                         dependencies,
-                        &mut self.selection,
+                        &mut proxy_index,
                     ));
+                    self.selection = proxy_index
+                        .and_then(|proxy_index| self.filter_proxy.source_index(proxy_index, data));
                 });
             });
     }
@@ -230,7 +236,6 @@ where
     ) -> bool {
         let item = self
             .selection
-            .and_then(|index| self.filter_proxy.source_index(index, model))
             .and_then(|index| model.item_mut(index));
         CentralPanel::default()
             .show(ctx, |ui| match item {
