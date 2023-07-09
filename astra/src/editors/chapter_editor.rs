@@ -133,6 +133,8 @@ pub struct ChapterEditor {
     dispos_kind: DisposKind,
     coordinate_kind: CoordinateKind,
     dispos_difficulty: Difficulty,
+    hovered_tile: Option<String>,
+    hovered_spawn: Option<String>,
     script_open_error: Option<String>,
     selected_chapter_index: Option<usize>,
 
@@ -153,6 +155,8 @@ impl ChapterEditor {
             dispos_kind: DisposKind::Main,
             coordinate_kind: CoordinateKind::Dispos,
             dispos_difficulty: Difficulty::All,
+            hovered_tile: None,
+            hovered_spawn: None,
             script_open_error: None,
             selected_chapter_index: None,
 
@@ -509,9 +513,15 @@ impl ChapterEditor {
             })
         {
             TopBottomPanel::bottom("dispos_bottom_panel").show(ctx, |ui| {
-                ui.horizontal(|ui| {
+                ui.horizontal_top(|ui| {
                     ui.label("Tile Brightness");
                     ui.add(Slider::new(&mut config.terrain_brightness, 0.0..=1.0));
+                    if let Some(tile) = self.hovered_tile.as_deref() {
+                        ui.label(format!("Tile: {}", tile));
+                    }
+                    if let Some(spawn) = self.hovered_spawn.as_deref() {
+                        ui.label(format!("Spawn: {}", spawn));
+                    }
                 });
             });
 
@@ -529,7 +539,7 @@ impl ChapterEditor {
                         .and_then(|state| state.terrain.as_ref())
                     {
                         chapter_terrain.read(|terrain_data| {
-                            changed = dispos_grid(
+                            let result = dispos_grid(
                                 ui,
                                 terrain_data,
                                 state,
@@ -539,6 +549,9 @@ impl ChapterEditor {
                                 self.dispos_difficulty,
                                 config.terrain_brightness,
                             );
+                            changed = result.changed;
+                            self.hovered_tile = result.hovered_tile;
+                            self.hovered_spawn = result.hovered_spawn;
                         });
                     } else {
                         ui.centered_and_justified(|ui| {
@@ -716,6 +729,9 @@ impl ChapterEditor {
                 ui.horizontal(|ui| {
                     ui.label("Tile Brightness");
                     ui.add(Slider::new(&mut config.terrain_brightness, 0.0..=1.0));
+                    if let Some(tile) = self.hovered_tile.as_deref() {
+                        ui.label(format!("Tile: {}", tile));
+                    }
                 });
             });
 
@@ -723,13 +739,15 @@ impl ChapterEditor {
 
             CentralPanel::default().show(ctx, |ui| {
                 chapter_terrain.write(|terrain_data| {
-                    terrain_grid(
+                    let result = terrain_grid(
                         ui,
                         terrain_data,
                         self.terrain_content.selection(),
                         state,
                         config.terrain_brightness,
-                    )
+                    );
+                    self.hovered_tile = result.hovered_tile;
+                    result.changed
                 });
             });
         } else {

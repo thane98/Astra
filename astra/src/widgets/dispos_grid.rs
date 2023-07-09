@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::collections::HashMap;
 
 use astra_formats::TerrainData;
@@ -13,6 +14,12 @@ struct SpawnData<'a> {
     group: &'a str,
     index: usize,
     spawn: &'a mut Spawn,
+}
+
+pub struct DisposGridResult {
+    pub changed: bool,
+    pub hovered_tile: Option<String>,
+    pub hovered_spawn: Option<String>,
 }
 
 fn get_position(spawn: &Spawn, coordinate_kind: CoordinateKind) -> (usize, usize) {
@@ -109,7 +116,7 @@ pub fn dispos_grid(
     coordinate_kind: CoordinateKind,
     difficulty: Difficulty,
     brightness: f32,
-) -> bool {
+) -> DisposGridResult {
     let selected_spawn_position = selected_spawn
         .as_ref()
         .and_then(|(group, index)| dispos.get(group).and_then(|group| group.get(*index)))
@@ -117,6 +124,8 @@ pub fn dispos_grid(
     let spawn_data = SpawnDataMap::new(dispos, coordinate_kind, difficulty);
     let mut changed = false;
     let mut move_pos = None;
+    let mut hovered_tile = None;
+    let mut hovered_spawn = None;
     ScrollArea::both()
         .id_source("spawn_grid_scroll")
         .show(ui, |ui| {
@@ -127,21 +136,24 @@ pub fn dispos_grid(
                     for row in (0..(terrain.height as usize)).rev() {
                         for col in 0..(terrain.width as usize) {
                             let sprite = spawn_data.get_sprite(state, row, col);
-                            let fill = terrain
+                            let (tile_name, fill) = terrain
                                 .terrains
                                 .get(row * 32 + col)
                                 .and_then(|tid| data.get(tid.as_str()))
                                 .map(|tile| {
-                                    Color32::from_rgb(
-                                        (tile.color_r.unwrap_or_default() as f32 * brightness)
-                                            as u8,
-                                        (tile.color_g.unwrap_or_default() as f32 * brightness)
-                                            as u8,
-                                        (tile.color_b.unwrap_or_default() as f32 * brightness)
-                                            as u8,
+                                    (
+                                        tile.text(state),
+                                        Color32::from_rgb(
+                                            (tile.color_r.unwrap_or_default() as f32 * brightness)
+                                                as u8,
+                                            (tile.color_g.unwrap_or_default() as f32 * brightness)
+                                                as u8,
+                                            (tile.color_b.unwrap_or_default() as f32 * brightness)
+                                                as u8,
+                                        ),
                                     )
                                 })
-                                .unwrap_or_else(|| Color32::from_gray(0));
+                                .unwrap_or_else(|| (Cow::Borrowed("???"), Color32::from_gray(0)));
 
                             // Put these in a container to please egui's grid.
                             let mut button = Button::new("").rounding(0.).fill(fill);
@@ -154,6 +166,13 @@ pub fn dispos_grid(
                                     ui.allocate_ui_at_rect(response.rect, |ui| {
                                         ui.image(&sprite, sprite.size_vec2());
                                     });
+                                }
+                                if response.hovered() {
+                                    hovered_tile = Some(tile_name.into_owned());
+                                    if let Some(spawn_data) = spawn_data.get_spawn(row, col) {
+                                        hovered_spawn =
+                                            Some(spawn_data.spawn.text(state).into_owned());
+                                    }
                                 }
                                 if response.clicked() {
                                     move_pos = Some((row, col));
@@ -180,5 +199,9 @@ pub fn dispos_grid(
         }
     }
 
-    changed
+    DisposGridResult {
+        changed,
+        hovered_tile,
+        hovered_spawn,
+    }
 }

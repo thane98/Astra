@@ -1,7 +1,15 @@
+use std::borrow::Cow;
+
 use astra_formats::{TerrainData, UString};
 use egui::{Button, Color32, Grid, ScrollArea, Ui, Vec2};
 
+use crate::model::ViewItem;
 use crate::{EditorState, ListModel};
+
+pub struct TerrainGridResult {
+    pub changed: bool,
+    pub hovered_tile: Option<String>,
+}
 
 pub fn terrain_grid(
     ui: &mut Ui,
@@ -9,8 +17,9 @@ pub fn terrain_grid(
     selected_tile_index: Option<usize>,
     state: &EditorState,
     brightness: f32,
-) -> bool {
-    let mut change = None;
+) -> TerrainGridResult {
+    let mut changed = None;
+    let mut hovered_tile = None;
     ScrollArea::both()
         .id_source("chapter_terrain_scroll")
         .show(ui, |ui| {
@@ -20,21 +29,24 @@ pub fn terrain_grid(
                 state.terrain.read(|data| {
                     for row in (0..(terrain.height as usize)).rev() {
                         for col in 0..(terrain.width as usize) {
-                            let fill = terrain
+                            let (tile_name, fill) = terrain
                                 .terrains
                                 .get(row * 32 + col)
                                 .and_then(|tid| data.get(tid.as_str()))
                                 .map(|tile| {
-                                    Color32::from_rgb(
-                                        (tile.color_r.unwrap_or_default() as f32 * brightness)
-                                            as u8,
-                                        (tile.color_g.unwrap_or_default() as f32 * brightness)
-                                            as u8,
-                                        (tile.color_b.unwrap_or_default() as f32 * brightness)
-                                            as u8,
+                                    (
+                                        tile.text(state),
+                                        Color32::from_rgb(
+                                            (tile.color_r.unwrap_or_default() as f32 * brightness)
+                                                as u8,
+                                            (tile.color_g.unwrap_or_default() as f32 * brightness)
+                                                as u8,
+                                            (tile.color_b.unwrap_or_default() as f32 * brightness)
+                                                as u8,
+                                        ),
                                     )
                                 })
-                                .unwrap_or_else(|| Color32::from_gray(0));
+                                .unwrap_or_else(|| (Cow::Borrowed("???"), Color32::from_gray(0)));
 
                             let response =
                                 ui.add_sized([48., 48.], Button::new("").rounding(0.).fill(fill));
@@ -43,8 +55,11 @@ pub fn terrain_grid(
                                     .and_then(|index| data.item(index))
                                     .map(|tile| tile.tid.clone());
                                 if let Some(tid) = new_tid {
-                                    change = Some((row, col, tid));
+                                    changed = Some((row, col, tid));
                                 }
+                            }
+                            if response.hovered() {
+                                hovered_tile = Some(tile_name.into_owned());
                             }
                         }
                         ui.end_row();
@@ -52,12 +67,18 @@ pub fn terrain_grid(
                 });
             });
         });
-    if let Some((row, col, tid)) = change {
+    if let Some((row, col, tid)) = changed {
         let index = row * 32 + col;
         if index < terrain.terrains.len() {
             terrain.terrains[index] = UString(tid);
         }
-        return true;
+        return TerrainGridResult {
+            changed: true,
+            hovered_tile,
+        };
     }
-    false
+    TerrainGridResult {
+        changed: false,
+        hovered_tile,
+    }
 }
