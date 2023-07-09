@@ -78,7 +78,7 @@ pub trait ListModel<I> {
     fn remove(&mut self, index: usize);
 
     /// Swap items at the given indices (if in bounds)
-    fn swap(&mut self, a: usize, b: usize);
+    fn swap_items(&mut self, a: usize, b: usize);
 
     /// Copy the contents of index `a` to index `b`.
     fn copy(&mut self, a: usize, b: usize);
@@ -116,7 +116,7 @@ where
         }
     }
 
-    fn swap(&mut self, a: usize, b: usize) {
+    fn swap_items(&mut self, a: usize, b: usize) {
         if a < self.len() && b < self.len() {
             self.swap(a, b);
         }
@@ -165,7 +165,7 @@ where
         }
     }
 
-    fn swap(&mut self, a: usize, b: usize) {
+    fn swap_items(&mut self, a: usize, b: usize) {
         if a < self.len() && b < self.len() {
             self.swap_indices(a, b);
         }
@@ -247,6 +247,11 @@ impl FilterProxyBuilder {
         }
     }
 
+    /// Request that the filter proxy refresh its indices.
+    pub fn request_refresh(&mut self) {
+        self.requires_refresh = true;
+    }
+
     /// Build a filtered view of a source model using this proxy's filter expression.
     /// Will ONLY trigger a refresh when required. There are three cases for this:
     /// * First time building a proxy (detected automatically)
@@ -323,7 +328,7 @@ where
         unimplemented!("modify the source model instead")
     }
 
-    fn swap(&mut self, _: usize, _: usize) {
+    fn swap_items(&mut self, _: usize, _: usize) {
         unimplemented!("modify the source model instead")
     }
 

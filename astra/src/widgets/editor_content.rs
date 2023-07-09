@@ -157,8 +157,9 @@ where
                             model.write(|data| {
                                 let selection = self.selection.unwrap();
                                 if selection > 0 && selection < data.len() {
-                                    data.swap(selection, selection - 1);
+                                    data.swap_items(selection, selection - 1);
                                     self.selection = Some(selection - 1);
+                                    self.filter_proxy.request_refresh();
                                     return true;
                                 }
                                 false
@@ -172,8 +173,9 @@ where
                             model.write(|data| {
                                 let selection = self.selection.unwrap();
                                 if selection < data.len() - 1 {
-                                    data.swap(selection, selection + 1);
+                                    data.swap_items(selection, selection + 1);
                                     self.selection = Some(selection + 1);
+                                    self.filter_proxy.request_refresh();
                                     return true;
                                 }
                                 false
