@@ -2,9 +2,9 @@ use astra_types::{Accessory, ItemBook};
 use indexmap::IndexMap;
 
 use crate::{
-    model_drop_down, msbt_key_value_multiline, msbt_key_value_singleline, AccessorySheet,
-    AccessorySheetRetriever, CachedView, EditorState, ListEditorContent, PropertyGrid,
-    keyed_add_modal_content, id_field
+    id_field, keyed_add_modal_content, model_drop_down, msbt_key_value_multiline,
+    msbt_key_value_singleline, AccessorySheet, AccessorySheetRetriever, CachedView, EditorState,
+    ListEditorContent, PropertyGrid,
 };
 
 pub struct AccessoryEditor {
@@ -32,9 +32,7 @@ impl AccessoryEditor {
             self.content.content(ctx, data, |ui, accessory| {
                 PropertyGrid::new("accessory", accessory)
                     .new_section("Data")
-                    .field("AID", |ui, acc| {
-                        ui.add(id_field(&mut acc.aid))
-                    })
+                    .field("AID", |ui, acc| ui.add(id_field(&mut acc.aid)))
                     .field("Name", |ui, acc| {
                         msbt_key_value_singleline!(ui, state, "accessory", acc.name)
                     })

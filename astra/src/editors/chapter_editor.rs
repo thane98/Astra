@@ -8,14 +8,14 @@ use indexmap::IndexMap;
 use parking_lot::RwLock;
 
 use crate::widgets::{
-    bitgrid_i32, chapter_encount_type, chapter_spot_state, keyed_add_modal_content, bitgrid_u16, id_field,
+    bitgrid_i32, bitgrid_u16, chapter_encount_type, chapter_spot_state, id_field,
+    keyed_add_modal_content,
 };
 use crate::{
-    blank_slate, dispos_grid, editor_tab_strip, f32_drag, i8_drag,
-    indexed_model_drop_down, model_drop_down, msbt_key_value_singleline, msbt_script_editor,
-    terrain_grid, u32_drag, u8_drag, AppConfig, CacheItem, CachedView, ChapterSheet,
-    ChapterSheetRetriever, EditorState, GroupEditorContent, ListEditorContent, ListModel,
-    PropertyGrid, SpawnSheet,
+    blank_slate, dispos_grid, editor_tab_strip, f32_drag, i8_drag, indexed_model_drop_down,
+    model_drop_down, msbt_key_value_singleline, msbt_script_editor, terrain_grid, u32_drag,
+    u8_drag, AppConfig, CacheItem, CachedView, ChapterSheet, ChapterSheetRetriever, EditorState,
+    GroupEditorContent, ListEditorContent, ListModel, PropertyGrid, SpawnSheet,
 };
 
 const CHAPTER_FLAG_LABELS: &[&str] = &[
@@ -529,9 +529,9 @@ impl ChapterEditor {
             })
             .field("BID", |ui, spawn| ui.text_edit_singleline(&mut spawn.bid))
             .field("GID", |ui, spawn| {
-                state.god.read(|data| {
-                    ui.add(model_drop_down(data, state, &mut spawn.gid))
-                })
+                state
+                    .god
+                    .read(|data| ui.add(model_drop_down(data, state, &mut spawn.gid)))
             })
             .field("Force", |ui, spawn| ui.add(i8_drag(&mut spawn.force)))
             .field("Flag", |ui, spawn| {

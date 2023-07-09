@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use anyhow::{anyhow, Result, Context};
+use anyhow::{anyhow, Context, Result};
 use astra_formats::indexmap::IndexMap;
 use astra_formats::MessageBundle;
 use parking_lot::RwLock;
@@ -234,9 +234,11 @@ impl MessageSystem {
             let file_name = path
                 .file_name()
                 .map(|f| f.to_string_lossy().into_owned())
-                .ok_or_else(|| anyhow!("bad cobalt MSBT file name"))
-                .with_context(|| format!("failed to read Cobalt archive {}", path.display()))?;
-            archives.insert(file_name, OpenMessageArchive::new_cobalt(path, archive)?);
+                .ok_or_else(|| anyhow!("bad cobalt MSBT file name"))?;
+            archives.insert(
+                file_name,
+                OpenMessageArchive::new_cobalt(path.clone(), archive)?,
+            );
         }
         Ok(Self {
             scripts: HashMap::new(),

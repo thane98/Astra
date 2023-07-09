@@ -117,11 +117,7 @@ impl From<ProjectDef> for AstraProject {
                 data_path,
                 patch_path,
                 output_msbt,
-            } => (
-                data_path.into(),
-                Some(patch_path.into()),
-                output_msbt,
-            ),
+            } => (data_path.into(), Some(patch_path.into()), output_msbt),
         };
         Self {
             backup_dir: PathBuf::from("Backups"),

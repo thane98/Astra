@@ -2,7 +2,7 @@ use astra_types::{RelianceBonusData, RelianceExpData};
 use egui::Ui;
 use indexmap::IndexMap;
 
-use crate::widgets::{keyed_add_modal_content, id_field};
+use crate::widgets::{id_field, keyed_add_modal_content};
 use crate::{
     editor_tab_strip, i8_drag, u8_drag, EditorState, GroupEditorContent, ListEditorContent,
     PropertyGrid, RelianceBonusDataSheet, RelianceExpDataSheet,

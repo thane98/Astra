@@ -2,7 +2,7 @@ use astra_types::{Person, PersonBook};
 use egui::{Grid, Ui};
 use indexmap::IndexMap;
 
-use crate::widgets::{exist_die_timing_drop_down, keyed_add_modal_content, id_field};
+use crate::widgets::{exist_die_timing_drop_down, id_field, keyed_add_modal_content};
 use crate::{
     bitgrid_i32, bitgrid_u8, editable_list, gender_drop_down, i8_drag, model_drop_down,
     msbt_key_value_multiline, msbt_key_value_singleline, nation_drop_down, optional_image,

@@ -166,29 +166,29 @@ impl AssetTableEditor {
                     })
                     .new_section("Animation")
                     .field("Body Anim", |ui, def| {
-                        state.anim_set.read(|data| {
-                            ui.add(model_drop_down(data, &(), &mut def.body_anim))
-                        })
+                        state
+                            .anim_set
+                            .read(|data| ui.add(model_drop_down(data, &(), &mut def.body_anim)))
                     })
                     .field("Info Anim", |ui, def| {
-                        state.anim_set.read(|data| {
-                            ui.add(model_drop_down(data, &(), &mut def.info_anim))
-                        })
+                        state
+                            .anim_set
+                            .read(|data| ui.add(model_drop_down(data, &(), &mut def.info_anim)))
                     })
                     .field("Talk Anim", |ui, def| {
-                        state.anim_set.read(|data| {
-                            ui.add(model_drop_down(data, &(), &mut def.talk_anim))
-                        })
+                        state
+                            .anim_set
+                            .read(|data| ui.add(model_drop_down(data, &(), &mut def.talk_anim)))
                     })
                     .field("Demo Anim", |ui, def| {
-                        state.anim_set.read(|data| {
-                            ui.add(model_drop_down(data, &(), &mut def.demo_anim))
-                        })
+                        state
+                            .anim_set
+                            .read(|data| ui.add(model_drop_down(data, &(), &mut def.demo_anim)))
                     })
                     .field("Hub Anim", |ui, def| {
-                        state.anim_set.read(|data| {
-                            ui.add(model_drop_down(data, &(), &mut def.hub_anim))
-                        })
+                        state
+                            .anim_set
+                            .read(|data| ui.add(model_drop_down(data, &(), &mut def.hub_anim)))
                     })
                     .new_section("Scale")
                     .field("Scale (All)", |ui, def| {

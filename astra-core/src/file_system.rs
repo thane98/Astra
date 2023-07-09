@@ -419,12 +419,19 @@ impl CobaltFileSystemProxy {
             if fs.exists(self.cobalt_msbt_dir()) {
                 for path in fs.list_files(self.cobalt_msbt_dir(), "*")? {
                     let raw = fs.read(&path)?;
-                    let mut message_map = MessageMap::from_slice(&raw)?;
+                    let mut message_map = MessageMap::from_slice(&raw).with_context(|| {
+                        format!("failed to read Cobalt MSBT at path {}", path.display())
+                    })?;
                     // TODO: Push this into astra_formats
                     let mut out = IndexMap::new();
                     let raw = std::mem::take(&mut message_map.messages);
                     for (k, v) in raw {
-                        out.insert(k, astra_formats::parse_msbt_entry(&v)?);
+                        out.insert(
+                            k,
+                            astra_formats::parse_msbt_entry(&v).with_context(|| {
+                                format!("failed to read Cobalt archive {}", path.display())
+                            })?,
+                        );
                     }
                     files.push((path, out))
                 }

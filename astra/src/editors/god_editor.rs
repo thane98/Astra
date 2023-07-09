@@ -1,13 +1,14 @@
-use astra_types::{GodBondLevelData, GodData, GodLevelData, GodBook};
+use astra_types::{GodBondLevelData, GodBook, GodData, GodLevelData};
 use egui::Ui;
 use indexmap::IndexMap;
 
-use crate::model::{CachedView, GodDataSheetRetriever, CacheItem};
-use crate::widgets::{id_field, keyed_add_modal_content, bitgrid_i32};
+use crate::model::{CacheItem, CachedView, GodDataSheetRetriever};
+use crate::widgets::{bitgrid_i32, id_field, keyed_add_modal_content};
 use crate::{
     editable_list, editor_tab_strip, i16_drag, i32_drag, i8_drag, model_drop_down,
-    msbt_key_value_singleline, u16_drag, u8_drag, EditorState, GodBondLevelDataSheet, GodDataSheet,
-    GodLevelDataSheet, GroupEditorContent, ListEditorContent, PropertyGrid, msbt_key_value_multiline,
+    msbt_key_value_multiline, msbt_key_value_singleline, u16_drag, u8_drag, EditorState,
+    GodBondLevelDataSheet, GodDataSheet, GodLevelDataSheet, GroupEditorContent, ListEditorContent,
+    PropertyGrid,
 };
 
 const FLAG_LABELS: &[&str] = &[
@@ -90,7 +91,12 @@ impl GodEditor {
         }
     }
 
-    fn god_property_grid(cache: &IndexMap<String, CacheItem<GodData>>, ui: &mut Ui, data: &mut GodData, state: &EditorState) -> bool {
+    fn god_property_grid(
+        cache: &IndexMap<String, CacheItem<GodData>>,
+        ui: &mut Ui,
+        data: &mut GodData,
+        state: &EditorState,
+    ) -> bool {
         PropertyGrid::new("gods", data)
             .new_section("Data")
             .field("GID", |ui, god| ui.add(id_field(&mut god.gid)))
@@ -129,7 +135,9 @@ impl GodEditor {
                     ui.add(model_drop_down(cache, &(), value))
                 }))
             })
-            .field("Link", |ui, god| ui.add(model_drop_down(cache, &(), &mut god.link)))
+            .field("Link", |ui, god| {
+                ui.add(model_drop_down(cache, &(), &mut god.link))
+            })
             .field("Engage Haunt", |ui, god| {
                 ui.text_edit_singleline(&mut god.engage_haunt)
             })
@@ -144,9 +152,9 @@ impl GodEditor {
                 ui.add(u8_drag(&mut god.engage_count))
             })
             .field("Engage Attack", |ui, god| {
-                state.skill.read(|data| {
-                    ui.add(model_drop_down(data, state, &mut god.engage_attack))
-                })
+                state
+                    .skill
+                    .read(|data| ui.add(model_drop_down(data, state, &mut god.engage_attack)))
             })
             .field("Engage Attack Rampage", |ui, god| {
                 state.skill.read(|data| {
@@ -154,9 +162,9 @@ impl GodEditor {
                 })
             })
             .field("Engage Attack Link", |ui, god| {
-                state.skill.read(|data| {
-                    ui.add(model_drop_down(data, state, &mut god.engage_attack_link))
-                })
+                state
+                    .skill
+                    .read(|data| ui.add(model_drop_down(data, state, &mut god.engage_attack_link)))
             })
             .field("Link Emblem", |ui, god| {
                 ui.add(model_drop_down(cache, &(), &mut god.link_gid))
@@ -220,7 +228,9 @@ impl GodEditor {
             .field("Synchro MOV Bonus", |ui, god| {
                 ui.add(i8_drag(&mut god.synchro_enhance_move))
             })
-            .field("Flag", |ui, god| ui.add(bitgrid_i32(FLAG_LABELS, 3, &mut god.flag)))
+            .field("Flag", |ui, god| {
+                ui.add(bitgrid_i32(FLAG_LABELS, 3, &mut god.flag))
+            })
             .field("Net Ranking Index", |ui, god| {
                 ui.add(u8_drag(&mut god.net_ranking_index))
             })

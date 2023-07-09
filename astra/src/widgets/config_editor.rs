@@ -1,5 +1,5 @@
 use catppuccin_egui::{FRAPPE, LATTE, MACCHIATO, MOCHA};
-use egui::{Grid, Ui, TextEdit};
+use egui::{Grid, TextEdit, Ui};
 use egui_modal::Modal;
 
 use crate::{AppConfig, Theme};
@@ -50,11 +50,17 @@ pub fn config_editor(ui: &mut Ui, config: &mut AppConfig) {
         ui.end_row();
 
         ui.label("Script Editor Program");
-        ui.add_sized([300., 0.], TextEdit::singleline(&mut config.script_editor_process));
+        ui.add_sized(
+            [300., 0.],
+            TextEdit::singleline(&mut config.script_editor_process),
+        );
         ui.end_row();
 
         ui.label("Script Editor Command Args");
-        ui.add_sized([300., 0.], TextEdit::singleline(&mut config.script_editor_command_args));
+        ui.add_sized(
+            [300., 0.],
+            TextEdit::singleline(&mut config.script_editor_command_args),
+        );
         ui.end_row();
     });
 }

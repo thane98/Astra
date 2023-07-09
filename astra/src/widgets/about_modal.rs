@@ -10,19 +10,31 @@ pub fn about_modal(ctx: &egui::Context) -> Modal {
         ui.label("Credits");
         ui.horizontal(|ui| {
             ui.label("•");
-            ui.add(Hyperlink::from_label_and_url("Raytwo", "https://github.com/Raytwo"));
+            ui.add(Hyperlink::from_label_and_url(
+                "Raytwo",
+                "https://github.com/Raytwo",
+            ));
         });
         ui.horizontal(|ui| {
             ui.label("•");
-            ui.add(Hyperlink::from_label_and_url("DeathChaos", "https://github.com/DeathChaos25"));
+            ui.add(Hyperlink::from_label_and_url(
+                "DeathChaos",
+                "https://github.com/DeathChaos25",
+            ));
         });
         ui.horizontal(|ui| {
             ui.label("•");
-            ui.add(Hyperlink::from_label_and_url("Araragi Hoozuki (Documentation)", "https://github.com/AraragiHoozuki"));
+            ui.add(Hyperlink::from_label_and_url(
+                "Araragi Hoozuki (Documentation)",
+                "https://github.com/AraragiHoozuki",
+            ));
         });
         ui.horizontal(|ui| {
             ui.label("•");
-            ui.add(Hyperlink::from_label_and_url("Perfare (AssetStudio)", "https://github.com/Perfare"));
+            ui.add(Hyperlink::from_label_and_url(
+                "Perfare (AssetStudio)",
+                "https://github.com/Perfare",
+            ));
         });
         modal.buttons(ui, |ui| {
             modal.button(ui, "Close");

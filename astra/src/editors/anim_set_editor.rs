@@ -1,7 +1,7 @@
 use astra_types::AnimSet;
 use indexmap::IndexMap;
 
-use crate::widgets::{keyed_add_modal_content, id_field};
+use crate::widgets::{id_field, keyed_add_modal_content};
 use crate::{AnimSetSheet, EditorState, ListEditorContent, PropertyGrid};
 
 pub struct AnimSetEditor {
