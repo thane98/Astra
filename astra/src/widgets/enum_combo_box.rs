@@ -36,6 +36,12 @@ macro_rules! enum_combo_box {
     };
 }
 
+enum_combo_box!(force_drop_down, i8,
+    0 => "Player",
+    1 => "Enemy",
+    2 => "Other",
+);
+
 enum_combo_box!(gender_drop_down, i8,
     0 => "Other",
     1 => "Male",

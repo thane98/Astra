@@ -7,6 +7,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::Theme;
 
+fn default_terrain_brightness() -> f32 {
+    0.5
+}
+
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct AppConfig {
     pub projects: Vec<ProjectDef>,
@@ -18,6 +22,8 @@ pub struct AppConfig {
     pub script_editor_process: String,
     #[serde(default)]
     pub script_editor_command_args: String,
+    #[serde(default = "default_terrain_brightness")]
+    pub terrain_brightness: f32,
 }
 
 impl AppConfig {

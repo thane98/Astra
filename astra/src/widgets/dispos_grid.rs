@@ -6,6 +6,7 @@ use egui::{Button, Color32, Grid, ScrollArea, TextureHandle, Ui, Vec2};
 use indexmap::IndexMap;
 use itertools::Itertools;
 
+use crate::editors::Difficulty;
 use crate::{CoordinateKind, DecorationKind, EditorState, ViewItem};
 
 struct SpawnData<'a> {
@@ -48,22 +49,32 @@ impl<'a> SpawnDataMap<'a> {
     pub fn new(
         dispos: &'a mut IndexMap<String, Vec<Spawn>>,
         coordinate_kind: CoordinateKind,
+        difficulty: Difficulty,
     ) -> Self {
         Self {
             spawns_by_position: dispos
                 .iter_mut()
                 .flat_map(|(group_name, group)| {
-                    group.iter_mut().enumerate().map(|(index, spawn)| {
-                        let position = get_position(spawn, coordinate_kind);
-                        (
-                            position,
-                            SpawnData {
-                                group: group_name.as_str(),
-                                index,
-                                spawn,
-                            },
-                        )
-                    })
+                    group
+                        .iter_mut()
+                        .enumerate()
+                        .filter(|(_, spawn)| match difficulty {
+                            Difficulty::All => true,
+                            Difficulty::Normal => spawn.flag.unwrap_or_default() & 1 != 0,
+                            Difficulty::Hard => spawn.flag.unwrap_or_default() & 2 != 0,
+                            Difficulty::Lunatic => spawn.flag.unwrap_or_default() & 4 != 0,
+                        })
+                        .map(|(index, spawn)| {
+                            let position = get_position(spawn, coordinate_kind);
+                            (
+                                position,
+                                SpawnData {
+                                    group: group_name.as_str(),
+                                    index,
+                                    spawn,
+                                },
+                            )
+                        })
                 })
                 .into_group_map(),
         }
@@ -96,12 +107,14 @@ pub fn dispos_grid(
     dispos: &mut IndexMap<String, Vec<Spawn>>,
     selected_spawn: &mut Option<(String, usize)>,
     coordinate_kind: CoordinateKind,
+    difficulty: Difficulty,
+    brightness: f32,
 ) -> bool {
     let selected_spawn_position = selected_spawn
         .as_ref()
         .and_then(|(group, index)| dispos.get(group).and_then(|group| group.get(*index)))
         .map(|spawn| get_position(spawn, coordinate_kind));
-    let spawn_data = SpawnDataMap::new(dispos, coordinate_kind);
+    let spawn_data = SpawnDataMap::new(dispos, coordinate_kind, difficulty);
     let mut changed = false;
     let mut move_pos = None;
     ScrollArea::both()
@@ -120,9 +133,12 @@ pub fn dispos_grid(
                                 .and_then(|tid| data.get(tid.as_str()))
                                 .map(|tile| {
                                     Color32::from_rgb(
-                                        tile.color_r.unwrap_or_default(),
-                                        tile.color_g.unwrap_or_default(),
-                                        tile.color_b.unwrap_or_default(),
+                                        (tile.color_r.unwrap_or_default() as f32 * brightness)
+                                            as u8,
+                                        (tile.color_g.unwrap_or_default() as f32 * brightness)
+                                            as u8,
+                                        (tile.color_b.unwrap_or_default() as f32 * brightness)
+                                            as u8,
                                     )
                                 })
                                 .unwrap_or_else(|| Color32::from_gray(0));

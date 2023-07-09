@@ -2,13 +2,13 @@ use std::sync::Arc;
 
 use astra_core::{Astra, OpenMessageScript, OpenTerrain};
 use astra_types::{Chapter, ChapterBook, Spawn};
-use egui::{Button, CentralPanel, ComboBox, Ui};
+use egui::{Button, CentralPanel, ComboBox, Slider, TopBottomPanel, Ui};
 use egui_modal::{Icon, Modal};
 use indexmap::IndexMap;
 use parking_lot::RwLock;
 
 use crate::widgets::{
-    bitgrid_i32, bitgrid_u16, chapter_encount_type, chapter_spot_state, id_field,
+    bitgrid_i32, bitgrid_u16, chapter_encount_type, chapter_spot_state, force_drop_down, id_field,
     keyed_add_modal_content,
 };
 use crate::{
@@ -77,6 +77,14 @@ pub enum CoordinateKind {
     Appear,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Difficulty {
+    All,
+    Normal,
+    Hard,
+    Lunatic,
+}
+
 struct OpenChapterState {
     dispos: Option<SpawnSheet>,
     encount_dispos: Option<SpawnSheet>,
@@ -124,6 +132,7 @@ pub struct ChapterEditor {
     tab: Tab,
     dispos_kind: DisposKind,
     coordinate_kind: CoordinateKind,
+    dispos_difficulty: Difficulty,
     script_open_error: Option<String>,
     selected_chapter_index: Option<usize>,
 
@@ -143,6 +152,7 @@ impl ChapterEditor {
             tab: Tab::Core,
             dispos_kind: DisposKind::Main,
             coordinate_kind: CoordinateKind::Dispos,
+            dispos_difficulty: Difficulty::All,
             script_open_error: None,
             selected_chapter_index: None,
 
@@ -157,7 +167,7 @@ impl ChapterEditor {
         }
     }
 
-    pub fn show(&mut self, ctx: &egui::Context, state: &mut EditorState, config: &AppConfig) {
+    pub fn show(&mut self, ctx: &egui::Context, state: &mut EditorState, config: &mut AppConfig) {
         if self.chapter_state.is_none() {
             CentralPanel::default().show(ctx, |ui| {
                 blank_slate(ui);
@@ -169,8 +179,8 @@ impl ChapterEditor {
 
         match self.tab {
             Tab::Core => self.core_tab_content(ctx, state, config),
-            Tab::Dispos => self.dispos_tab_content(ctx, state),
-            Tab::Terrain => self.terrain_tab_content(ctx, state),
+            Tab::Dispos => self.dispos_tab_content(ctx, state, config),
+            Tab::Terrain => self.terrain_tab_content(ctx, state, config),
             Tab::Dialogue => self.dialogue_tab_content(ctx),
         }
     }
@@ -240,6 +250,27 @@ impl ChapterEditor {
                         &mut self.coordinate_kind,
                         CoordinateKind::Appear,
                         "Appear",
+                    );
+                });
+            ComboBox::from_id_source("dispos_difficulty_drop_down")
+                .selected_text(match self.dispos_difficulty {
+                    Difficulty::All => "All Difficulties",
+                    Difficulty::Normal => "Normal",
+                    Difficulty::Hard => "Hard",
+                    Difficulty::Lunatic => "Lunatic",
+                })
+                .show_ui(ui, |ui| {
+                    ui.selectable_value(
+                        &mut self.dispos_difficulty,
+                        Difficulty::All,
+                        "All Difficulties",
+                    );
+                    ui.selectable_value(&mut self.dispos_difficulty, Difficulty::Normal, "Normal");
+                    ui.selectable_value(&mut self.dispos_difficulty, Difficulty::Hard, "Hard");
+                    ui.selectable_value(
+                        &mut self.dispos_difficulty,
+                        Difficulty::Lunatic,
+                        "Lunatic",
                     );
                 });
         });
@@ -463,7 +494,12 @@ impl ChapterEditor {
             .changed()
     }
 
-    fn dispos_tab_content(&mut self, ctx: &egui::Context, state: &EditorState) {
+    fn dispos_tab_content(
+        &mut self,
+        ctx: &egui::Context,
+        state: &EditorState,
+        config: &mut AppConfig,
+    ) {
         if let Some(dispos) = self
             .chapter_state
             .as_ref()
@@ -472,6 +508,13 @@ impl ChapterEditor {
                 DisposKind::Encount => state.encount_dispos.as_ref(),
             })
         {
+            TopBottomPanel::bottom("dispos_bottom_panel").show(ctx, |ui| {
+                ui.horizontal(|ui| {
+                    ui.label("Tile Brightness");
+                    ui.add(Slider::new(&mut config.terrain_brightness, 0.0..=1.0));
+                });
+            });
+
             self.dispos_content.left_panel(ctx, dispos, state);
 
             dispos.write(|data| {
@@ -493,6 +536,8 @@ impl ChapterEditor {
                                 data,
                                 self.dispos_content.selection_mut(),
                                 self.coordinate_kind,
+                                self.dispos_difficulty,
+                                config.terrain_brightness,
                             );
                         });
                     } else {
@@ -533,7 +578,9 @@ impl ChapterEditor {
                     .god
                     .read(|data| ui.add(model_drop_down(data, state, &mut spawn.gid)))
             })
-            .field("Force", |ui, spawn| ui.add(i8_drag(&mut spawn.force)))
+            .field("Force", |ui, spawn| {
+                ui.add(force_drop_down(&mut spawn.force))
+            })
             .field("Flag", |ui, spawn| {
                 ui.add(bitgrid_u16(SPAWN_FLAG_LABELS, 1, &mut spawn.flag))
             })
@@ -654,17 +701,35 @@ impl ChapterEditor {
             .changed()
     }
 
-    fn terrain_tab_content(&mut self, ctx: &egui::Context, state: &EditorState) {
+    fn terrain_tab_content(
+        &mut self,
+        ctx: &egui::Context,
+        state: &EditorState,
+        config: &mut AppConfig,
+    ) {
         if let Some(chapter_terrain) = self
             .chapter_state
             .as_ref()
             .and_then(|state| state.terrain.as_ref())
         {
+            TopBottomPanel::bottom("dispos_bottom_panel").show(ctx, |ui| {
+                ui.horizontal(|ui| {
+                    ui.label("Tile Brightness");
+                    ui.add(Slider::new(&mut config.terrain_brightness, 0.0..=1.0));
+                });
+            });
+
             self.terrain_content.side_panel(ctx, &state.terrain, state);
 
             CentralPanel::default().show(ctx, |ui| {
                 chapter_terrain.write(|terrain_data| {
-                    terrain_grid(ui, terrain_data, self.terrain_content.selection(), state)
+                    terrain_grid(
+                        ui,
+                        terrain_data,
+                        self.terrain_content.selection(),
+                        state,
+                        config.terrain_brightness,
+                    )
                 });
             });
         } else {

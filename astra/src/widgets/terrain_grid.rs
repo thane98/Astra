@@ -8,6 +8,7 @@ pub fn terrain_grid(
     terrain: &mut TerrainData,
     selected_tile_index: Option<usize>,
     state: &EditorState,
+    brightness: f32,
 ) -> bool {
     let mut change = None;
     ScrollArea::both()
@@ -25,9 +26,12 @@ pub fn terrain_grid(
                                 .and_then(|tid| data.get(tid.as_str()))
                                 .map(|tile| {
                                     Color32::from_rgb(
-                                        tile.color_r.unwrap_or_default(),
-                                        tile.color_g.unwrap_or_default(),
-                                        tile.color_b.unwrap_or_default(),
+                                        (tile.color_r.unwrap_or_default() as f32 * brightness)
+                                            as u8,
+                                        (tile.color_g.unwrap_or_default() as f32 * brightness)
+                                            as u8,
+                                        (tile.color_b.unwrap_or_default() as f32 * brightness)
+                                            as u8,
                                     )
                                 })
                                 .unwrap_or_else(|| Color32::from_gray(0));
