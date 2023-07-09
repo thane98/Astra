@@ -74,7 +74,7 @@ pub fn project_creator(
 
                         match &mut state.project.output_mode {
                             ProjectOutputMode::Standard(data_path) => {
-                                ui.label("Data Path");
+                                ui.label("Output Path");
                                 ui.add(folder_picker(data_path));
                                 ui.end_row();
                             }
@@ -83,7 +83,7 @@ pub fn project_creator(
                                 patch_path,
                                 output_msbt,
                             } => {
-                                ui.label("Data Path");
+                                ui.label("Output Path");
                                 ui.add(folder_picker(data_path));
                                 ui.end_row();
 

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use astra_formats::{AtlasBundle, SpriteAtlasWrapper};
 use image::{DynamicImage, GenericImageView, RgbaImage};
 
@@ -30,8 +30,9 @@ impl AtlasSystem {
         let mut atlases = HashMap::new();
         for (key, path) in entries {
             let raw_bundle = file_system.read(path, false)?;
-            let atlas =
-                AtlasBundle::from_slice(&raw_bundle).and_then(|bundle| bundle.extract_data())?;
+            let atlas = AtlasBundle::from_slice(&raw_bundle)
+                .and_then(|bundle| bundle.extract_data())
+                .with_context(|| format!("Failed to load sprites from {}", path))?;
             atlases.insert(key.to_owned(), atlas);
         }
         Ok(Self { atlases })

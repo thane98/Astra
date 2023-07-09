@@ -16,6 +16,7 @@ use astra_types::{
     AnimSetBook, AssetTableBook, ChapterBook, DisposBook, GodBook, ItemBook, JobBook, ParamsBook,
     PersonBook, RelianceBook, ShopBook, SkillBook, TerrainBook,
 };
+use error::Context;
 pub use image;
 pub use parking_lot;
 
@@ -59,15 +60,22 @@ impl Astra {
             ])?,
             project.localization,
         ));
-        let cobalt_proxy = Arc::new(CobaltFileSystemProxy::new(file_system.clone(), project.cobalt_dir)?);
+        let cobalt_proxy = Arc::new(CobaltFileSystemProxy::new(
+            file_system.clone(),
+            project.cobalt_dir,
+        )?);
         Ok(Self {
             backup_root: project.backup_dir,
             cobalt_msbt: project.cobalt_msbt,
-            atlas_system: AtlasSystem::load(&file_system)?,
-            book_system: BookSystem::load(cobalt_proxy.clone())?,
+            atlas_system: AtlasSystem::load(&file_system)
+                .context("Failed to load sprite atlases")?,
+            book_system: BookSystem::load(cobalt_proxy.clone())
+                .context("Failed to load books (fe_assets_gamedata)")?,
             script_system: ScriptSystem::new(file_system.clone()),
-            message_system: MessageSystem::load(file_system.clone(), cobalt_proxy)?,
-            terrain_system: TerrainSystem::load(file_system)?,
+            message_system: MessageSystem::load(file_system.clone(), cobalt_proxy)
+                .context("Failed to load text data (MSBT)")?,
+            terrain_system: TerrainSystem::load(file_system)
+                .context("Failed to initialize terrain system")?,
         })
     }
 

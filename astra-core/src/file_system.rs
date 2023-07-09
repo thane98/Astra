@@ -539,7 +539,10 @@ impl CobaltFileSystemProxy {
         !path.starts_with("dispos")
             && !path
                 .file_stem()
-                .map(|stem| stem.to_string_lossy().as_ref() == "reliance")
+                .map(|stem| match stem.to_string_lossy().as_ref() {
+                    "reliance" | "terrain" => false,
+                    _ => true,
+                })
                 .unwrap_or_default()
     }
 }

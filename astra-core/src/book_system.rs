@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use anyhow::{anyhow, Result};
+use anyhow::{anyhow, Context, Result};
 use astra_formats::{Book, TextBundle};
 use astra_types::{
     AnimSetBook, AssetTableBook, ChapterBook, DisposBook, GodBook, ItemBook, JobBook, ParamsBook,
@@ -33,18 +33,24 @@ pub struct BookSystem {
 impl BookSystem {
     pub fn load(file_system: Arc<CobaltFileSystemProxy>) -> Result<Self> {
         Ok(Self {
-            asset_table: OpenBook::load(&file_system, "assettable".into())?,
-            anim_set: OpenBook::load(&file_system, "animset".into())?,
-            chapter: OpenBook::load(&file_system, "chapter".into())?,
-            god: OpenBook::load(&file_system, "god".into())?,
-            person: OpenBook::load(&file_system, "person".into())?,
-            job: OpenBook::load(&file_system, "job".into())?,
-            item: OpenBook::load(&file_system, "item".into())?,
-            param: OpenBook::load(&file_system, "params".into())?,
-            reliance: OpenBook::load(&file_system, "reliance".into())?,
-            shop: OpenBook::load(&file_system, "shop".into())?,
-            skill: OpenBook::load(&file_system, "skill".into())?,
-            terrain: OpenBook::load(&file_system, "terrain".into())?,
+            asset_table: OpenBook::load(&file_system, "assettable".into())
+                .context("Failed to load asset table")?,
+            anim_set: OpenBook::load(&file_system, "animset".into())
+                .context("Failed to load anim_set")?,
+            chapter: OpenBook::load(&file_system, "chapter".into())
+                .context("Failed to load chapter")?,
+            god: OpenBook::load(&file_system, "god".into()).context("Failed to load god")?,
+            person: OpenBook::load(&file_system, "person".into())
+                .context("Failed to load person")?,
+            job: OpenBook::load(&file_system, "job".into()).context("Failed to load job")?,
+            item: OpenBook::load(&file_system, "item".into()).context("Failed to load item")?,
+            param: OpenBook::load(&file_system, "params".into()).context("Failed to load param")?,
+            reliance: OpenBook::load(&file_system, "reliance".into())
+                .context("Failed to load reliance")?,
+            shop: OpenBook::load(&file_system, "shop".into()).context("Failed to load shop")?,
+            skill: OpenBook::load(&file_system, "skill".into()).context("Failed to load skill")?,
+            terrain: OpenBook::load(&file_system, "terrain".into())
+                .context("Failed to load terrain")?,
             dispos: HashMap::new(),
             file_system,
         })
