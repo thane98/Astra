@@ -22,9 +22,12 @@ fn main() {
     tracing_subscriber::fmt::init();
 
     let app_config = AppConfig::load().expect("failed to initialize application");
-    let mut native_options = eframe::NativeOptions::default();
-    native_options.icon_data =
-        Some(IconData::try_from_png_bytes(include_bytes!("../assets/astra.png")).unwrap());
+    let mut native_options = eframe::NativeOptions {
+        icon_data: Some(
+            IconData::try_from_png_bytes(include_bytes!("../assets/astra.png")).unwrap(),
+        ),
+        ..Default::default()
+    };
     native_options.initial_window_size = Some([1310., 800.].into());
 
     eframe::run_native(

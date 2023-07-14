@@ -91,7 +91,6 @@ impl MessageDb {
         if let Some(mut data) = self.retrieve_data(key, default_archive) {
             let changed = consumer(Some(&mut data.value));
             if changed {
-                let data = data.clone();
                 if let Some(archive) = self.archives.get(data.archive) {
                     archive.write(|message_map| {
                         message_map.insert(key.to_string(), data.value.clone());

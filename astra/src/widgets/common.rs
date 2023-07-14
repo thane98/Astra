@@ -15,7 +15,7 @@ pub fn blank_slate(ui: &mut Ui) {
     });
 }
 
-pub fn optional_checkbox<'a>(value: &'a mut Option<bool>) -> impl Widget + 'a {
+pub fn optional_checkbox(value: &mut Option<bool>) -> impl Widget + '_ {
     move |ui: &mut Ui| {
         let mut temp = value.unwrap_or_default();
         let response = ui.checkbox(&mut temp, "");
@@ -42,7 +42,7 @@ pub fn optional_image(
     }
 }
 
-pub fn raised_heading<'a>(text: &'a str) -> impl Widget + 'a {
+pub fn raised_heading(text: &str) -> impl Widget + '_ {
     move |ui: &mut Ui| {
         let fill = ui.visuals().code_bg_color;
         Frame::group(ui.style())

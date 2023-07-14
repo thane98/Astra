@@ -1,6 +1,6 @@
 macro_rules! enum_combo_box {
     ($name:ident, $target:ty, $($key:expr => $label:expr,)+) => {
-        pub fn $name<'a>(value: &'a mut Option<$target>) -> impl egui::Widget + 'a {
+        pub fn $name(value: &mut Option<$target>) -> impl egui::Widget + '_ {
             move |ui: &mut egui::Ui| {
                 {
                     let mut changed = false;
@@ -282,7 +282,7 @@ enum_combo_box!(skill_give_targets_drop_down, i8,
 
 macro_rules! string_combo_box {
     ($name:ident, $($key:expr => $label:expr,)+) => {
-        pub fn $name<'a>(value: &'a mut String) -> impl egui::Widget + 'a {
+        pub fn $name(value: &mut String) -> impl egui::Widget + '_ {
             move |ui: &mut egui::Ui| {
                 {
                     let mut changed = false;

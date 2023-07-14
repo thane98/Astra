@@ -224,7 +224,7 @@ impl GroupEditorContent {
                                             group,
                                             dependencies,
                                         ));
-                                        if !group_command.is_some() {
+                                        if group_command.is_none() {
                                             group_command =
                                                 self.group_command_menu(&modal, ui, group, i);
                                         }
@@ -237,7 +237,7 @@ impl GroupEditorContent {
                                             group,
                                             items,
                                         );
-                                        if !group_entry_command.is_some() {
+                                        if group_entry_command.is_none() {
                                             group_entry_command = command;
                                         }
                                     });
@@ -288,7 +288,7 @@ impl GroupEditorContent {
         let mut command = None;
         for (i, entry) in items.iter().enumerate() {
             let selected =
-                self.selection.as_ref().map(|(g, i)| (g.as_str(), *i)) == Some((&group, i));
+                self.selection.as_ref().map(|(g, i)| (g.as_str(), *i)) == Some((group, i));
             ui.horizontal(|ui| {
                 if I::decorated(DecorationKind::List) {
                     ui.add(optional_image(
@@ -302,8 +302,8 @@ impl GroupEditorContent {
                 {
                     self.selection = Some((group.to_owned(), i));
                 }
-                if !command.is_some() {
-                    command = self.group_entry_command_menu(ui, &copy_modal, group, i);
+                if command.is_none() {
+                    command = self.group_entry_command_menu(ui, copy_modal, group, i);
                 }
             });
         }

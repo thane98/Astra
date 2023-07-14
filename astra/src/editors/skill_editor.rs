@@ -138,7 +138,7 @@ impl SkillEditor {
                     })
                     .field("Condition", |ui, skill| {
                         ui.vertical_centered_justified(|ui| {
-                            (&mut skill.condition).default_widget(ui)
+                            skill.condition.default_widget(ui)
                         })
                         .inner
                     })

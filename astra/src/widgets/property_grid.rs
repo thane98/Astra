@@ -37,8 +37,7 @@ impl<'a, D> PropertyGridSection<'a, D> {
             || self
                 .labels
                 .iter()
-                .find(|label| label.to_lowercase().contains(&filter.to_lowercase()))
-                .is_some()
+                .any(|label| label.to_lowercase().contains(&filter.to_lowercase()))
     }
 
     pub fn show(&self, ui: &mut Ui, data: &mut D, filter: &str) -> Response {
@@ -140,10 +139,8 @@ impl<'a, D> PropertyGrid<'a, D> {
                     ui.add(TextEdit::singleline(&mut filter).hint_text("Search fields..."));
                     ui.separator();
                     for section in &self.sections {
-                        if section.visible(&filter) {
-                            if section.show(ui, self.data, &filter).changed() {
-                                changed = true;
-                            }
+                        if section.visible(&filter) && section.show(ui, self.data, &filter).changed() {
+                            changed = true;
                         }
                     }
                 })

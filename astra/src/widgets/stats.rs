@@ -20,37 +20,37 @@ pub fn standard_stat_column_headers(ui: &mut Ui) {
 macro_rules! standard_stats_row {
     ($ui:ident, $target:ident, $prefix:ident, $changed:ident) => {
         paste::paste! {
-            if crate::DefaultWidget::default_widget(&mut $target.[<$prefix _hp>], $ui).changed() {
+            if $crate::DefaultWidget::default_widget(&mut $target.[<$prefix _hp>], $ui).changed() {
                 $changed = true;
             }
-            if crate::DefaultWidget::default_widget(&mut $target.[<$prefix _str>], $ui).changed() {
+            if $crate::DefaultWidget::default_widget(&mut $target.[<$prefix _str>], $ui).changed() {
                 $changed = true;
             }
-            if crate::DefaultWidget::default_widget(&mut $target.[<$prefix _def>], $ui).changed() {
+            if $crate::DefaultWidget::default_widget(&mut $target.[<$prefix _def>], $ui).changed() {
                 $changed = true;
             }
-            if crate::DefaultWidget::default_widget(&mut $target.[<$prefix _tech>], $ui).changed() {
+            if $crate::DefaultWidget::default_widget(&mut $target.[<$prefix _tech>], $ui).changed() {
                 $changed = true;
             }
-            if crate::DefaultWidget::default_widget(&mut $target.[<$prefix _quick>], $ui).changed() {
+            if $crate::DefaultWidget::default_widget(&mut $target.[<$prefix _quick>], $ui).changed() {
                 $changed = true;
             }
-            if crate::DefaultWidget::default_widget(&mut $target.[<$prefix _luck>], $ui).changed() {
+            if $crate::DefaultWidget::default_widget(&mut $target.[<$prefix _luck>], $ui).changed() {
                 $changed = true;
             }
-            if crate::DefaultWidget::default_widget(&mut $target.[<$prefix _magic>], $ui).changed() {
+            if $crate::DefaultWidget::default_widget(&mut $target.[<$prefix _magic>], $ui).changed() {
                 $changed = true;
             }
-            if crate::DefaultWidget::default_widget(&mut $target.[<$prefix _mdef>], $ui).changed() {
+            if $crate::DefaultWidget::default_widget(&mut $target.[<$prefix _mdef>], $ui).changed() {
                 $changed = true;
             }
-            if crate::DefaultWidget::default_widget(&mut $target.[<$prefix _phys>], $ui).changed() {
+            if $crate::DefaultWidget::default_widget(&mut $target.[<$prefix _phys>], $ui).changed() {
                 $changed = true;
             }
-            if crate::DefaultWidget::default_widget(&mut $target.[<$prefix _move>], $ui).changed() {
+            if $crate::DefaultWidget::default_widget(&mut $target.[<$prefix _move>], $ui).changed() {
                 $changed = true;
             }
-            if crate::DefaultWidget::default_widget(&mut $target.[<$prefix _sight>], $ui).changed() {
+            if $crate::DefaultWidget::default_widget(&mut $target.[<$prefix _sight>], $ui).changed() {
                 $changed = true;
             }
         }
@@ -77,34 +77,34 @@ pub fn stat_column_headers_no_sight(ui: &mut Ui) {
 macro_rules! stats_row_no_sight {
     ($ui:ident, $target:ident, $prefix:ident, $changed:ident) => {
         paste::paste! {
-            if crate::DefaultWidget::default_widget(&mut $target.[<$prefix _hp>], $ui).changed() {
+            if $crate::DefaultWidget::default_widget(&mut $target.[<$prefix _hp>], $ui).changed() {
                 $changed = true;
             }
-            if crate::DefaultWidget::default_widget(&mut $target.[<$prefix _str>], $ui).changed() {
+            if $crate::DefaultWidget::default_widget(&mut $target.[<$prefix _str>], $ui).changed() {
                 $changed = true;
             }
-            if crate::DefaultWidget::default_widget(&mut $target.[<$prefix _def>], $ui).changed() {
+            if $crate::DefaultWidget::default_widget(&mut $target.[<$prefix _def>], $ui).changed() {
                 $changed = true;
             }
-            if crate::DefaultWidget::default_widget(&mut $target.[<$prefix _tech>], $ui).changed() {
+            if $crate::DefaultWidget::default_widget(&mut $target.[<$prefix _tech>], $ui).changed() {
                 $changed = true;
             }
-            if crate::DefaultWidget::default_widget(&mut $target.[<$prefix _quick>], $ui).changed() {
+            if $crate::DefaultWidget::default_widget(&mut $target.[<$prefix _quick>], $ui).changed() {
                 $changed = true;
             }
-            if crate::DefaultWidget::default_widget(&mut $target.[<$prefix _luck>], $ui).changed() {
+            if $crate::DefaultWidget::default_widget(&mut $target.[<$prefix _luck>], $ui).changed() {
                 $changed = true;
             }
-            if crate::DefaultWidget::default_widget(&mut $target.[<$prefix _magic>], $ui).changed() {
+            if $crate::DefaultWidget::default_widget(&mut $target.[<$prefix _magic>], $ui).changed() {
                 $changed = true;
             }
-            if crate::DefaultWidget::default_widget(&mut $target.[<$prefix _mdef>], $ui).changed() {
+            if $crate::DefaultWidget::default_widget(&mut $target.[<$prefix _mdef>], $ui).changed() {
                 $changed = true;
             }
-            if crate::DefaultWidget::default_widget(&mut $target.[<$prefix _phys>], $ui).changed() {
+            if $crate::DefaultWidget::default_widget(&mut $target.[<$prefix _phys>], $ui).changed() {
                 $changed = true;
             }
-            if crate::DefaultWidget::default_widget(&mut $target.[<$prefix _move>], $ui).changed() {
+            if $crate::DefaultWidget::default_widget(&mut $target.[<$prefix _move>], $ui).changed() {
                 $changed = true;
             }
         }

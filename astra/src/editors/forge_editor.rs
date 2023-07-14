@@ -62,7 +62,7 @@ impl ForgeEditor {
         match self.tab {
             Tab::Refine => self.refine.write(|data| {
                 self.refine_content
-                    .content(ctx, data, |ui, data| Self::refine_property_grid(ui, data))
+                    .content(ctx, data, Self::refine_property_grid)
             }),
             Tab::Evolve => self.evolve.write(|data| {
                 self.evolve_content.content(ctx, data, |ui, data| {
@@ -71,7 +71,7 @@ impl ForgeEditor {
             }),
             Tab::Exchange => self.exchange.write(|data| {
                 self.exchange_content
-                    .content(ctx, data, |ui, data| Self::exchange_property_grid(ui, data))
+                    .content(ctx, data, Self::exchange_property_grid)
             }),
         }
     }

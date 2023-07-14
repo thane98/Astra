@@ -57,7 +57,7 @@ impl TextureCache {
                         key,
                         ColorImage::from_rgba_unmultiplied(
                             [image.width() as _, image.height() as _],
-                            &image.as_bytes(),
+                            image.as_bytes(),
                         ),
                         texture_options,
                     ),

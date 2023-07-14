@@ -1,6 +1,6 @@
 use egui::{TextEdit, Ui, Widget};
 
-pub fn msbt_field_singleline<'a>(value: Option<&'a mut String>) -> impl Widget + 'a {
+pub fn msbt_field_singleline(value: Option<&mut String>) -> impl Widget + '_ {
     move |ui: &mut Ui| match value {
         Some(value) => {
             ui.vertical(|ui| {
@@ -23,8 +23,8 @@ macro_rules! msbt_key_value_singleline {
             let response = ui.text_edit_singleline(&mut $target);
             $state
                 .message_db
-                .with_message_mut(&mut $target, $default_archive, |value| {
-                    ui.add(crate::msbt_field_singleline(value)).changed()
+                .with_message_mut(&$target, $default_archive, |value| {
+                    ui.add($crate::msbt_field_singleline(value)).changed()
                 });
             response
         })
@@ -32,7 +32,7 @@ macro_rules! msbt_key_value_singleline {
     };
 }
 
-pub fn msbt_field_multiline<'a>(value: Option<&'a mut String>) -> impl Widget + 'a {
+pub fn msbt_field_multiline(value: Option<&mut String>) -> impl Widget + '_ {
     move |ui: &mut Ui| match value {
         Some(value) => {
             ui.vertical(|ui| {
@@ -55,8 +55,8 @@ macro_rules! msbt_key_value_multiline {
             let response = ui.text_edit_singleline(&mut $target);
             $state
                 .message_db
-                .with_message_mut(&mut $target, $default_archive, |value| {
-                    ui.add(crate::msbt_field_multiline(value)).changed()
+                .with_message_mut(&$target, $default_archive, |value| {
+                    ui.add($crate::msbt_field_multiline(value)).changed()
                 });
             response
         })

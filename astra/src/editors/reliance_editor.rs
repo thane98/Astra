@@ -50,11 +50,11 @@ impl RelianceEditor {
         match self.tab {
             Tab::ExpData => self.exp_data.write(|data| {
                 self.exp_data_content
-                    .content(ctx, data, |ui, data| Self::exp_data_property_grid(ui, data))
+                    .content(ctx, data, Self::exp_data_property_grid)
             }),
             Tab::Bonuses => self.bonuses.write(|data| {
                 self.bonuses_content
-                    .content(ctx, data, |ui, data| Self::bonuses_property_grid(ui, data))
+                    .content(ctx, data, Self::bonuses_property_grid)
             }),
         }
     }

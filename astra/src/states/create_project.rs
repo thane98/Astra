@@ -97,7 +97,7 @@ pub fn project_creator(
                                     .selected_text(output_msbt.as_deref().unwrap_or_default())
                                     .show_ui(ui, |ui| {
                                         for msbt in get_cobalt_msbt_options(
-                                            &patch_path,
+                                            patch_path,
                                             &state.project.active_country_dir_name,
                                             &state.project.active_language_dir_name,
                                         ) {
@@ -177,11 +177,9 @@ fn get_region_dirs(romfs_path: &str) -> Vec<String> {
         .ok()
         .map(|entries| {
             let mut dirs = vec![];
-            for entry in entries {
-                if let Ok(entry) = entry {
-                    if entry.path().is_dir() {
-                        dirs.push(entry.file_name().to_string_lossy().to_string());
-                    }
+            for entry in entries.flatten() {
+                if entry.path().is_dir() {
+                    dirs.push(entry.file_name().to_string_lossy().to_string());
                 }
             }
             dirs
@@ -195,11 +193,9 @@ fn get_language_dirs(romfs_path: &str, region_dir: &str) -> Vec<String> {
         .ok()
         .map(|entries| {
             let mut dirs = vec![];
-            for entry in entries {
-                if let Ok(entry) = entry {
-                    if entry.path().is_dir() {
-                        dirs.push(entry.file_name().to_string_lossy().to_string());
-                    }
+            for entry in entries.flatten() {
+                if entry.path().is_dir() {
+                    dirs.push(entry.file_name().to_string_lossy().to_string());
                 }
             }
             dirs
@@ -217,11 +213,9 @@ fn get_cobalt_msbt_options(cobalt_path: &str, region_dir: &str, language_dir: &s
         .ok()
         .map(|entries| {
             let mut dirs = vec![];
-            for entry in entries {
-                if let Ok(entry) = entry {
-                    if entry.path().is_file() {
-                        dirs.push(entry.file_name().to_string_lossy().to_string());
-                    }
+            for entry in entries.flatten() {
+                if entry.path().is_dir() {
+                    dirs.push(entry.file_name().to_string_lossy().to_string());
                 }
             }
             dirs

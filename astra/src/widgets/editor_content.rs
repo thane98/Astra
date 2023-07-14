@@ -64,7 +64,7 @@ where
         let modal = Modal::new(ctx, self.id_source);
         if let (Some(modal_fn), Some(add_command)) = (&self.add_modal_fn, self.add_command) {
             modal.show(|ui| {
-                model.write(|data| modal_fn(&self.id_source, &modal, ui, data, add_command))
+                model.write(|data| modal_fn(self.id_source, &modal, ui, data, add_command))
             });
         }
 
@@ -91,7 +91,7 @@ where
                 ui.horizontal(|ui| {
                     ui.menu_button("…", |ui| {
                         if ui.button("➕ Add Item").clicked() {
-                            if let Some(_) = &self.add_modal_fn {
+                            if self.add_modal_fn.is_some() {
                                 self.add_command = Some(AddModalCommand::Add);
                                 modal.open();
                             } else {
@@ -109,7 +109,7 @@ where
                             .clicked()
                         {
                             let selection = self.selection.unwrap();
-                            if let Some(_) = &self.add_modal_fn {
+                            if self.add_modal_fn.is_some() {
                                 self.add_command = Some(AddModalCommand::Insert(selection + 1));
                                 modal.open();
                             } else {
@@ -125,7 +125,7 @@ where
                             .clicked()
                         {
                             let selection = self.selection.unwrap();
-                            if let Some(_) = &self.add_modal_fn {
+                            if self.add_modal_fn.is_some() {
                                 self.add_command = Some(AddModalCommand::Duplicate(selection));
                                 modal.open();
                             } else {

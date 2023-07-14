@@ -477,11 +477,13 @@ impl CobaltFileSystemProxy {
         if let Some(fs) = &self.cobalt_file_system {
             let mut messages = IndexMap::new();
             for (k, v) in msbt {
-                let msbt_tokens = astra_formats::parse_astra_script_entry(&v)?;
+                let msbt_tokens = astra_formats::parse_astra_script_entry(v)?;
                 messages.insert(k.clone(), astra_formats::pack_msbt_entry(&msbt_tokens));
             }
-            let mut message_map = MessageMap::default();
-            message_map.messages = messages;
+            let mut message_map = MessageMap {
+                messages,
+                ..Default::default()
+            };
             fs.write(path, &message_map.rehash_and_serialize()?)?;
         } else {
             bail!("Expected Cobalt folder but the project does not support it")
@@ -546,10 +548,7 @@ impl CobaltFileSystemProxy {
         !path.starts_with("dispos")
             && !path
                 .file_stem()
-                .map(|stem| match stem.to_string_lossy().as_ref() {
-                    "reliance" | "terrain" => false,
-                    _ => true,
-                })
+                .map(|stem| !matches!(stem.to_string_lossy().as_ref(), "reliance" | "terrain"))
                 .unwrap_or_default()
     }
 }

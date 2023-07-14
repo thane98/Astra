@@ -107,7 +107,7 @@ where
     /// Perform a read operation on the sheet.
     pub fn read<V>(&self, consumer: impl FnOnce(&S) -> V) -> V {
         self.book
-            .read(|book| consumer(self.retriever.retrieve(&book)))
+            .read(|book| consumer(self.retriever.retrieve(book)))
     }
 
     /// Perform a write operation on the sheet.
@@ -215,12 +215,11 @@ impl ViewItem for AssetDef {
 
     fn text(&self, _: &Self::Dependencies) -> Cow<'_, str> {
         // TODO: Take EditorState instead and try to guess a friendly name
-        Cow::Borrowed(
-            self.preset_name
-                .is_empty()
-                .then_some("{unnamed}")
-                .unwrap_or_else(|| self.preset_name.as_str()),
-        )
+        Cow::Borrowed(if self.preset_name.is_empty() {
+            "{unnamed}"
+        } else {
+            self.preset_name.as_str()
+        })
     }
 }
 
@@ -568,7 +567,7 @@ impl ViewItem for Person {
             DecorationKind::Other(kind) if kind == "portrait" => dependencies
                 .texture_cache
                 .borrow_mut()
-                .get_facethumb(&self.name.trim_start_matches("MPID_"))
+                .get_facethumb(self.name.trim_start_matches("MPID_"))
                 .map(|texture| (texture, 1.)),
             _ => None,
         }
@@ -676,11 +675,7 @@ impl ViewItem for ShopInventory {
     }
 
     fn decorated(kind: DecorationKind<'_>) -> bool {
-        if matches!(kind, DecorationKind::List) {
-            true
-        } else {
-            false
-        }
+        matches!(kind, DecorationKind::List)
     }
 
     fn decoration(
@@ -785,10 +780,7 @@ impl ViewItem for Spawn {
     }
 
     fn decorated(kind: DecorationKind<'_>) -> bool {
-        match kind {
-            DecorationKind::Other(kind) if kind == "spawn_grid" => true,
-            _ => false,
-        }
+        matches!(kind, DecorationKind::Other(kind) if kind == "spawn_grid")
     }
 
     fn decoration(

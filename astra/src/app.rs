@@ -42,7 +42,7 @@ impl AstraApp {
     }
 }
 
-impl<'a> eframe::App for AstraApp {
+impl eframe::App for AstraApp {
     fn on_exit(&mut self, _gl: Option<&eframe::glow::Context>) {
         if let Err(err) = self.config.save() {
             println!("{:?}", err);

@@ -172,6 +172,39 @@ impl ChapterEditor {
     }
 
     pub fn show(&mut self, ctx: &egui::Context, state: &mut EditorState, config: &mut AppConfig) {
+        if self.selected_chapter_index.is_some() {
+            let confirm_delete_modal = Modal::new(ctx, "chapter_delete_confirm_modal");
+            confirm_delete_modal.show(|ui| {
+                confirm_delete_modal.title(ui, "Confirm Delete");
+                confirm_delete_modal.body_and_icon(
+                    ui,
+                    "Are you sure you want to delete this chapter?",
+                    Icon::Error,
+                );
+                confirm_delete_modal.buttons(ui, |ui| {
+                    confirm_delete_modal.button(ui, "Cancel");
+                    if confirm_delete_modal.caution_button(ui, "Confirm").clicked() {
+                        let index = self.selected_chapter_index.unwrap();
+                        self.chapter.write(|data| {
+                            if index < data.len() {
+                                data.shift_remove_index(index);
+                                if data.is_empty() {
+                                    self.selected_chapter_index = None;
+                                } else if index >= data.len() {
+                                    self.selected_chapter_index = Some(index - 1);
+                                }
+                                true
+                            } else {
+                                false
+                            }
+                        });
+                        self.chapter_state =
+                            OpenChapterState::load(state, self.selected_chapter_index);
+                    }
+                });
+            });
+        }
+
         if self.chapter_state.is_none() {
             CentralPanel::default().show(ctx, |ui| {
                 blank_slate(ui);
@@ -198,21 +231,8 @@ impl ChapterEditor {
                 )
                 .clicked()
             {
-                let index = self.selected_chapter_index.unwrap();
-                self.chapter.write(|data| {
-                    if index < data.len() {
-                        data.shift_remove_index(index);
-                        if data.is_empty() {
-                            self.selected_chapter_index = None;
-                        } else if index >= data.len() {
-                            self.selected_chapter_index = Some(index - 1);
-                        }
-                        true
-                    } else {
-                        false
-                    }
-                });
-                self.chapter_state = OpenChapterState::load(state, self.selected_chapter_index);
+                let modal = Modal::new(ui.ctx(), "chapter_delete_confirm_modal");
+                modal.open();
             }
             self.chapter.read(|data| {
                 if ui
@@ -370,7 +390,7 @@ impl ChapterEditor {
         }
         let script_name = script_name.unwrap();
         if ui
-            .add_enabled(can_open_script(&script_name, config), Button::new(label))
+            .add_enabled(can_open_script(script_name, config), Button::new(label))
             .clicked()
         {
             let result = astra.open_script(

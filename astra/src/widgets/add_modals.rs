@@ -244,7 +244,7 @@ where
                 ui.heading(group);
                 for (i, item) in items.iter_mut().enumerate() {
                     let selected =
-                        selection.as_ref().map(|(g, i)| (g.as_str(), *i)) == Some((&group, i));
+                        selection.as_ref().map(|(g, i)| (g.as_str(), *i)) == Some((group, i));
                     if ui
                         .selectable_label(selected, item.text(dependencies))
                         .clicked()
