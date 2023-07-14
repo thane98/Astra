@@ -6,6 +6,8 @@ use anyhow::{bail, Context, Result};
 use astra_formats::{Book, MessageMap, TextBundle};
 use indexmap::IndexMap;
 use normpath::PathExt;
+use quick_xml::events::Event;
+use quick_xml::{Reader, Writer};
 
 #[derive(Debug, Clone)]
 pub struct PathLocalizer {
@@ -447,7 +449,8 @@ impl CobaltFileSystemProxy {
         bundle: Option<&mut TextBundle>,
     ) -> Result<()> {
         let mut raw_book = vec![0xEF, 0xBB, 0xBF];
-        raw_book.extend(book.serialize()?.as_bytes());
+        let pretty_xml = prettify_xml(&book.serialize()?)?;
+        raw_book.extend(pretty_xml.as_bytes());
         if let Some(fs) = &self.cobalt_file_system {
             if Self::supports_cobalt_xml_patching(path.as_ref()) {
                 fs.write(Self::format_cobalt_xml_path(path), &raw_book)?;
@@ -548,7 +551,26 @@ impl CobaltFileSystemProxy {
         !path.starts_with("dispos")
             && !path
                 .file_stem()
-                .map(|stem| !matches!(stem.to_string_lossy().as_ref(), "reliance" | "terrain"))
+                .map(|stem| matches!(stem.to_string_lossy().as_ref(), "reliance" | "terrain"))
                 .unwrap_or_default()
     }
+}
+
+// Borrowed from Raytwo
+fn prettify_xml(xml: &str) -> Result<String> {
+    let mut reader = Reader::from_str(xml);
+    reader.trim_text(true);
+
+    let mut writer = Writer::new_with_indent(Vec::new(), b' ', 2);
+
+    loop {
+        match reader.read_event()? {
+            Event::Eof => break, // exits the loop when reaching end of file
+            event => {
+                writer.write_event(event).unwrap();
+            }
+        }
+    }
+
+    Ok(std::str::from_utf8(&writer.into_inner())?.to_string())
 }
