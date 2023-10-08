@@ -92,7 +92,7 @@ impl OpenMessageArchiveInner {
                 file_system.backup(&self.path, backup_root, true)?;
                 bundle.replace_entries(self.message_map.clone())?;
                 let raw_bundle = bundle.serialize()?;
-                // Clear out the data after building the bundle to avoid a memory leak.
+                // Clear out data after building the bundle to avoid a memory leak.
                 bundle.replace_entries(IndexMap::new())?;
                 file_system.write(&self.path, &raw_bundle, true)?;
             } else {

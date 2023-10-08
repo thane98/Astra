@@ -420,22 +420,32 @@ impl CobaltFileSystemProxy {
         if let Some(fs) = &self.cobalt_file_system {
             if fs.exists(self.cobalt_msbt_dir()) {
                 for path in fs.list_files(self.cobalt_msbt_dir(), "*")? {
-                    let raw = fs.read(&path)?;
-                    let mut message_map = MessageMap::from_slice(&raw).with_context(|| {
-                        format!("failed to read Cobalt MSBT at path {}", path.display())
-                    })?;
-                    // TODO: Push this into astra_formats
-                    let mut out = IndexMap::new();
-                    let raw = std::mem::take(&mut message_map.messages);
-                    for (k, v) in raw {
-                        out.insert(
-                            k,
-                            astra_formats::parse_msbt_entry(&v).with_context(|| {
-                                format!("failed to read Cobalt archive {}", path.display())
-                            })?,
-                        );
-                    }
-                    files.push((path, out))
+                    let extension = path
+                        .extension()
+                        .and_then(|ext| ext.to_str())
+                        .unwrap_or_default();
+                    let messages = if extension == "msbt" {
+                        // TODO: Push this into astra_formats
+                        let raw = fs.read(&path)?;
+                        let mut message_map = MessageMap::from_slice(&raw).with_context(|| {
+                            format!("failed to read Cobalt MSBT at path {}", path.display())
+                        })?;
+                        let mut out = IndexMap::new();
+                        for (k, v) in std::mem::take(&mut message_map.messages) {
+                            out.insert(
+                                k,
+                                astra_formats::parse_msbt_entry(&v).with_context(|| {
+                                    format!("failed to read Cobalt archive {}", path.display())
+                                })?,
+                            );
+                        }
+                        out
+                    } else {
+                        let raw = fs.read(&path)?;
+                        let script = String::from_utf8_lossy(&raw);
+                        astra_formats::convert_astra_script_to_entries(&script)?
+                    };
+                    files.push((path, messages))
                 }
             }
         }
@@ -478,16 +488,26 @@ impl CobaltFileSystemProxy {
         msbt: &IndexMap<String, String>,
     ) -> Result<()> {
         if let Some(fs) = &self.cobalt_file_system {
-            let mut messages = IndexMap::new();
-            for (k, v) in msbt {
-                let msbt_tokens = astra_formats::parse_astra_script_entry(v)?;
-                messages.insert(k.clone(), astra_formats::pack_msbt_entry(&msbt_tokens));
+            let extension = path
+                .as_ref()
+                .extension()
+                .and_then(|ext| ext.to_str())
+                .unwrap_or_default();
+            if extension == "msbt" {
+                let mut messages = IndexMap::new();
+                for (k, v) in msbt {
+                    let msbt_tokens = astra_formats::parse_astra_script_entry(v)?;
+                    messages.insert(k.clone(), astra_formats::pack_msbt_entry(&msbt_tokens));
+                }
+                let mut message_map = MessageMap {
+                    messages,
+                    ..Default::default()
+                };
+                fs.write(path, &message_map.rehash_and_serialize()?)?;
+            } else {
+                let script = astra_formats::convert_entries_to_astra_script(msbt)?;
+                fs.write(path, script.as_bytes())?;
             }
-            let mut message_map = MessageMap {
-                messages,
-                ..Default::default()
-            };
-            fs.write(path, &message_map.rehash_and_serialize()?)?;
         } else {
             bail!("Expected Cobalt folder but the project does not support it")
         }

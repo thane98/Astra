@@ -204,6 +204,9 @@ fn get_language_dirs(romfs_path: &str, region_dir: &str) -> Vec<String> {
 }
 
 fn get_cobalt_msbt_options(cobalt_path: &str, region_dir: &str, language_dir: &str) -> Vec<String> {
+    if region_dir.is_empty() || language_dir.is_empty() {
+        return vec![];
+    }
     let path = Path::new(cobalt_path)
         .join("msbt")
         .join("message")
@@ -214,7 +217,7 @@ fn get_cobalt_msbt_options(cobalt_path: &str, region_dir: &str, language_dir: &s
         .map(|entries| {
             let mut dirs = vec![];
             for entry in entries.flatten() {
-                if entry.path().is_dir() {
+                if entry.path().is_file() {
                     dirs.push(entry.file_name().to_string_lossy().to_string());
                 }
             }
