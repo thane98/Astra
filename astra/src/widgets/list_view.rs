@@ -14,6 +14,8 @@ where
     I: ViewItem<Dependencies = D>,
 {
     if let Some(text) = model.item(index).map(|item| item.text(dependencies)) {
+        let true_index = model.row_to_index(index).unwrap_or(0);
+        ui.label(format!("{}.", true_index + 1));
         if let Some((decoration, scale)) = model
             .item(index)
             .and_then(|item| item.decoration(dependencies, DecorationKind::List))
@@ -25,6 +27,7 @@ where
         ui.selectable_label(selected, text)
     } else {
         // Out of bounds - fill with empty space.
+        ui.label("");
         ui.label("");
         ui.label("")
     }
@@ -53,7 +56,7 @@ where
         |ui, range| {
             if I::decorated(DecorationKind::List) {
                 Grid::new(ui.auto_id_with("astra_list_view_grid"))
-                    .num_columns(2)
+                    .num_columns(3)
                     .show(ui, |ui| {
                         for index in range {
                             let response = list_item_ui(
@@ -73,19 +76,23 @@ where
             } else {
                 ui.vertical(|ui| {
                     for index in range {
-                        if ui
-                            .selectable_label(
-                                Some(index) == *selected_index,
-                                model
-                                    .item(index)
-                                    .map(|item| item.text(dependencies))
-                                    .unwrap_or_default(),
-                            )
-                            .clicked()
-                        {
-                            *selected_index = Some(index);
-                            changed = true;
-                        }
+                        ui.horizontal(|ui| {
+                            let true_index = model.row_to_index(index).unwrap_or(0);
+                            ui.label(format!("{}.", true_index + 1));
+                            if ui
+                                .selectable_label(
+                                    Some(index) == *selected_index,
+                                    model
+                                        .item(index)
+                                        .map(|item| item.text(dependencies))
+                                        .unwrap_or_default(),
+                                )
+                                .clicked()
+                            {
+                                *selected_index = Some(index);
+                                changed = true;
+                            }
+                        });
                     }
                 })
             }

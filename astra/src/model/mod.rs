@@ -82,6 +82,9 @@ pub trait ListModel<I> {
 
     /// Copy the contents of index `a` to index `b`.
     fn copy(&mut self, a: usize, b: usize);
+
+    /// Convert a row number to its index in the underlying collection.
+    fn row_to_index(&self, row_number: usize) -> Option<usize>;
 }
 
 impl<I> ListModel<I> for Vec<I>
@@ -126,6 +129,10 @@ where
         if a < self.len() && b < self.len() {
             self[b] = self[a].clone();
         }
+    }
+
+    fn row_to_index(&self, row_number: usize) -> Option<usize> {
+        (0..self.len()).contains(&row_number).then_some(row_number)
     }
 }
 
@@ -178,6 +185,10 @@ where
                 self.insert(key, a);
             }
         }
+    }
+
+    fn row_to_index(&self, row_number: usize) -> Option<usize> {
+        (0..self.len()).contains(&row_number).then_some(row_number)
     }
 }
 
@@ -274,9 +285,12 @@ impl FilterProxyBuilder {
                 let matches_filter = model
                     .item(i)
                     .map(|item| {
-                        item.text(dependencies)
+                        let matches_search_by_index = (i + 1).to_string() == self.filter_expr;
+                        let matches_search_by_name = item
+                            .text(dependencies)
                             .to_lowercase()
-                            .contains(&self.filter_expr.to_lowercase())
+                            .contains(&self.filter_expr.to_lowercase());
+                        matches_search_by_index || matches_search_by_name
                     })
                     .unwrap_or_default();
                 if matches_filter {
@@ -334,6 +348,12 @@ where
 
     fn copy(&mut self, _: usize, _: usize) {
         unimplemented!("modify the source model instead")
+    }
+
+    fn row_to_index(&self, row_number: usize) -> Option<usize> {
+        self.proxy_indices
+            .get(row_number)
+            .and_then(|index| self.model.row_to_index(*index))
     }
 }
 

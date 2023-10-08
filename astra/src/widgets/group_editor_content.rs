@@ -188,8 +188,7 @@ impl GroupEditorContent {
                         self.modal_command = Some(GroupModalCommand::Add);
                         modal.open();
                     }
-                    ui.add(TextEdit::singleline(&mut self.search).desired_width(f32::INFINITY))
-                        .changed();
+                    ui.add(TextEdit::singleline(&mut self.search).desired_width(f32::INFINITY));
                 });
 
                 let mut group_command = None;
@@ -201,7 +200,8 @@ impl GroupEditorContent {
                     .show(ui, |ui| {
                         model.read(|data| {
                             for (i, (group, items)) in data.iter().enumerate() {
-                                if !group.to_lowercase().contains(&search) {
+                                let name = <Group<I> as GroupViewItem>::text(group, dependencies);
+                                if !name.to_lowercase().contains(&search) {
                                     continue;
                                 }
                                 let id =
@@ -220,10 +220,7 @@ impl GroupEditorContent {
                                                 [0., 0.],
                                             ));
                                         }
-                                        ui.label(<Group<I> as GroupViewItem>::text(
-                                            group,
-                                            dependencies,
-                                        ));
+                                        ui.label(name);
                                         if group_command.is_none() {
                                             group_command =
                                                 self.group_command_menu(&modal, ui, group, i);
