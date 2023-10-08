@@ -569,7 +569,7 @@ impl ChapterEditor {
                                 self.dispos_difficulty,
                                 config.terrain_brightness,
                             );
-                            changed = result.changed;
+                            changed |= result.changed;
                             self.hovered_tile = result.hovered_tile;
                             self.hovered_spawn = result.hovered_spawn;
                         });
