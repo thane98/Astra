@@ -15,11 +15,12 @@ use astra_types::{
 };
 use egui::TextureHandle;
 use indexmap::IndexMap;
+use itertools::Itertools;
 use parking_lot::RwLock;
 
 use crate::{DecorationKind, KeyedViewItem, MessageDbWrapper, TextureCache, ViewItem};
 
-use super::GroupViewItem;
+use super::{AppConfig, GroupViewItem};
 
 pub struct EditorState {
     pub message_db: MessageDbWrapper,
@@ -211,15 +212,24 @@ impl KeyedViewItem for AnimSet {
 sheet_retriever!(AssetTable, AssetTableBook, asset_defs, Vec<AssetDef>);
 
 impl ViewItem for AssetDef {
-    type Dependencies = ();
+    type Dependencies = EditorState;
 
     fn text(&self, _: &Self::Dependencies) -> Cow<'_, str> {
-        // TODO: Take EditorState instead and try to guess a friendly name
-        Cow::Borrowed(if self.preset_name.is_empty() {
-            "{unnamed}"
+        let condition_text = self
+            .conditions
+            .iter()
+            .join(" and ");
+
+        if self.preset_name.is_empty() && condition_text.is_empty() {
+            Cow::Borrowed("{unnamed}")
+        } else if self.preset_name.is_empty() {
+            Cow::Owned(condition_text)
         } else {
-            self.preset_name.as_str()
-        })
+            Cow::Owned(format!(
+                "{}, ({})",
+                self.preset_name,condition_text
+            ))
+        }
     }
 }
 
@@ -449,7 +459,7 @@ impl ViewItem for Item {
             .get_item(&self.icon)
             .or_else(|| texture_cache.get_item("Vulnerary"))?;
         match kind {
-            DecorationKind::Other(kind) if kind == "portrait" => Some((decoration, 1.)),
+            DecorationKind::Other("portrait") => Some((decoration, 1.)),
             _ => Some((decoration, 0.5)),
         }
     }
@@ -500,7 +510,7 @@ impl ViewItem for Job {
             .or_else(|| texture_cache.get_unit("000Dummy", "000Dummy", "Dummy"))?;
         match kind {
             DecorationKind::List | DecorationKind::DropDown => Some((decoration, 1.)),
-            DecorationKind::Other(kind) if kind == "portrait" => Some((decoration, 2.)),
+            DecorationKind::Other("portrait") => Some((decoration, 2.)),
             _ => None,
         }
     }
@@ -564,7 +574,7 @@ impl ViewItem for Person {
                 });
                 decoration.map(|tex| (tex, 1.))
             }
-            DecorationKind::Other(kind) if kind == "portrait" => dependencies
+            DecorationKind::Other("portrait") => dependencies
                 .texture_cache
                 .borrow_mut()
                 .get_facethumb(self.name.trim_start_matches("MPID_"))
@@ -740,7 +750,7 @@ impl ViewItem for Skill {
             .get_skill(&self.icon_label)
             .or_else(|| texture_cache.get_skill("Empty"))?;
         match kind {
-            DecorationKind::Other(kind) if kind == "portrait" => Some((decoration, 1.)),
+            DecorationKind::Other("portrait") => Some((decoration, 1.)),
             _ => Some((decoration, 0.5)),
         }
     }
@@ -789,7 +799,7 @@ impl ViewItem for Spawn {
         kind: DecorationKind<'_>,
     ) -> Option<(TextureHandle, f32)> {
         match kind {
-            DecorationKind::Other(kind) if kind == "spawn_grid" => dependencies
+            DecorationKind::Other("spawn_grid") => dependencies
                 .person
                 .read(|data| {
                     data.get(&self.pid)

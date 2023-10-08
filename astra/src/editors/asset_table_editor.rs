@@ -20,7 +20,7 @@ impl AssetTableEditor {
     }
 
     pub fn show(&mut self, ctx: &egui::Context, state: &EditorState) {
-        self.content.side_panel(ctx, &self.asset_table, &());
+        self.content.side_panel(ctx, &self.asset_table, state);
 
         self.asset_table.write(|data| {
             self.content.content(ctx, data, |ui, assettable| {
