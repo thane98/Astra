@@ -297,7 +297,22 @@ impl SkillEditor {
                         ))
                     })
                     .new_section("Command")
-                    // TODO
+                    .field("Root SID", |ui, skill| {
+                        ui.add(model_drop_down(
+                            self.cache.get(),
+                            &(),
+                            &mut skill.root_command_sid,
+                        ))
+                    })
+                    .field("Name", |ui, skill| {
+                        msbt_key_value_singleline!(ui, state, "skill", skill.command_name)
+                    })
+                    .field("Help", |ui, skill| {
+                        msbt_key_value_multiline!(ui, state, "skill", skill.command_help)
+                    })
+                    .field("Warning", |ui, skill| {
+                        msbt_key_value_multiline!(ui, state, "skill", skill.command_warning)
+                    })
                     .new_section("Act")
                     .field("Names", |ui, skill| {
                         ui.add(editable_list(&mut skill.act_names, |_, value, ui| {
