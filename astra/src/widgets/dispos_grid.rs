@@ -107,6 +107,7 @@ impl<'a> SpawnDataMap<'a> {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn dispos_grid(
     ui: &mut Ui,
     terrain: &TerrainData,

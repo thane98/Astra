@@ -20,7 +20,7 @@ use parking_lot::RwLock;
 
 use crate::{DecorationKind, KeyedViewItem, MessageDbWrapper, TextureCache, ViewItem};
 
-use super::{AppConfig, GroupViewItem};
+use super::GroupViewItem;
 
 pub struct EditorState {
     pub message_db: MessageDbWrapper,

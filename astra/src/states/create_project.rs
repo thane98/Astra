@@ -117,6 +117,7 @@ pub fn project_creator(
                         }
                     });
                 ui.horizontal(|ui| {
+                    ui.label("Region");
                     ComboBox::from_id_source("region_dir_combbo")
                         .selected_text(&state.project.active_country_dir_name)
                         .show_ui(ui, |ui| {
@@ -132,6 +133,7 @@ pub fn project_creator(
                                 }
                             }
                         });
+                    ui.label("Language");
                     ComboBox::from_id_source("language_dir_combbo")
                         .selected_text(&state.project.active_language_dir_name)
                         .show_ui(ui, |ui| {

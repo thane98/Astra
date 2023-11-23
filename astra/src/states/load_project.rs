@@ -29,8 +29,8 @@ pub fn project_loader(
     ctx: &egui::Context,
 ) {
     if let (Some(receiver), None) = (&mut state.receiver, &state.error) {
-        match receiver.try_recv() {
-            Ok(load_result) => match load_result {
+        if let Ok(load_result) = receiver.try_recv() {
+            match load_result {
                 Ok(data) => {
                     *next_state = Some(AppState::Main(MainState::new(
                         data.astra,
@@ -41,8 +41,7 @@ pub fn project_loader(
                 Err(err) => {
                     state.error = Some(format!("{:?}", err));
                 }
-            },
-            _ => {}
+            }
         }
     } else if state.error.is_none() {
         let project = config.get_active_project().unwrap(); // TODO

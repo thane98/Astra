@@ -36,8 +36,8 @@ impl SaveScreen {
 
     pub fn ui(&mut self, screen: &mut Screens, ctx: &egui::Context, toasts: &mut Toasts) {
         if let (Some(rx), None) = (&mut self.rx, &self.error) {
-            match rx.try_recv() {
-                Ok(result) => match result {
+            if let Ok(result) = rx.try_recv() {
+                match result {
                     Ok(_) => {
                         self.rx = None;
                         self.error = None;
@@ -49,8 +49,7 @@ impl SaveScreen {
                     Err(err) => {
                         self.error = Some(format!("{:?}", err));
                     }
-                },
-                _ => {}
+                }
             }
         } else if self.error.is_none() {
             let astra = self.astra.clone();
