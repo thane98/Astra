@@ -395,9 +395,9 @@ impl CobaltFileSystemProxy {
         })
     }
 
-    pub fn read_book<P: AsRef<Path>>(&self, path: P) -> Result<(Book, Option<TextBundle>)> {
+    pub fn read_book<P: AsRef<Path>>(&self, path: P, xml_name: Option<&str>) -> Result<(Book, Option<TextBundle>)> {
         if let Some(fs) = &self.cobalt_file_system {
-            let path_in_cobalt = Self::format_cobalt_xml_path(&path);
+            let path_in_cobalt = Self::format_cobalt_xml_path(&path, xml_name);
             if Self::supports_cobalt_xml_patching(path.as_ref()) && fs.exists(&path_in_cobalt) {
                 return fs
                     .read(path_in_cobalt)
@@ -457,13 +457,14 @@ impl CobaltFileSystemProxy {
         path: P,
         book: &Book,
         bundle: Option<&mut TextBundle>,
+        xml_name: Option<&str>,
     ) -> Result<()> {
         let mut raw_book = vec![0xEF, 0xBB, 0xBF];
         let pretty_xml = prettify_xml(&book.serialize()?)?;
         raw_book.extend(pretty_xml.as_bytes());
         if let Some(fs) = &self.cobalt_file_system {
             if Self::supports_cobalt_xml_patching(path.as_ref()) {
-                fs.write(Self::format_cobalt_xml_path(path), &raw_book)?;
+                fs.write(Self::format_cobalt_xml_path(path, xml_name), &raw_book)?;
                 return Ok(());
             }
         }
@@ -519,9 +520,10 @@ impl CobaltFileSystemProxy {
         path: T,
         backup_root: U,
         use_cobalt_path: bool,
+        xml_name: Option<&str>,
     ) -> Result<()> {
         if use_cobalt_path && Self::supports_cobalt_xml_patching(path.as_ref()) {
-            let path = Self::format_cobalt_xml_path(path);
+            let path = Self::format_cobalt_xml_path(path, xml_name);
             if let Some(fs) = &self.cobalt_file_system {
                 fs.backup(path, backup_root)?;
             } else {
@@ -556,9 +558,11 @@ impl CobaltFileSystemProxy {
             .join(&self.path_localizer.language_dir)
     }
 
-    fn format_cobalt_xml_path<P: AsRef<Path>>(path: P) -> PathBuf {
+    fn format_cobalt_xml_path<P: AsRef<Path>>(path: P, xml_name: Option<&str>) -> PathBuf {
         let path = Path::new("xml").join(path);
-        if let Some(file_name) = path.file_name() {
+        if let Some(xml_name) = xml_name {
+            path.with_file_name(xml_name).with_extension("xml")
+        } else if let Some(file_name) = path.file_name() {
             let mut file_name = file_name.to_string_lossy().into_owned();
             let capitalized = format!("{}{file_name}", file_name.remove(0).to_uppercase());
             path.with_file_name(capitalized).with_extension("xml")
@@ -581,13 +585,13 @@ fn prettify_xml(xml: &str) -> Result<String> {
     let mut reader = Reader::from_str(xml);
     reader.trim_text(true);
 
-    let mut writer = Writer::new_with_indent(Vec::new(), b' ', 2);
+    let mut writer = Writer::new_with_indent(Vec::new(), b'\t', 1);
 
     loop {
         match reader.read_event()? {
             Event::Eof => break, // exits the loop when reaching end of file
             event => {
-                writer.write_event(event).unwrap();
+                writer.write_event(event)?;
             }
         }
     }
