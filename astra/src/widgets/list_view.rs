@@ -1,4 +1,4 @@
-use egui::{Grid, Response, ScrollArea, Ui, Widget};
+use egui::{Grid, Response, ScrollArea, Ui, Widget, Image};
 
 use crate::{DecorationKind, ListModel, ViewItem};
 
@@ -20,7 +20,7 @@ where
             .item(index)
             .and_then(|item| item.decoration(dependencies, DecorationKind::List))
         {
-            ui.image(decoration.id(), decoration.size_vec2() * scale);
+            ui.add(Image::new(&decoration).max_size(decoration.size_vec2() * scale));
         } else {
             ui.label("");
         }

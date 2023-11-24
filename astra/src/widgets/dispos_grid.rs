@@ -165,7 +165,7 @@ pub fn dispos_grid(
                                 let response = ui.add_sized([48., 48.], button);
                                 if let Some((sprite, _)) = sprite {
                                     ui.allocate_ui_at_rect(response.rect, |ui| {
-                                        ui.image(&sprite, sprite.size_vec2());
+                                        ui.image(&sprite);
                                     });
                                 }
                                 if response.hovered() {

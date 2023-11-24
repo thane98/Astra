@@ -17,19 +17,19 @@ astra-core = { path = "../astra-core" }
 astra-types = { path = "../astra-types" }
 astra_formats = { path = "../astra-formats" }
 
-eframe = { version = "0.22.0", default-features = false, features = [
+eframe = { version = "0.23.0", default-features = false, features = [
     "accesskit",
     "default_fonts",
     "glow",
 ] }
 directories = "4.0.1"
 rfd = "0.10.0"
-egui_extras = { version = "0.22.0", features = ["image"] }
-egui_grid = { git = "https://github.com/thane98/egui-grid" }
-egui-modal = "0.2.4"
-egui_dock = "0.6.2"
+egui_extras = { version = "0.23.0", features = ["image"] }
+egui_grid = { git = "https://github.com/mythitorium/egui-grid", rev = "7cd1fdc" }
+egui-modal = "0.2.5"
 paste = "1.0.12"
-egui-notify = "0.7.0"
+egui-notify = "0.10.0"
+egui-dropdown = "0.4.0"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 tracing-subscriber = "0.3"

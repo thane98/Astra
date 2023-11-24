@@ -34,7 +34,7 @@ pub fn optional_image(
         if let Some((image, scale)) = content {
             ui.add_sized(
                 placeholder_size,
-                Image::new(&image, image.size_vec2() * scale),
+                Image::from_texture(&image).max_size(image.size_vec2() * scale),
             )
         } else {
             ui.add_sized(placeholder_size, Label::new(""))

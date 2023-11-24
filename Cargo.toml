@@ -18,8 +18,8 @@ image = "0.24.5"
 parking_lot = "0.12.1"
 serde_yaml = "0.8.26"
 
-egui = "0.22.0"
-catppuccin-egui = "3.0.0"
+egui = "0.23.0"
+catppuccin-egui = { git = "https://github.com/catppuccin/egui", rev = "f2bcf74" }
 
 syn = "2.0.13"
 darling = "0.20.1"

@@ -1,4 +1,4 @@
-use egui::{ComboBox, Grid, Response, Ui, Widget};
+use egui::{AboveOrBelow, Grid, Image, Response, ScrollArea, Ui, Widget, Sense};
 
 use crate::{DecorationKind, KeyedListModel, KeyedViewItem, ListModel, ViewItem};
 
@@ -42,7 +42,7 @@ where
             .item(index)
             .and_then(|item| item.decoration(dependencies, DecorationKind::DropDown))
         {
-            ui.image(decoration.id(), decoration.size_vec2() * scale);
+            ui.add(Image::new(&decoration).max_size(decoration.size_vec2() * scale));
         } else {
             ui.label("");
         }
@@ -71,6 +71,124 @@ impl<'a> ModelDropDown<'a> {
         self
     }
 
+    fn show_impl<M, I, D>(
+        ui: &mut Ui,
+        model: &M,
+        dependencies: &D,
+        selected_index: Option<usize>,
+    ) -> (Response, Option<usize>)
+    where
+        M: ListModel<I>,
+        I: ViewItem<Dependencies = D>,
+    {
+        let id = ui.auto_id_with("model_combo_box");
+        let prev_index_id = ui.auto_id_with("model_combo_box_prev_index");
+        let mut selection = None;
+
+        let display_text = selected_index
+            .and_then(|index| model.item(index))
+            .map(|item| item.text(dependencies))
+            .unwrap_or_default();
+
+        let prev_index = ui.memory_mut(|mem| {
+            *mem.data
+                .get_persisted_mut_or_default::<Option<usize>>(prev_index_id)
+        });
+        ui.memory_mut(|mem| mem.data.insert_persisted(prev_index_id, selected_index));
+
+        let mut search = ui.memory_mut(|mem| {
+            mem.data
+                .get_persisted_mut_or_insert_with::<String>(id, || display_text.to_string())
+                .to_owned()
+        });
+
+        let text_edit_response = ui.text_edit_singleline(&mut search);
+        if text_edit_response.gained_focus() {
+            ui.memory_mut(|mem| {
+                mem.data.insert_persisted(id, String::new());
+                mem.open_popup(id);
+            })
+        } else if text_edit_response.lost_focus() || prev_index != selected_index {
+            ui.memory_mut(|mem| {
+                mem.data.insert_persisted(id, display_text.to_string());
+            });
+        }
+
+        // Copied from egui's ComboBox implementation.
+        let above_or_below = if ui.next_widget_position().y + ui.spacing().interact_size.y + 200.0
+            < ui.ctx().screen_rect().bottom()
+        {
+            AboveOrBelow::Below
+        } else {
+            AboveOrBelow::Above
+        };
+        
+        egui::popup_above_or_below_widget(ui, id, &text_edit_response, above_or_below, |ui| {
+            ScrollArea::vertical().max_height(200.).show(ui, |ui| {
+                if I::decorated(DecorationKind::DropDown) {
+                    Grid::new(ui.auto_id_with("__model_combo_box_grid"))
+                        .num_columns(2)
+                        .show(ui, |ui| {
+                            for i in 0..model.len() {
+                                let text = model
+                                    .item(i)
+                                    .map(|item| item.text(dependencies))
+                                    .unwrap_or_default();
+                                if search.is_empty() || text.contains(&search) {
+                                    let response = drop_down_item_ui(
+                                        ui,
+                                        model,
+                                        dependencies,
+                                        i,
+                                        Some(i) == selected_index,
+                                    );
+                                    ui.end_row();
+                                    if response.clicked() {
+                                        selection = Some(i);
+                                    }
+                                }
+                            }
+                        });
+                } else {
+                    for i in 0..model.len() {
+                        let text = model
+                            .item(i)
+                            .map(|item| item.text(dependencies))
+                            .unwrap_or_default();
+                        if search.is_empty() || text.contains(&search) {
+                            ui.vertical(|ui| {
+                                if ui
+                                    .selectable_label(
+                                        Some(i) == selected_index,
+                                        model
+                                            .item(i)
+                                            .map(|i| i.text(dependencies))
+                                            .unwrap_or("{empty}".into()),
+                                    )
+                                    .clicked()
+                                {
+                                    selection = Some(i);
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+        });
+
+        if text_edit_response.changed() {
+            ui.memory_mut(|mem| {
+                mem.data.insert_persisted(id, search);
+            });
+        }
+
+        let mut response = ui.interact(text_edit_response.rect, id, Sense::focusable_noninteractive());
+        if selection.is_some() {
+            response.mark_changed();
+        }
+        (response, selection)
+    }
+
     pub fn show<M, I, D>(
         self,
         ui: &mut Ui,
@@ -82,68 +200,19 @@ impl<'a> ModelDropDown<'a> {
         M: KeyedListModel<I>,
         I: KeyedViewItem<Dependencies = D>,
     {
-        let mut changed = false;
-        let id = ui.auto_id_with("model_combo_box");
         let index = match self.key_transform {
             Some(transform) => model.index_of(&transform(key)),
             None => model.index_of(key),
         };
-        let inner_response = ComboBox::from_id_source(id)
-            .selected_text(
-                index
-                    .and_then(|index| model.item(index))
-                    .map(|item| item.text(dependencies))
-                    .unwrap_or_default(),
-            )
-            .width(ui.spacing().text_edit_width)
-            .show_ui(ui, |ui| {
-                if I::decorated(DecorationKind::DropDown) {
-                    Grid::new(ui.auto_id_with("__model_combo_box_grid"))
-                        .num_columns(2)
-                        .show(ui, |ui| {
-                            for i in 0..model.len() {
-                                let response =
-                                    drop_down_item_ui(ui, model, dependencies, i, Some(i) == index);
-                                ui.end_row();
-                                if response.clicked() {
-                                    if let Some(new_key) = model.item(i).map(|item| item.key()) {
-                                        *key = match self.key_reverse_transform {
-                                            Some(transform) => transform(&new_key),
-                                            None => new_key.to_string(),
-                                        };
-                                        changed = true;
-                                    }
-                                }
-                            }
-                        });
-                } else {
-                    for i in 0..model.len() {
-                        ui.vertical(|ui| {
-                            if ui
-                                .selectable_label(
-                                    Some(i) == index,
-                                    model
-                                        .item(i)
-                                        .map(|i| i.text(dependencies))
-                                        .unwrap_or("{empty}".into()),
-                                )
-                                .clicked()
-                            {
-                                if let Some(new_key) = model.item(i).map(|item| item.key()) {
-                                    *key = match self.key_reverse_transform {
-                                        Some(transform) => transform(&new_key),
-                                        None => new_key.to_string(),
-                                    };
-                                    changed = true;
-                                }
-                            }
-                        });
-                    }
-                }
-            });
-        let mut response = inner_response.response;
-        if changed {
-            response.mark_changed();
+
+        let (response, selection) = Self::show_impl(ui, model, dependencies, index);
+        if let Some(i) = selection {
+            if let Some(new_key) = model.item(i).map(|item| item.key()) {
+                *key = match self.key_reverse_transform {
+                    Some(transform) => transform(&new_key),
+                    None => new_key.to_string(),
+                };
+            }
         }
         response
     }
@@ -159,54 +228,9 @@ impl<'a> ModelDropDown<'a> {
         M: ListModel<I>,
         I: ViewItem<Dependencies = D>,
     {
-        let mut changed = false;
-        let id = ui.auto_id_with("model_combo_box");
-        let inner_response = ComboBox::from_id_source(id)
-            .selected_text(
-                index
-                    .and_then(|index| model.item(index))
-                    .map(|item| item.text(dependencies))
-                    .unwrap_or_default(),
-            )
-            .width(ui.spacing().text_edit_width)
-            .show_ui(ui, |ui| {
-                if I::decorated(DecorationKind::DropDown) {
-                    Grid::new(ui.auto_id_with("__model_combo_box_grid"))
-                        .num_columns(2)
-                        .show(ui, |ui| {
-                            for i in 0..model.len() {
-                                let response = drop_down_item_ui(
-                                    ui,
-                                    model,
-                                    dependencies,
-                                    i,
-                                    Some(i) == *index,
-                                );
-                                ui.end_row();
-                                if response.clicked() {
-                                    *index = Some(i);
-                                    changed = true;
-                                }
-                            }
-                        });
-                } else {
-                    for i in 0..model.len() {
-                        changed |= ui
-                            .selectable_value(
-                                index,
-                                Some(i),
-                                model
-                                    .item(i)
-                                    .map(|i| i.text(dependencies))
-                                    .unwrap_or("{empty}".into()),
-                            )
-                            .changed();
-                    }
-                }
-            });
-        let mut response = inner_response.response;
-        if changed {
-            response.mark_changed();
+        let (response, selection) = Self::show_impl(ui, model, dependencies, *index);
+        if let Some(i) = selection {
+            *index = Some(i);
         }
         response
     }
