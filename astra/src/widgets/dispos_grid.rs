@@ -8,7 +8,8 @@ use indexmap::IndexMap;
 use itertools::Itertools;
 
 use crate::editors::Difficulty;
-use crate::{CoordinateKind, DecorationKind, EditorState, ViewItem};
+use crate::util::get_tile_color;
+use crate::{AppConfig, CoordinateKind, DecorationKind, EditorState, ViewItem};
 
 struct SpawnData<'a> {
     group: &'a str,
@@ -116,7 +117,7 @@ pub fn dispos_grid(
     selected_spawn: &mut Option<(String, usize)>,
     coordinate_kind: CoordinateKind,
     difficulty: Difficulty,
-    brightness: f32,
+    config: &AppConfig,
 ) -> DisposGridResult {
     let selected_spawn_position = selected_spawn
         .as_ref()
@@ -144,14 +145,7 @@ pub fn dispos_grid(
                                 .map(|tile| {
                                     (
                                         tile.text(state),
-                                        Color32::from_rgb(
-                                            (tile.color_r.unwrap_or_default() as f32 * brightness)
-                                                as u8,
-                                            (tile.color_g.unwrap_or_default() as f32 * brightness)
-                                                as u8,
-                                            (tile.color_b.unwrap_or_default() as f32 * brightness)
-                                                as u8,
-                                        ),
+                                        get_tile_color(tile, config),
                                     )
                                 })
                                 .unwrap_or_else(|| (Cow::Borrowed("???"), Color32::from_gray(0)));

@@ -8,6 +8,7 @@ mod model;
 mod states;
 mod texture_cache;
 mod widgets;
+mod util;
 
 use astra_core::image;
 use editors::*;

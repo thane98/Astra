@@ -30,7 +30,6 @@ pub use message_system::{OpenMessageArchive, OpenMessageScript};
 use script_system::ScriptSystem;
 pub use terrain_system::OpenTerrain;
 use terrain_system::TerrainSystem;
-use tracing::info;
 
 #[derive(Debug)]
 pub struct AstraProject {
@@ -54,7 +53,6 @@ pub struct Astra {
 
 impl Astra {
     pub fn load(project: AstraProject) -> Result<Self> {
-        info!("Loading {:?}", project);
         let file_system = Arc::new(LocalizedFileSystem::new(
             LayeredFileSystem::new(vec![
                 FileSystemLayer::directory(project.output_dir)?,

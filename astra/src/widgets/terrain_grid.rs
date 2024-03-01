@@ -4,7 +4,8 @@ use astra_formats::{TerrainData, UString};
 use egui::{Button, Color32, Grid, ScrollArea, Ui, Vec2};
 
 use crate::model::ViewItem;
-use crate::{EditorState, ListModel};
+use crate::util::get_tile_color;
+use crate::{AppConfig, EditorState, ListModel};
 
 pub struct TerrainGridResult {
     pub changed: bool,
@@ -16,7 +17,7 @@ pub fn terrain_grid(
     terrain: &mut TerrainData,
     selected_tile_index: Option<usize>,
     state: &EditorState,
-    brightness: f32,
+    config: &AppConfig,
 ) -> TerrainGridResult {
     let mut changed = None;
     let mut hovered_tile = None;
@@ -36,14 +37,7 @@ pub fn terrain_grid(
                                 .map(|tile| {
                                     (
                                         tile.text(state),
-                                        Color32::from_rgb(
-                                            (tile.color_r.unwrap_or_default() as f32 * brightness)
-                                                as u8,
-                                            (tile.color_g.unwrap_or_default() as f32 * brightness)
-                                                as u8,
-                                            (tile.color_b.unwrap_or_default() as f32 * brightness)
-                                                as u8,
-                                        ),
+                                        get_tile_color(tile, config),
                                     )
                                 })
                                 .unwrap_or_else(|| (Cow::Borrowed("???"), Color32::from_gray(0)));

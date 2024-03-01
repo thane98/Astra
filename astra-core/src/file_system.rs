@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use anyhow::{bail, Context, Result};
-use astra_formats::{Book, MessageMap, TextBundle};
+use astra_formats::{Book, TextBundle};
 use indexmap::IndexMap;
 use normpath::PathExt;
 use quick_xml::events::Event;
@@ -536,7 +536,10 @@ impl CobaltFileSystemProxy {
         if let Some(cobalt) = &self.cobalt_file_system {
             let path_in_cobalt = Self::format_cobalt_xml_path(&path, Some(xml_name));
             if cobalt.exists(&path_in_cobalt) {
-                info!("Loading book from Cobalt folder at {}", path_in_cobalt.display());
+                info!(
+                    "Loading book from Cobalt folder at {}",
+                    path_in_cobalt.display()
+                );
                 return cobalt
                     .read(&path_in_cobalt)
                     .and_then(|raw| Book::from_string(&String::from_utf8_lossy(&raw)))
@@ -640,35 +643,11 @@ impl CobaltFileSystemProxy {
         let mut files = vec![];
         if let Some(fs) = &self.cobalt_file_system {
             if fs.exists(self.cobalt_msbt_dir()) {
-                for path in fs.list_files(self.cobalt_msbt_dir(), "*")? {
+                for path in fs.list_files(self.cobalt_msbt_dir(), "*.txt")? {
                     info!("Loading Cobalt MSBT from path {}", path.display());
-                    let extension = path
-                        .extension()
-                        .and_then(|ext| ext.to_str())
-                        .unwrap_or_default();
-                    let messages = if extension == "msbt" {
-                        info!("Loading as serialized MSBT");
-                        // TODO: Push this into astra_formats
-                        let raw = fs.read(&path)?;
-                        let mut message_map = MessageMap::from_slice(&raw).with_context(|| {
-                            format!("failed to read Cobalt MSBT at path {}", path.display())
-                        })?;
-                        let mut out = IndexMap::new();
-                        for (k, v) in std::mem::take(&mut message_map.messages) {
-                            out.insert(
-                                k,
-                                astra_formats::parse_msbt_entry(&v).with_context(|| {
-                                    format!("failed to read Cobalt archive {}", path.display())
-                                })?,
-                            );
-                        }
-                        out
-                    } else {
-                        info!("Loading MSBT as plain text");
-                        let raw = fs.read(&path)?;
-                        let script = String::from_utf8_lossy(&raw);
-                        astra_formats::convert_astra_script_to_entries(&script)?
-                    };
+                    let raw = fs.read(&path)?;
+                    let script = String::from_utf8_lossy(&raw);
+                    let messages = astra_formats::convert_astra_script_to_entries(&script)?;
                     files.push((path, messages))
                 }
             }
@@ -682,26 +661,10 @@ impl CobaltFileSystemProxy {
         msbt: &IndexMap<String, String>,
     ) -> Result<()> {
         if let Some(fs) = &self.cobalt_file_system {
-            let extension = path
-                .as_ref()
-                .extension()
-                .and_then(|ext| ext.to_str())
-                .unwrap_or_default();
-            if extension == "msbt" {
-                let mut messages = IndexMap::new();
-                for (k, v) in msbt {
-                    let msbt_tokens = astra_formats::parse_astra_script_entry(v)?;
-                    messages.insert(k.clone(), astra_formats::pack_msbt_entry(&msbt_tokens));
-                }
-                let mut message_map = MessageMap {
-                    messages,
-                    ..Default::default()
-                };
-                fs.write(path, &message_map.rehash_and_serialize()?)?;
-            } else {
-                let script = astra_formats::convert_entries_to_astra_script(msbt)?;
-                fs.write(path, script.as_bytes())?;
-            }
+            let p: &Path = path.as_ref();
+            info!("Saving MSBT to Cobalt folder at {}", p.display());
+            let script = astra_formats::convert_entries_to_astra_script(msbt)?;
+            fs.write(p, script.as_bytes())?;
         } else {
             bail!("Expected Cobalt folder but the project does not support it")
         }

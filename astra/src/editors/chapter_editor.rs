@@ -567,7 +567,7 @@ impl ChapterEditor {
                                 self.dispos_content.selection_mut(),
                                 self.coordinate_kind,
                                 self.dispos_difficulty,
-                                config.terrain_brightness,
+                                config,
                             );
                             changed |= result.changed;
                             self.hovered_tile = result.hovered_tile;
@@ -764,7 +764,7 @@ impl ChapterEditor {
                         terrain_data,
                         self.terrain_content.selection(),
                         state,
-                        config.terrain_brightness,
+                        config,
                     );
                     self.hovered_tile = result.hovered_tile;
                     result.changed

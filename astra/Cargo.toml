@@ -12,6 +12,7 @@ itertools = { workspace = true }
 serde_yaml = { workspace = true }
 egui = { workspace = true }
 catppuccin-egui = { workspace = true }
+maplit = { workspace = true }
 
 astra-core = { path = "../astra-core" }
 astra-types = { path = "../astra-types" }

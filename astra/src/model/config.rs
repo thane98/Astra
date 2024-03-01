@@ -1,14 +1,34 @@
+use std::collections::HashMap;
 use std::path::PathBuf;
 
 use anyhow::{bail, Result};
 use astra_core::{AstraProject, PathLocalizer};
 use directories::ProjectDirs;
+use egui::Color32;
+use maplit::hashmap;
 use serde::{Deserialize, Serialize};
 
 use crate::Theme;
 
 fn default_terrain_brightness() -> f32 {
-    0.5
+    0.7
+}
+
+fn default_tile_color_overrides() -> HashMap<String, Color32> {
+    hashmap! {
+        "TID_大柱".into() => Color32::from_rgb(128, 128, 0),
+        "TID_階段".into() => Color32::from_rgb(160, 160, 160),
+        "TID_壁".into() => Color32::from_rgb(128, 128, 0),
+        "TID_柱".into() => Color32::from_rgb(128, 128, 128),
+        "TID_大柱".into() => Color32::from_rgb(128, 128, 128),
+        "TID_崩れた床".into() => Color32::from_rgb(128, 128, 0),
+        "TID_進入不可".into() => Color32::BLACK,
+        "TID_林".into() => Color32::from_rgb(32, 100, 32),
+        "TID_橋".into() => Color32::BROWN,
+        "TID_海".into() => Color32::BLUE,
+        "TID_海_全戦禁".into() => Color32::BLUE,
+        "TID_海_影無".into() => Color32::BLUE,
+    }
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -24,6 +44,8 @@ pub struct AppConfig {
     pub script_editor_command_args: String,
     #[serde(default = "default_terrain_brightness")]
     pub terrain_brightness: f32,
+    #[serde(default = "default_tile_color_overrides")]
+    pub tile_color_overrides: HashMap<String, Color32>,
 }
 
 impl AppConfig {
