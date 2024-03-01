@@ -48,6 +48,10 @@ where
         }
     }
 
+    pub fn select(&mut self, index: Option<usize>) {
+        self.selection = index;
+    }
+
     pub fn selection(&self) -> Option<usize> {
         self.selection
     }

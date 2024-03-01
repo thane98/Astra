@@ -4,21 +4,21 @@ use std::process::Command;
 use std::sync::Arc;
 
 use anyhow::Result;
-use astra_formats::TextBundle;
 use parking_lot::Mutex;
+use tracing::info;
 
-use crate::LocalizedFileSystem;
+use crate::{BundlePersistFormat, CobaltFileSystemProxy};
 
 pub struct ScriptSystem {
-    file_system: Arc<LocalizedFileSystem>,
+    file_system: Arc<CobaltFileSystemProxy>,
     opened_scripts: HashMap<String, OpenScript>,
 }
 
 impl ScriptSystem {
-    pub fn new(file_system: Arc<LocalizedFileSystem>) -> Self {
+    pub fn new(file_system: Arc<CobaltFileSystemProxy>) -> Self {
         Self {
             file_system,
-            opened_scripts: HashMap::new(),
+            opened_scripts: Default::default(),
         }
     }
 
@@ -28,12 +28,11 @@ impl ScriptSystem {
         editor_program: &str,
         editor_args: &str,
     ) -> Result<()> {
-        let root = self.file_system.root();
         let script_path = if let Some(script) = self.opened_scripts.get(script_name) {
-            root.join(&script.script_path)
+            script.absolute_script_path.clone()
         } else {
             let script = OpenScript::load(&self.file_system, script_name)?;
-            let path = root.join(&script.script_path);
+            let path = script.absolute_script_path.clone();
             self.opened_scripts.insert(script_name.to_string(), script);
             path
         };
@@ -62,41 +61,31 @@ impl ScriptSystem {
     }
 }
 
-struct OpenScript {
-    bundle_path: PathBuf,
-    script_path: PathBuf,
-    bundle: Mutex<TextBundle>,
+pub struct OpenScript {
+    absolute_script_path: PathBuf,
+    persist_format: Mutex<BundlePersistFormat>,
 }
 
 impl OpenScript {
-    pub fn load(file_system: &LocalizedFileSystem, script_name: &str) -> Result<Self> {
-        let base_path = Path::new(r"StreamingAssets\aa\Switch\fe_assets_scripts").join(script_name);
+    pub fn load(file_system: &CobaltFileSystemProxy, script_file_name: &str) -> Result<Self> {
+        info!("Loading script {}", script_file_name);
 
-        // Load the bundle.
-        let bundle_path = base_path.with_extension("txt.bundle");
-        let raw_bundle = file_system.read(&bundle_path, false)?;
-        let mut bundle = TextBundle::from_slice(&raw_bundle)?;
+        let (absolute_script_path, persist_format) = file_system.read_script(script_file_name)?;
 
-        // Extract the script. If it doesn't exist on disk, save it.
-        // Otherwise, dropping it saves some memory since we have to hold the bundle.
-        let script_contents = bundle.take_raw()?;
-        let script_path = base_path.with_extension("lua");
-        if !file_system.exists(&script_path, false)? {
-            file_system.write(&script_path, &script_contents, false)?;
-        }
+        info!("Loaded script {:?}", persist_format);
 
         Ok(Self {
-            bundle_path,
-            script_path,
-            bundle: Mutex::new(bundle),
+            absolute_script_path,
+            persist_format: Mutex::new(persist_format),
         })
     }
 
-    pub fn save(&self, file_system: &LocalizedFileSystem, backup_root: &Path) -> Result<()> {
-        file_system.backup(&self.script_path, backup_root, false)?;
-        let script = file_system.read(&self.script_path, false)?;
-        let mut bundle = self.bundle.lock();
-        bundle.replace_raw(script)?;
-        file_system.write(&self.bundle_path, &bundle.serialize()?, false)
+    pub fn save(&self, file_system: &CobaltFileSystemProxy, backup_root: &Path) -> Result<()> {
+        info!("Saving script {:?}", self.persist_format);
+        file_system.save_script(
+            &self.absolute_script_path,
+            &mut self.persist_format.lock(),
+            backup_root,
+        )
     }
 }

@@ -1,4 +1,5 @@
 use std::collections::{BTreeSet, HashSet};
+use std::fmt::Debug;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
@@ -8,6 +9,9 @@ use indexmap::IndexMap;
 use normpath::PathExt;
 use quick_xml::events::Event;
 use quick_xml::{Reader, Writer};
+use tracing::info;
+
+use crate::OpenBook;
 
 #[derive(Debug, Clone)]
 pub struct PathLocalizer {
@@ -252,6 +256,13 @@ impl LayeredFileSystem {
         let backup_root = backup_root.as_ref();
         for layer in &self.layers {
             if layer.exists(path) {
+                let p: &Path = path;
+                let b: &Path = backup_root;
+                info!(
+                    "Backuping up file {} to folder {}",
+                    p.display(),
+                    b.display()
+                );
                 return layer.backup(path, backup_root);
             }
         }
@@ -370,6 +381,28 @@ impl LocalizedFileSystem {
     }
 }
 
+pub enum BundlePersistFormat {
+    Cobalt {
+        path: PathBuf,
+    },
+    Vanilla {
+        bundle_path: PathBuf,
+        bundle: TextBundle,
+    },
+}
+
+impl Debug for BundlePersistFormat {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Cobalt { path } => f.debug_struct("Cobalt").field("path", path).finish(),
+            Self::Vanilla { bundle_path, .. } => f
+                .debug_struct("Vanilla")
+                .field("bundle_path", bundle_path)
+                .finish(),
+        }
+    }
+}
+
 /// Support for [Cobalt](https://github.com/Raytwo/Cobalt) files.
 /// Writes Cobalt patch files where supported and regular bundles otherwise.
 // TODO: Refactor the file_system setup so this doesn't have to be a special case.
@@ -395,24 +428,212 @@ impl CobaltFileSystemProxy {
         })
     }
 
-    pub fn read_book<P: AsRef<Path>>(&self, path: P, xml_name: Option<&str>) -> Result<(Book, Option<TextBundle>)> {
-        if let Some(fs) = &self.cobalt_file_system {
-            let path_in_cobalt = Self::format_cobalt_xml_path(&path, xml_name);
-            if Self::supports_cobalt_xml_patching(path.as_ref()) && fs.exists(&path_in_cobalt) {
-                return fs
-                    .read(path_in_cobalt)
-                    .and_then(|data| Book::from_string(&String::from_utf8_lossy(&data)))
-                    .map(|book| (book, None));
+    pub fn read_script(&self, script_file_name: &str) -> Result<(PathBuf, BundlePersistFormat)> {
+        let path_in_cobalt = Path::new(r"patches\scripts")
+            .with_file_name(script_file_name)
+            .with_extension("txt");
+        let base_path =
+            Path::new(r"StreamingAssets\aa\Switch\fe_assets_scripts").join(script_file_name);
+        let script_path = base_path.with_extension("lua");
+
+        // Try reading an existing script from the Cobalt FS.
+        if let Some(cobalt) = &self.cobalt_file_system {
+            // For backwards compatibility, copy old scripts to the Cobalt FS.
+            if !cobalt.exists(&path_in_cobalt)
+                && self.main_file_system.exists(&script_path, false)?
+            {
+                info!(
+                    "Found legacy script at {} - copying to {}",
+                    script_path.display(),
+                    path_in_cobalt.display()
+                );
+                let raw = self.main_file_system.read(&script_path, false)?;
+                cobalt.write(&path_in_cobalt, &raw)?;
+            }
+            if cobalt.exists(&path_in_cobalt) {
+                info!(
+                    "Found script in Cobalt folder at {}",
+                    path_in_cobalt.display()
+                );
+                return Ok((
+                    cobalt.root.join(&path_in_cobalt),
+                    BundlePersistFormat::Cobalt {
+                        path: path_in_cobalt,
+                    },
+                ));
             }
         }
 
+        // Load the bundle.
+        let bundle_path = base_path.with_extension("txt.bundle");
+        let raw_bundle = self.main_file_system.read(&bundle_path, false)?;
+        let mut bundle = TextBundle::from_slice(&raw_bundle)?;
+        let script_contents = bundle.take_raw()?;
+
+        // If this is a Cobalt project, save the script in the Cobalt FS.
+        if let Some(cobalt) = &self.cobalt_file_system {
+            info!(
+                "Loaded the script from its bundle. Saving to the Cobalt folder at {}",
+                path_in_cobalt.display()
+            );
+            cobalt.write(&path_in_cobalt, &script_contents)?;
+            return Ok((
+                cobalt.root.join(&path_in_cobalt),
+                BundlePersistFormat::Cobalt {
+                    path: path_in_cobalt,
+                },
+            ));
+        }
+
+        // If this is a normal project, save the lua file to the output folder.
+        info!("Saving unbundled script to path {}", script_path.display());
+        if !self.main_file_system.exists(&script_path, false)? {
+            self.main_file_system
+                .write(&script_path, &script_contents, false)?;
+        }
+        Ok((
+            self.main_file_system.root().join(script_path),
+            BundlePersistFormat::Vanilla {
+                bundle_path,
+                bundle,
+            },
+        ))
+    }
+
+    pub fn save_script<P: AsRef<Path>, P2: AsRef<Path>>(
+        &self,
+        absolute_script_path: P,
+        persist_format: &mut BundlePersistFormat,
+        backup_root: P2,
+    ) -> Result<()> {
+        if let BundlePersistFormat::Vanilla {
+            bundle_path,
+            bundle,
+        } = persist_format
+        {
+            info!("Re-bundling script to {}", bundle_path.display());
+            self.main_file_system
+                .backup(&bundle_path, backup_root, false)?;
+            let script_contents = std::fs::read(absolute_script_path)?;
+            bundle.replace_raw(script_contents)?;
+            self.main_file_system
+                .write(bundle_path, &bundle.serialize()?, false)?;
+            bundle.replace_raw(vec![])?;
+        }
+        Ok(())
+    }
+
+    pub fn read_book<PathType, DataType>(
+        &self,
+        path: PathType,
+        xml_name: &str,
+    ) -> Result<OpenBook<DataType>>
+    where
+        PathType: AsRef<Path>,
+        DataType: TryFrom<Book, Error = anyhow::Error>,
+    {
+        // Try to read a Cobalt XML.
+        if let Some(cobalt) = &self.cobalt_file_system {
+            let path_in_cobalt = Self::format_cobalt_xml_path(&path, Some(xml_name));
+            if cobalt.exists(&path_in_cobalt) {
+                info!("Loading book from Cobalt folder at {}", path_in_cobalt.display());
+                return cobalt
+                    .read(&path_in_cobalt)
+                    .and_then(|raw| Book::from_string(&String::from_utf8_lossy(&raw)))
+                    .and_then(|book| DataType::try_from(book))
+                    .map(|data| {
+                        OpenBook::new(
+                            data,
+                            BundlePersistFormat::Cobalt {
+                                path: path_in_cobalt,
+                            },
+                        )
+                    });
+            }
+        }
+
+        // Read a normal bundle.
         let path_in_rom = Path::new(r"StreamingAssets\aa\Switch\fe_assets_gamedata\")
             .join(&path)
             .with_extension("xml.bundle");
-        let raw = self.main_file_system.read(path_in_rom, false)?;
+        info!("Loading bundled book from path {}", path_in_rom.display());
+
+        let raw = self.main_file_system.read(&path_in_rom, false)?;
         let mut bundle = TextBundle::from_slice(&raw)?;
         let book = Book::from_string(&bundle.take_string()?)?;
-        Ok((book, Some(bundle)))
+        let data = DataType::try_from(book)?;
+        Ok(OpenBook::new(
+            data,
+            if self.cobalt_file_system.is_some() {
+                BundlePersistFormat::Cobalt {
+                    path: Self::format_cobalt_xml_path(&path, Some(xml_name)),
+                }
+            } else {
+                BundlePersistFormat::Vanilla {
+                    bundle_path: path_in_rom,
+                    bundle,
+                }
+            },
+        ))
+    }
+
+    // TODO: Delete this.
+    fn format_cobalt_xml_path<P: AsRef<Path>>(path: P, xml_name: Option<&str>) -> PathBuf {
+        let path = Path::new("xml").join(path);
+        if let Some(xml_name) = xml_name {
+            path.with_file_name(xml_name).with_extension("xml")
+        } else if let Some(file_name) = path.file_name() {
+            let mut file_name = file_name.to_string_lossy().into_owned();
+            let capitalized = format!("{}{file_name}", file_name.remove(0).to_uppercase());
+            path.with_file_name(capitalized).with_extension("xml")
+        } else {
+            path.with_extension("xml")
+        }
+    }
+
+    pub fn save_book<PathType, DataType>(
+        &self,
+        book_data: &DataType,
+        persist_format: &mut BundlePersistFormat,
+        backup_root: PathType,
+    ) -> Result<()>
+    where
+        PathType: AsRef<Path>,
+        for<'a> &'a DataType: Into<Book>,
+    {
+        // Serialize the book.
+        let book: Book = book_data.into();
+        let mut raw_book = vec![0xEF, 0xBB, 0xBF];
+        let pretty_xml = prettify_xml(&book.serialize()?)?;
+        raw_book.extend(pretty_xml.as_bytes());
+
+        match (persist_format, &self.cobalt_file_system) {
+            (BundlePersistFormat::Cobalt { path }, Some(cobalt)) => {
+                info!("Saving book to Cobalt folder at {}", path.display());
+                cobalt.backup(&path, backup_root)?;
+                cobalt.write(&path, &raw_book)?;
+            }
+            // TODO: Technically, there is a case where we could receive vanilla data and save as Cobalt.
+            //       This should never happen, but we could support it anyway.
+            (
+                BundlePersistFormat::Vanilla {
+                    bundle_path,
+                    bundle,
+                },
+                None,
+            ) => {
+                // Happy path: straight to the layered FS output.
+                info!("Saving book to bundle at {}", bundle_path.display());
+                self.main_file_system
+                    .backup(&bundle_path, backup_root, false)?;
+                bundle.replace_raw(raw_book)?;
+                self.main_file_system
+                    .write(bundle_path, &bundle.serialize()?, false)?;
+                bundle.replace_raw(vec![])?; // Avoid holding the book blob in memory while it's unused.
+            }
+            _ => bail!("Cannot save a Cobalt book because Cobalt's file system is not configured."),
+        }
+        Ok(())
     }
 
     pub fn read_cobalt_msbts(&self) -> Result<Vec<(PathBuf, IndexMap<String, String>)>> {
@@ -420,11 +641,13 @@ impl CobaltFileSystemProxy {
         if let Some(fs) = &self.cobalt_file_system {
             if fs.exists(self.cobalt_msbt_dir()) {
                 for path in fs.list_files(self.cobalt_msbt_dir(), "*")? {
+                    info!("Loading Cobalt MSBT from path {}", path.display());
                     let extension = path
                         .extension()
                         .and_then(|ext| ext.to_str())
                         .unwrap_or_default();
                     let messages = if extension == "msbt" {
+                        info!("Loading as serialized MSBT");
                         // TODO: Push this into astra_formats
                         let raw = fs.read(&path)?;
                         let mut message_map = MessageMap::from_slice(&raw).with_context(|| {
@@ -441,6 +664,7 @@ impl CobaltFileSystemProxy {
                         }
                         out
                     } else {
+                        info!("Loading MSBT as plain text");
                         let raw = fs.read(&path)?;
                         let script = String::from_utf8_lossy(&raw);
                         astra_formats::convert_astra_script_to_entries(&script)?
@@ -450,37 +674,6 @@ impl CobaltFileSystemProxy {
             }
         }
         Ok(files)
-    }
-
-    pub fn save_book<P: AsRef<Path>>(
-        &self,
-        path: P,
-        book: &Book,
-        bundle: Option<&mut TextBundle>,
-        xml_name: Option<&str>,
-    ) -> Result<()> {
-        let mut raw_book = vec![0xEF, 0xBB, 0xBF];
-        let pretty_xml = prettify_xml(&book.serialize()?)?;
-        raw_book.extend(pretty_xml.as_bytes());
-        if let Some(fs) = &self.cobalt_file_system {
-            if Self::supports_cobalt_xml_patching(path.as_ref()) {
-                fs.write(Self::format_cobalt_xml_path(path, xml_name), &raw_book)?;
-                return Ok(());
-            }
-        }
-
-        if let Some(bundle) = bundle {
-            let path_in_rom = Path::new(r"StreamingAssets\aa\Switch\fe_assets_gamedata\")
-                .join(&path)
-                .with_extension("xml.bundle");
-            bundle.replace_raw(raw_book)?;
-            self.main_file_system
-                .write(path_in_rom, &bundle.serialize()?, false)?;
-            bundle.replace_raw(vec![])?; // Avoid holding the book blob in memory when it's not being used.
-            Ok(())
-        } else {
-            bail!("Must provide a bundle to save books when Cobalt is not enabled.");
-        }
     }
 
     pub fn save_msbt<P: AsRef<Path>>(
@@ -515,29 +708,6 @@ impl CobaltFileSystemProxy {
         Ok(())
     }
 
-    pub fn backup_xml<T: AsRef<Path>, U: AsRef<Path>>(
-        &self,
-        path: T,
-        backup_root: U,
-        use_cobalt_path: bool,
-        xml_name: Option<&str>,
-    ) -> Result<()> {
-        if use_cobalt_path && Self::supports_cobalt_xml_patching(path.as_ref()) {
-            let path = Self::format_cobalt_xml_path(path, xml_name);
-            if let Some(fs) = &self.cobalt_file_system {
-                fs.backup(path, backup_root)?;
-            } else {
-                bail!("Expected Cobalt patch but the project does not support it")
-            }
-        } else {
-            let path = Path::new(r"StreamingAssets\aa\Switch\fe_assets_gamedata\")
-                .join(&path)
-                .with_extension("xml.bundle");
-            self.main_file_system.backup(path, backup_root, false)?;
-        }
-        Ok(())
-    }
-
     pub fn backup_msbt<T: AsRef<Path>, U: AsRef<Path>>(
         &self,
         path: T,
@@ -556,27 +726,6 @@ impl CobaltFileSystemProxy {
             .join("message")
             .join(&self.path_localizer.country_dir)
             .join(&self.path_localizer.language_dir)
-    }
-
-    fn format_cobalt_xml_path<P: AsRef<Path>>(path: P, xml_name: Option<&str>) -> PathBuf {
-        let path = Path::new("xml").join(path);
-        if let Some(xml_name) = xml_name {
-            path.with_file_name(xml_name).with_extension("xml")
-        } else if let Some(file_name) = path.file_name() {
-            let mut file_name = file_name.to_string_lossy().into_owned();
-            let capitalized = format!("{}{file_name}", file_name.remove(0).to_uppercase());
-            path.with_file_name(capitalized).with_extension("xml")
-        } else {
-            path.with_extension("xml")
-        }
-    }
-
-    fn supports_cobalt_xml_patching(path: &Path) -> bool {
-        !path.starts_with("dispos")
-            && !path
-                .file_stem()
-                .map(|stem| matches!(stem.to_string_lossy().as_ref(), "reliance" | "terrain"))
-                .unwrap_or_default()
     }
 }
 

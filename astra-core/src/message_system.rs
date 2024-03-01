@@ -9,6 +9,125 @@ use parking_lot::RwLock;
 
 use crate::{CobaltFileSystemProxy, LocalizedFileSystem};
 
+pub struct MessageSystem {
+    archives: HashMap<String, OpenMessageArchive>,
+    scripts: HashMap<String, OpenMessageScript>,
+    file_system: Arc<LocalizedFileSystem>,
+    cobalt: Arc<CobaltFileSystemProxy>,
+}
+
+impl MessageSystem {
+    pub fn load(
+        file_system: Arc<LocalizedFileSystem>,
+        cobalt: Arc<CobaltFileSystemProxy>,
+    ) -> Result<Self> {
+        let targets = vec![
+            (
+                "accessories",
+                "StreamingAssets/aa/Switch/fe_assets_message/accessories.bytes.bundle",
+            ),
+            (
+                "bondsring",
+                "StreamingAssets/aa/Switch/fe_assets_message/bondsring.bytes.bundle",
+            ),
+            (
+                "gamedata",
+                "StreamingAssets/aa/Switch/fe_assets_message/gamedata.bytes.bundle",
+            ),
+            (
+                "person",
+                "StreamingAssets/aa/Switch/fe_assets_message/person.bytes.bundle",
+            ),
+            (
+                "item",
+                "StreamingAssets/aa/Switch/fe_assets_message/item.bytes.bundle",
+            ),
+            (
+                "job",
+                "StreamingAssets/aa/Switch/fe_assets_message/job.bytes.bundle",
+            ),
+            (
+                "skill",
+                "StreamingAssets/aa/Switch/fe_assets_message/skill.bytes.bundle",
+            ),
+            (
+                "patch0",
+                "StreamingAssets/aa/Switch/fe_assets_message/patch0.bytes.bundle",
+            ),
+            (
+                "patch1",
+                "StreamingAssets/aa/Switch/fe_assets_message/patch1.bytes.bundle",
+            ),
+            (
+                "patch2",
+                "StreamingAssets/aa/Switch/fe_assets_message/patch2.bytes.bundle",
+            ),
+            (
+                "patch3",
+                "StreamingAssets/aa/Switch/fe_assets_message/patch3.bytes.bundle",
+            ),
+        ];
+        let mut archives = HashMap::new();
+        for (key, path) in targets {
+            let archive = OpenMessageArchive::load(&file_system, path.to_string())
+                .with_context(|| format!("failed to read archive {}", path))?;
+            archives.insert(key.to_string(), archive);
+        }
+        for (path, archive) in cobalt.read_cobalt_msbts()? {
+            let file_name = path
+                .file_name()
+                .map(|f| f.to_string_lossy().into_owned())
+                .ok_or_else(|| anyhow!("bad cobalt MSBT file name"))?;
+            archives.insert(
+                file_name,
+                OpenMessageArchive::new_cobalt(path.clone(), archive)?,
+            );
+        }
+        Ok(Self {
+            scripts: HashMap::new(),
+            archives,
+            file_system,
+            cobalt,
+        })
+    }
+
+    pub fn archives(&self) -> impl Iterator<Item = &String> {
+        self.archives.keys()
+    }
+
+    pub fn open_script(&mut self, archive_name: &str) -> Result<OpenMessageScript> {
+        // TODO: Do not allow opening a script which is already opened as an archive
+        if let Some(script) = self.scripts.get(archive_name).cloned() {
+            Ok(script)
+        } else {
+            let path = Path::new(r"StreamingAssets/aa/Switch/fe_assets_message")
+                .join(archive_name)
+                .with_extension("bytes.bundle");
+            let script = OpenMessageScript::load(
+                &self.file_system,
+                path.to_string_lossy().to_string(), // TODO: Just take a PathBuf?
+            )?;
+            self.scripts
+                .insert(archive_name.to_string(), script.clone());
+            Ok(script)
+        }
+    }
+
+    pub fn save(&self, backup_root: &Path) -> Result<()> {
+        for archive in self.archives.values() {
+            archive.save(&self.file_system, &self.cobalt, backup_root)?;
+        }
+        for script in self.scripts.values() {
+            script.save(&self.file_system, backup_root)?;
+        }
+        Ok(())
+    }
+
+    pub fn get(&self, archive_id: &str) -> Option<&OpenMessageArchive> {
+        self.archives.get(archive_id)
+    }
+}
+
 pub struct OpenMessageArchive(Arc<RwLock<OpenMessageArchiveInner>>);
 
 impl Clone for OpenMessageArchive {
@@ -163,124 +282,5 @@ impl OpenMessageScriptInner {
             file_system.write(&self.path, &raw_bundle, true)?;
         }
         Ok(())
-    }
-}
-
-pub struct MessageSystem {
-    archives: HashMap<String, OpenMessageArchive>,
-    scripts: HashMap<String, OpenMessageScript>,
-    file_system: Arc<LocalizedFileSystem>,
-    cobalt: Arc<CobaltFileSystemProxy>,
-}
-
-impl MessageSystem {
-    pub fn load(
-        file_system: Arc<LocalizedFileSystem>,
-        cobalt: Arc<CobaltFileSystemProxy>,
-    ) -> Result<Self> {
-        let targets = vec![
-            (
-                "accessories",
-                "StreamingAssets/aa/Switch/fe_assets_message/accessories.bytes.bundle",
-            ),
-            (
-                "bondsring",
-                "StreamingAssets/aa/Switch/fe_assets_message/bondsring.bytes.bundle",
-            ),
-            (
-                "gamedata",
-                "StreamingAssets/aa/Switch/fe_assets_message/gamedata.bytes.bundle",
-            ),
-            (
-                "person",
-                "StreamingAssets/aa/Switch/fe_assets_message/person.bytes.bundle",
-            ),
-            (
-                "item",
-                "StreamingAssets/aa/Switch/fe_assets_message/item.bytes.bundle",
-            ),
-            (
-                "job",
-                "StreamingAssets/aa/Switch/fe_assets_message/job.bytes.bundle",
-            ),
-            (
-                "skill",
-                "StreamingAssets/aa/Switch/fe_assets_message/skill.bytes.bundle",
-            ),
-            (
-                "patch0",
-                "StreamingAssets/aa/Switch/fe_assets_message/patch0.bytes.bundle",
-            ),
-            (
-                "patch1",
-                "StreamingAssets/aa/Switch/fe_assets_message/patch1.bytes.bundle",
-            ),
-            (
-                "patch2",
-                "StreamingAssets/aa/Switch/fe_assets_message/patch2.bytes.bundle",
-            ),
-            (
-                "patch3",
-                "StreamingAssets/aa/Switch/fe_assets_message/patch3.bytes.bundle",
-            ),
-        ];
-        let mut archives = HashMap::new();
-        for (key, path) in targets {
-            let archive = OpenMessageArchive::load(&file_system, path.to_string())
-                .with_context(|| format!("failed to read archive {}", path))?;
-            archives.insert(key.to_string(), archive);
-        }
-        for (path, archive) in cobalt.read_cobalt_msbts()? {
-            let file_name = path
-                .file_name()
-                .map(|f| f.to_string_lossy().into_owned())
-                .ok_or_else(|| anyhow!("bad cobalt MSBT file name"))?;
-            archives.insert(
-                file_name,
-                OpenMessageArchive::new_cobalt(path.clone(), archive)?,
-            );
-        }
-        Ok(Self {
-            scripts: HashMap::new(),
-            archives,
-            file_system,
-            cobalt,
-        })
-    }
-
-    pub fn archives(&self) -> impl Iterator<Item = &String> {
-        self.archives.keys()
-    }
-
-    pub fn open_script(&mut self, archive_name: &str) -> Result<OpenMessageScript> {
-        // TODO: Do not allow opening a script which is already opened as an archive
-        if let Some(script) = self.scripts.get(archive_name).cloned() {
-            Ok(script)
-        } else {
-            let path = Path::new(r"StreamingAssets/aa/Switch/fe_assets_message")
-                .join(archive_name)
-                .with_extension("bytes.bundle");
-            let script = OpenMessageScript::load(
-                &self.file_system,
-                path.to_string_lossy().to_string(), // TODO: Just take a PathBuf?
-            )?;
-            self.scripts
-                .insert(archive_name.to_string(), script.clone());
-            Ok(script)
-        }
-    }
-
-    pub fn save(&self, backup_root: &Path) -> Result<()> {
-        for archive in self.archives.values() {
-            archive.save(&self.file_system, &self.cobalt, backup_root)?;
-        }
-        for script in self.scripts.values() {
-            script.save(&self.file_system, backup_root)?;
-        }
-        Ok(())
-    }
-
-    pub fn get(&self, archive_id: &str) -> Option<&OpenMessageArchive> {
-        self.archives.get(archive_id)
     }
 }

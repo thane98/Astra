@@ -76,7 +76,7 @@ impl JobEditor {
             self.content.content(ctx, data, |ui, job| {
                 let mut changed = false;
                 egui_grid::GridBuilder::new()
-                    .new_row(Size::exact(180.))
+                    .new_row(Size::exact(200.))
                     .cell(Size::exact(350.))
                     .cell(Size::remainder())
                     .new_row(Size::remainder())
@@ -103,6 +103,8 @@ impl JobEditor {
                             ui.group(|ui| {
                                 Grid::new("item_grid").show(ui, |ui| {
                                     standard_stat_column_headers(ui);
+                                    ui.label("Limits");
+                                    standard_stats_row!(ui, job, limit, changed);
                                     ui.label("Bases");
                                     standard_stats_row!(ui, job, base, changed);
                                     ui.label("Base Growths");

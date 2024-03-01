@@ -30,6 +30,7 @@ pub use message_system::{OpenMessageArchive, OpenMessageScript};
 use script_system::ScriptSystem;
 pub use terrain_system::OpenTerrain;
 use terrain_system::TerrainSystem;
+use tracing::info;
 
 #[derive(Debug)]
 pub struct AstraProject {
@@ -53,6 +54,7 @@ pub struct Astra {
 
 impl Astra {
     pub fn load(project: AstraProject) -> Result<Self> {
+        info!("Loading {:?}", project);
         let file_system = Arc::new(LocalizedFileSystem::new(
             LayeredFileSystem::new(vec![
                 FileSystemLayer::directory(project.output_dir)?,
@@ -71,7 +73,7 @@ impl Astra {
                 .context("Failed to load sprite atlases")?,
             book_system: BookSystem::load(cobalt_proxy.clone())
                 .context("Failed to load books (fe_assets_gamedata)")?,
-            script_system: ScriptSystem::new(file_system.clone()),
+            script_system: ScriptSystem::new(cobalt_proxy.clone()),
             message_system: MessageSystem::load(file_system.clone(), cobalt_proxy)
                 .context("Failed to load text data (MSBT)")?,
             terrain_system: TerrainSystem::load(file_system)
