@@ -4,7 +4,7 @@ use std::marker::PhantomData;
 use egui::TextureHandle;
 use indexmap::IndexMap;
 
-use crate::{DecorationKind, KeyedViewItem, SheetHandle, SheetRetriever, ViewItem};
+use crate::{DecorationKind, KeyedViewItem, Screens, SheetHandle, SheetRetriever, ViewItem};
 
 #[derive(Clone)]
 pub struct CacheItem<I> {
@@ -53,6 +53,10 @@ where
         } else {
             None
         }
+    }
+
+    fn screen() -> Option<Screens> {
+        I::screen()
     }
 }
 

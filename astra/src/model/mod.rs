@@ -14,6 +14,8 @@ use std::borrow::Cow;
 use egui::TextureHandle;
 use indexmap::IndexMap;
 
+use crate::Screens;
+
 /// Where the decoration will be displayed. Used to provide context when requesting a decoration from an item.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DecorationKind<'a> {
@@ -45,6 +47,10 @@ pub trait ViewItem: Clone {
         dependencies: &Self::Dependencies,
         kind: DecorationKind<'_>,
     ) -> Option<(TextureHandle, f32)> {
+        None
+    }
+
+    fn screen() -> Option<Screens> {
         None
     }
 }
@@ -263,6 +269,32 @@ impl FilterProxyBuilder {
         self.requires_refresh = true;
     }
 
+    /// Refresh the model now.
+    pub fn refresh<M, I, D>(&mut self, model: &M, dependencies: &D)
+    where
+        M: ListModel<I>,
+        I: ViewItem<Dependencies = D>,
+    {
+        self.proxy_indices.clear();
+        for i in 0..model.len() {
+            let matches_filter = model
+                .item(i)
+                .map(|item| {
+                    let matches_search_by_index = (i + 1).to_string() == self.filter_expr;
+                    let matches_search_by_name = item
+                        .text(dependencies)
+                        .to_lowercase()
+                        .contains(&self.filter_expr.to_lowercase());
+                    matches_search_by_index || matches_search_by_name
+                })
+                .unwrap_or_default();
+            if matches_filter {
+                self.proxy_indices.push(i);
+            }
+        }
+        self.requires_refresh = false;
+    }
+
     /// Build a filtered view of a source model using this proxy's filter expression.
     /// Will ONLY trigger a refresh when required. There are three cases for this:
     /// * First time building a proxy (detected automatically)
@@ -279,24 +311,7 @@ impl FilterProxyBuilder {
         I: ViewItem<Dependencies = D>,
     {
         if self.requires_refresh || requires_refresh {
-            self.requires_refresh = false;
-            self.proxy_indices.clear();
-            for i in 0..model.len() {
-                let matches_filter = model
-                    .item(i)
-                    .map(|item| {
-                        let matches_search_by_index = (i + 1).to_string() == self.filter_expr;
-                        let matches_search_by_name = item
-                            .text(dependencies)
-                            .to_lowercase()
-                            .contains(&self.filter_expr.to_lowercase());
-                        matches_search_by_index || matches_search_by_name
-                    })
-                    .unwrap_or_default();
-                if matches_filter {
-                    self.proxy_indices.push(i);
-                }
-            }
+            self.refresh(model, dependencies);
         }
 
         FilterProxyModel {

@@ -1,10 +1,10 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
-use std::sync::Arc;
+use std::sync::{Arc, OnceLock};
 
 use egui_notify::Toasts;
-use parking_lot::RwLock;
+use parking_lot::{Mutex, RwLock};
 
 use astra_core::Astra;
 
@@ -22,6 +22,42 @@ use crate::{
     RelianceExpDataSheetRetriever, SaveScreen, ScriptManager, SheetHandle, ShopEditor, SkillEditor,
     SkillSheetRetriever, TerrainDataEditor, TerrainDataSheetRetriever, TextureCache, Theme,
 };
+
+static TRANSITION: OnceLock<Mutex<Option<Transition>>> = OnceLock::new();
+
+pub fn queue_transition(transition: Transition) {
+    let lock = TRANSITION.get_or_init(|| Mutex::new(None));
+    *lock.lock() = Some(transition);
+}
+
+#[derive(Debug)]
+pub struct Transition {
+    screen: Screens,
+    index: usize,
+}
+
+impl Transition {
+    pub fn new(screen: Screens, index: usize) -> Self {
+        Self { screen, index }
+    }
+
+    pub fn act(&self, state: &mut MainState) {
+        let index = Some(self.index);
+        state.active_screen = self.screen;
+        match self.screen {
+            Screens::Accessory => state.accessory_editor.select(index),
+            Screens::AnimSet => state.anim_set_editor.select(index),
+            Screens::Chapter => state.chapter_editor.select(index),
+            Screens::God => state.god_editor.select(index),
+            Screens::Item => state.item_editor.select(index),
+            Screens::Job => state.job_editor.select(index),
+            Screens::Person => state.person_editor.select(index),
+            Screens::Skill => state.skill_editor.select(index),
+            Screens::Terrain => state.terrain_editor.select(index),
+            _ => {}
+        }
+    }
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Screens {
@@ -164,6 +200,14 @@ pub fn main_window(
 ) {
     let about_modal = about_modal(ctx);
     let config_editor_modal = config_editor_modal(ctx, config);
+
+    if let Some(lock) = TRANSITION.get() {
+        let mut data = lock.lock();
+        if let Some(transition) = &*data {
+            transition.act(state);
+        }
+        *data = None;
+    }
 
     egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
         ui.set_enabled(!matches!(state.active_screen, Screens::Save));

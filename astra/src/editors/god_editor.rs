@@ -53,6 +53,10 @@ impl GodEditor {
         }
     }
 
+    pub fn select(&mut self, index: Option<usize>) {
+        self.main_content.select(index);
+    }
+
     pub fn tab_strip(&mut self, ui: &mut Ui) {
         editor_tab_strip(ui, |ui| {
             ui.selectable_value(&mut self.tab, Tab::Main, "Main");

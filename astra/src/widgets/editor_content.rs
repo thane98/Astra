@@ -218,6 +218,9 @@ where
                     true
                 };
                 model.read(|data| {
+                    // TODO: Find a better way to make sure the model is initialized.
+                    let _ = self.filter_proxy.model(changed, data, dependencies);
+
                     let mut proxy_index = self
                         .selection
                         .and_then(|source_index| self.filter_proxy.proxy_index(source_index));

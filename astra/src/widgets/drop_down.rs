@@ -1,6 +1,6 @@
 use egui::{AboveOrBelow, Grid, Image, Response, ScrollArea, Ui, Widget, Sense};
 
-use crate::{DecorationKind, KeyedListModel, KeyedViewItem, ListModel, ViewItem};
+use crate::{queue_transition, DecorationKind, KeyedListModel, KeyedViewItem, ListModel, Transition, ViewItem};
 
 pub fn model_drop_down<'a, M, I, D>(
     model: &'a M,
@@ -205,16 +205,26 @@ impl<'a> ModelDropDown<'a> {
             None => model.index_of(key),
         };
 
-        let (response, selection) = Self::show_impl(ui, model, dependencies, index);
-        if let Some(i) = selection {
-            if let Some(new_key) = model.item(i).map(|item| item.key()) {
-                *key = match self.key_reverse_transform {
-                    Some(transform) => transform(&new_key),
-                    None => new_key.to_string(),
-                };
+        ui.horizontal(|ui| {
+            let (response, selection) = Self::show_impl(ui, model, dependencies, index);
+            if let Some(i) = selection {
+                if let Some(new_key) = model.item(i).map(|item| item.key()) {
+                    *key = match self.key_reverse_transform {
+                        Some(transform) => transform(&new_key),
+                        None => new_key.to_string(),
+                    };
+                }
             }
-        }
-        response
+            if let Some(index) = selection.or(index) {
+                if let Some(screen) = I::screen() {
+                    if ui.button("⮩ Go To").clicked() {
+                        queue_transition(Transition::new(screen, index));
+                    }
+                }
+            }
+            response
+        })
+        .response
     }
 
     pub fn show_indexed<M, I, D>(

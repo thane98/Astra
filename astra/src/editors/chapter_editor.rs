@@ -171,6 +171,10 @@ impl ChapterEditor {
         }
     }
 
+    pub fn select(&mut self, index: Option<usize>) {
+        self.selected_chapter_index = index;
+    }
+
     pub fn show(&mut self, ctx: &egui::Context, state: &mut EditorState, config: &mut AppConfig) {
         if self.selected_chapter_index.is_some() {
             let confirm_delete_modal = Modal::new(ctx, "chapter_delete_confirm_modal");

@@ -23,6 +23,10 @@ impl AccessoryEditor {
         }
     }
 
+    pub fn select(&mut self, index: Option<usize>) {
+        self.content.select(index);
+    }
+
     pub fn show(&mut self, ctx: &egui::Context, state: &mut EditorState) {
         self.content.side_panel(ctx, &self.accessory, state);
 

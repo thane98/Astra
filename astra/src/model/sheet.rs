@@ -18,7 +18,7 @@ use indexmap::IndexMap;
 use itertools::Itertools;
 use parking_lot::RwLock;
 
-use crate::{DecorationKind, KeyedViewItem, MessageDbWrapper, TextureCache, ViewItem};
+use crate::{DecorationKind, KeyedViewItem, MessageDbWrapper, Screens, TextureCache, ViewItem};
 
 use super::GroupViewItem;
 
@@ -177,6 +177,10 @@ impl ViewItem for Accessory {
     fn text(&self, dependencies: &Self::Dependencies) -> Cow<'_, str> {
         standard_keyed_display!(self, dependencies, aid)
     }
+
+    fn screen() -> Option<Screens> {
+        Some(Screens::Accessory)
+    }
 }
 
 impl KeyedViewItem for Accessory {
@@ -196,6 +200,10 @@ impl ViewItem for AnimSet {
 
     fn text(&self, _: &Self::Dependencies) -> Cow<'_, str> {
         Cow::Borrowed(&self.name)
+    }
+
+    fn screen() -> Option<Screens> {
+        Some(Screens::AnimSet)
     }
 }
 
@@ -245,6 +253,10 @@ impl ViewItem for Chapter {
             .message(&name)
             .map(|name| Cow::Owned(format!("{} ({})", name, self.cid)))
             .unwrap_or_else(|| Cow::Borrowed(self.cid.as_str()))
+    }
+
+    fn screen() -> Option<Screens> {
+        Some(Screens::Chapter)
     }
 }
 
@@ -387,6 +399,10 @@ impl ViewItem for GodData {
     fn text(&self, dependencies: &Self::Dependencies) -> Cow<'_, str> {
         standard_keyed_display!(self, dependencies, gid, mid)
     }
+
+    fn screen() -> Option<Screens> {
+        Some(Screens::God)
+    }
 }
 
 impl KeyedViewItem for GodData {
@@ -463,6 +479,10 @@ impl ViewItem for Item {
             _ => Some((decoration, 0.5)),
         }
     }
+
+    fn screen() -> Option<Screens> {
+        Some(Screens::Item)
+    }
 }
 
 impl KeyedViewItem for Item {
@@ -513,6 +533,10 @@ impl ViewItem for Job {
             DecorationKind::Other("portrait") => Some((decoration, 2.)),
             _ => None,
         }
+    }
+
+    fn screen() -> Option<Screens> {
+        Some(Screens::Job)
     }
 }
 
@@ -581,6 +605,10 @@ impl ViewItem for Person {
                 .map(|texture| (texture, 1.)),
             _ => None,
         }
+    }
+
+    fn screen() -> Option<Screens> {
+        Some(Screens::Person)
     }
 }
 
@@ -754,6 +782,10 @@ impl ViewItem for Skill {
             _ => Some((decoration, 0.5)),
         }
     }
+
+    fn screen() -> Option<Screens> {
+        Some(Screens::Skill)
+    }
 }
 
 impl KeyedViewItem for Skill {
@@ -824,6 +856,10 @@ impl ViewItem for TerrainData {
 
     fn text(&self, dependencies: &Self::Dependencies) -> Cow<'_, str> {
         standard_keyed_display!(self, dependencies, tid)
+    }
+
+    fn screen() -> Option<Screens> {
+        Some(Screens::Terrain)
     }
 }
 
