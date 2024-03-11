@@ -350,9 +350,33 @@ impl SkillEditor {
                     })
                     .default_field("Condition", |skill| &mut skill.give_condition)
                     .field("Skills", |ui, skill| {
-                        ui.add(editable_list(&mut skill.act_values, |_, value, ui| {
+                        ui.add(editable_list(&mut skill.give_sids, |_, value, ui| {
                             ui.add(model_drop_down(self.cache.get(), &(), value))
                         }))
+                    })
+                    .new_section("Remove")
+                    .field("Skills", |ui, skill| {
+                        ui.add(editable_list(&mut skill.remove_sids, |_, value, ui| {
+                            ui.add(model_drop_down(self.cache.get(), &(), value))
+                        }))
+                    })
+                    .new_section("Sync")
+                    .field("Conditions", |ui, skill| {
+                        ui.add(editable_list(&mut skill.sync_conditions, |_, value, ui| {
+                            ui.text_edit_singleline(value)
+                        }))
+                    })
+                    .field("Skills", |ui, skill| {
+                        ui.add(editable_list(&mut skill.sync_sids, |_, value, ui| {
+                            ui.add(model_drop_down(self.cache.get(), &(), value))
+                        }))
+                    })
+                    .new_section("Other Related Skills")
+                    .field("Rebirth Skill", |ui, skill| {
+                        ui.add(model_drop_down(self.cache.get(), &(), &mut skill.rebirth_sid))
+                    })
+                    .field("Engage Skill", |ui, skill| {
+                        ui.add(model_drop_down(self.cache.get(), &(), &mut skill.engage_sid))
                     })
                     .new_section("Overlap")
                     .default_field("Range", |skill| &mut skill.overlap_range)
@@ -360,6 +384,11 @@ impl SkillEditor {
                         state.terrain.read(|data| {
                             ui.add(model_drop_down(data, state, &mut skill.overlap_terrain))
                         })
+                    })
+                    .field("Change Skills", |ui, skill| {
+                        ui.add(editable_list(&mut skill.change_sids, |_, value, ui| {
+                            ui.add(model_drop_down(self.cache.get(), &(), value))
+                        }))
                     })
                     .new_section("ZOC")
                     .default_field("Range", |skill| &mut skill.zoc_range)

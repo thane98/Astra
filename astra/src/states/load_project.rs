@@ -32,11 +32,11 @@ pub fn project_loader(
         if let Ok(load_result) = receiver.try_recv() {
             match load_result {
                 Ok(data) => {
-                    *next_state = Some(AppState::Main(MainState::new(
+                    *next_state = Some(AppState::Main(Box::new(MainState::new(
                         data.astra,
                         data.message_db,
                         data.texture_cache,
-                    )));
+                    ))));
                 }
                 Err(err) => {
                     state.error = Some(format!("{:?}", err));
@@ -92,6 +92,9 @@ pub fn project_loader(
                 modal.open();
             }
             None => {
+                if ui.button("Cancel").clicked() {
+                    *next_state = Some(AppState::SelectProject);
+                }
                 ui.centered_and_justified(|ui| {
                     ui.add(egui::Spinner::new().size(96.0));
                 });

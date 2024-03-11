@@ -32,9 +32,15 @@ pub use terrain_system::OpenTerrain;
 use terrain_system::TerrainSystem;
 
 #[derive(Debug)]
+pub enum RomSource {
+    Directory(PathBuf),
+    Network(String),
+}
+
+#[derive(Debug)]
 pub struct AstraProject {
     pub backup_dir: PathBuf,
-    pub romfs_dir: PathBuf,
+    pub rom_source: RomSource,
     pub output_dir: PathBuf,
     pub cobalt_dir: Option<PathBuf>,
     pub cobalt_msbt: Option<String>,
@@ -56,7 +62,10 @@ impl Astra {
         let file_system = Arc::new(LocalizedFileSystem::new(
             LayeredFileSystem::new(vec![
                 FileSystemLayer::directory(project.output_dir)?,
-                FileSystemLayer::directory(project.romfs_dir)?,
+                match &project.rom_source {
+                    RomSource::Directory(directory) => FileSystemLayer::directory(directory)?,
+                    RomSource::Network(ip) => FileSystemLayer::network(ip)?,
+                },
             ])?,
             project.localization,
         ));

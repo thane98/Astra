@@ -1,6 +1,8 @@
 use egui::{FontData, FontDefinitions, FontFamily};
 
-use crate::{main_window, project_creator, project_loader, project_selector, AppConfig, AppState};
+use crate::{
+    first_run, main_window, project_creator, project_loader, project_selector, AppConfig, AppState,
+};
 
 pub struct AstraApp {
     pub config: AppConfig,
@@ -35,8 +37,12 @@ impl AstraApp {
         cc.egui_ctx.set_fonts(font_definitions);
 
         AstraApp {
+            state: if config.projects.is_empty() && config.cobalt_path.is_empty() {
+                AppState::FirstRun
+            } else {
+                AppState::SelectProject
+            },
             config,
-            state: AppState::SelectProject,
             next_state: None,
         }
     }
@@ -54,6 +60,7 @@ impl eframe::App for AstraApp {
             self.state = state;
         }
         match &mut self.state {
+            AppState::FirstRun => first_run(&mut self.config, &mut self.next_state, ctx),
             AppState::CreateProject(state) => {
                 project_creator(state, &mut self.config, &mut self.next_state, ctx)
             }

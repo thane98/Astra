@@ -1,3 +1,6 @@
+use std::collections::hash_map::Entry;
+use std::collections::HashMap;
+use std::sync::mpsc::{Receiver, TryRecvError};
 use std::sync::Arc;
 
 use astra_core::{Astra, OpenMessageScript, OpenTerrain};
@@ -15,7 +18,8 @@ use crate::{
     blank_slate, dispos_grid, editor_tab_strip, f32_drag, i8_drag, indexed_model_drop_down,
     model_drop_down, msbt_key_value_singleline, msbt_script_editor, terrain_grid, u32_drag,
     u8_drag, AppConfig, CacheItem, CachedView, ChapterSheet, ChapterSheetRetriever, EditorState,
-    GroupEditorContent, ListEditorContent, ListModel, PropertyGrid, SpawnSheet,
+    GroupEditorContent, ListEditorContent, PropertyGrid, SheetHandle, SpawnSheet,
+    SpawnSheetRetriever,
 };
 
 const CHAPTER_FLAG_LABELS: &[&str] = &[
@@ -96,35 +100,97 @@ struct OpenChapterState {
 }
 
 impl OpenChapterState {
-    pub fn load(state: &mut EditorState, chapter_index: Option<usize>) -> Option<Self> {
-        chapter_index.and_then(|index| {
-            state.chapter.clone().read(|data| {
-                data.item(index).map(|chapter| {
-                    let cid_part = chapter.cid.trim_start_matches("CID_");
-                    let dispos_stem = chapter.dispos.replace('*', cid_part).to_lowercase();
-                    let terrain = state.astra.write().get_chapter_terrain(
-                        &chapter.terrain.replace('*', cid_part).to_lowercase(),
-                    );
-                    let message = state
-                        .astra
-                        .write()
-                        .open_msbt_script(&chapter.mess.replace('*', cid_part).to_lowercase())
-                        .ok();
-                    Self {
-                        dispos: state.load_spawn_sheet(&dispos_stem),
-                        encount_dispos: state.load_spawn_sheet(&format!("{}e", dispos_stem)),
-                        terrain,
-                        message,
-                        script: chapter.script_bmap.replace('*', cid_part).to_lowercase(),
-                        encount_script: chapter
-                            .script_encount
-                            .replace('*', cid_part)
-                            .to_lowercase(),
-                        kizuna_script: chapter.script_kizuna.replace('*', cid_part).to_lowercase(),
+    pub fn load(
+        chapter: &Chapter,
+        astra: &mut Astra,
+        spawn_cache: &mut HashMap<String, SpawnSheet>,
+    ) -> Self {
+        let cid_part = chapter.cid.trim_start_matches("CID_");
+        let dispos_stem = chapter.dispos.replace('*', cid_part).to_lowercase();
+        let encount_stem = format!("{}e", dispos_stem);
+        let terrain =
+            astra.get_chapter_terrain(&chapter.terrain.replace('*', cid_part).to_lowercase());
+        let message = astra
+            .open_msbt_script(&chapter.mess.replace('*', cid_part).to_lowercase())
+            .ok();
+        Self {
+            dispos: load_dispos_sheet(spawn_cache, astra, dispos_stem),
+            encount_dispos: load_dispos_sheet(spawn_cache, astra, encount_stem),
+            terrain,
+            message,
+            script: chapter.script_bmap.replace('*', cid_part).to_lowercase(),
+            encount_script: chapter.script_encount.replace('*', cid_part).to_lowercase(),
+            kizuna_script: chapter.script_kizuna.replace('*', cid_part).to_lowercase(),
+        }
+    }
+}
+
+fn load_dispos_sheet(
+    cache: &mut HashMap<String, SpawnSheet>,
+    astra: &mut Astra,
+    key: String,
+) -> Option<SpawnSheet> {
+    if let Entry::Vacant(e) = cache.entry(key.clone()) {
+        let dispos = astra.get_dispos(&key)?;
+        let sheet = SheetHandle::new(dispos, SpawnSheetRetriever);
+        // TODO: We clone today and it's fine, but I'm not sure if this is safe long term...
+        e.insert(sheet.clone());
+        Some(sheet)
+    } else {
+        cache.get(&key).cloned()
+    }
+}
+
+#[derive(Default)]
+enum ChapterLoader {
+    #[default]
+    NoChapterSelected,
+    Loading(Receiver<Option<OpenChapterState>>),
+    Loaded(Option<OpenChapterState>),
+    Error(String),
+}
+
+impl ChapterLoader {
+    pub fn load(&mut self, state: &mut EditorState, chapter_index: Option<usize>) {
+        *self = match chapter_index {
+            Some(chapter_index) => {
+                let (sender, receiver) = std::sync::mpsc::channel();
+                let spawn_cache = state.spawns.clone();
+                let astra = state.astra.clone();
+                std::thread::spawn(move || {
+                    let mut spawn_cache = spawn_cache.write();
+                    let mut astra = astra.write();
+                    let chapter = astra.get_chapter_book();
+                    sender.send(chapter.read(|data| {
+                        data.chapters
+                            .data
+                            .get_index(chapter_index)
+                            .map(|(_, chapter)| {
+                                OpenChapterState::load(chapter, &mut astra, &mut spawn_cache)
+                            })
+                    }))
+                });
+                Self::Loading(receiver)
+            }
+            None => Self::NoChapterSelected,
+        };
+    }
+
+    pub fn update(&mut self) {
+        if let Self::Loading(receiver) = self {
+            match receiver.try_recv() {
+                Ok(result) => *self = Self::Loaded(result),
+                Err(err) => {
+                    if let TryRecvError::Disconnected = err {
+                        *self = Self::Error("Thread disconnected unexpectedly.".to_string());
                     }
-                })
-            })
-        })
+                }
+            }
+        }
+    }
+
+    pub fn is_loading(&self) -> bool {
+        matches!(self, Self::Loading(_))
     }
 }
 
@@ -145,7 +211,7 @@ pub struct ChapterEditor {
     astra: Arc<RwLock<Astra>>,
     chapter: ChapterSheet,
     cache: CachedView<ChapterSheetRetriever, ChapterBook, Chapter>,
-    chapter_state: Option<OpenChapterState>,
+    loader: ChapterLoader,
 }
 
 impl ChapterEditor {
@@ -167,7 +233,7 @@ impl ChapterEditor {
             astra: state.astra.clone(),
             chapter: state.chapter.clone(),
             cache: CachedView::new(state.chapter.clone(), state),
-            chapter_state: None,
+            loader: Default::default(),
         }
     }
 
@@ -176,6 +242,17 @@ impl ChapterEditor {
     }
 
     pub fn show(&mut self, ctx: &egui::Context, state: &mut EditorState, config: &mut AppConfig) {
+        self.loader.update();
+        
+        if self.loader.is_loading() {
+            CentralPanel::default().show(ctx, |ui| {
+                ui.centered_and_justified(|ui| {
+                    ui.add(egui::Spinner::new().size(96.0));
+                });
+            });
+            return;
+        }
+
         if self.selected_chapter_index.is_some() {
             let confirm_delete_modal = Modal::new(ctx, "chapter_delete_confirm_modal");
             confirm_delete_modal.show(|ui| {
@@ -202,14 +279,13 @@ impl ChapterEditor {
                                 false
                             }
                         });
-                        self.chapter_state =
-                            OpenChapterState::load(state, self.selected_chapter_index);
+                        self.loader.load(state, self.selected_chapter_index);
                     }
                 });
             });
         }
 
-        if self.chapter_state.is_none() {
+        if !matches!(self.loader, ChapterLoader::Loaded(_)) {
             CentralPanel::default().show(ctx, |ui| {
                 blank_slate(ui);
             });
@@ -227,6 +303,7 @@ impl ChapterEditor {
     }
 
     pub fn tab_strip(&mut self, ui: &mut Ui, state: &mut EditorState) {
+        ui.set_enabled(!self.loader.is_loading());
         editor_tab_strip(ui, |ui| {
             if ui
                 .add_enabled(
@@ -247,7 +324,7 @@ impl ChapterEditor {
                     ))
                     .changed()
                 {
-                    self.chapter_state = OpenChapterState::load(state, self.selected_chapter_index);
+                    self.loader.load(state, self.selected_chapter_index);
                 }
             });
             ui.selectable_value(&mut self.tab, Tab::Core, "Core");
@@ -319,17 +396,14 @@ impl ChapterEditor {
     }
 
     fn script_buttons(&mut self, ui: &mut Ui, config: &AppConfig) {
-        let (script, encount_script, kizuna_script) = self
-            .chapter_state
-            .as_ref()
-            .map(|state| {
-                (
-                    Some(state.script.as_str()),
-                    Some(state.encount_script.as_str()),
-                    Some(state.kizuna_script.as_str()),
-                )
-            })
-            .unwrap_or((None, None, None));
+        let (script, encount_script, kizuna_script) = match &self.loader {
+            ChapterLoader::Loaded(Some(state)) => (
+                Some(state.script.as_str()),
+                Some(state.encount_script.as_str()),
+                Some(state.kizuna_script.as_str()),
+            ),
+            _ => (None, None, None),
+        };
 
         let error_modal = Modal::new(ui.ctx(), "script_open_error_modal");
         ui.group(|ui| {
@@ -528,14 +602,14 @@ impl ChapterEditor {
         state: &EditorState,
         config: &mut AppConfig,
     ) {
-        if let Some(dispos) = self
-            .chapter_state
-            .as_ref()
-            .and_then(|state| match self.dispos_kind {
+        let dispos = match &self.loader {
+            ChapterLoader::Loaded(Some(state)) => match self.dispos_kind {
                 DisposKind::Main => state.dispos.as_ref(),
                 DisposKind::Encount => state.encount_dispos.as_ref(),
-            })
-        {
+            },
+            _ => None,
+        };
+        if let Some(dispos) = dispos {
             TopBottomPanel::bottom("dispos_bottom_panel").show(ctx, |ui| {
                 ui.horizontal_top(|ui| {
                     ui.label("Tile Brightness");
@@ -557,11 +631,11 @@ impl ChapterEditor {
                 });
 
                 CentralPanel::default().show(ctx, |ui| {
-                    if let Some(chapter_terrain) = self
-                        .chapter_state
-                        .as_ref()
-                        .and_then(|state| state.terrain.as_ref())
-                    {
+                    let terrain = match &self.loader {
+                        ChapterLoader::Loaded(Some(state)) => state.terrain.as_ref(),
+                        _ => None,
+                    };
+                    if let Some(chapter_terrain) = terrain {
                         chapter_terrain.read(|terrain_data| {
                             let result = dispos_grid(
                                 ui,
@@ -744,11 +818,11 @@ impl ChapterEditor {
         state: &EditorState,
         config: &mut AppConfig,
     ) {
-        if let Some(chapter_terrain) = self
-            .chapter_state
-            .as_ref()
-            .and_then(|state| state.terrain.as_ref())
-        {
+        let terrain = match &self.loader {
+            ChapterLoader::Loaded(Some(state)) => state.terrain.as_ref(),
+            _ => None,
+        };
+        if let Some(chapter_terrain) = terrain {
             TopBottomPanel::bottom("dispos_bottom_panel").show(ctx, |ui| {
                 ui.horizontal(|ui| {
                     ui.label("Tile Brightness");
@@ -785,11 +859,11 @@ impl ChapterEditor {
 
     fn dialogue_tab_content(&mut self, ctx: &egui::Context) {
         CentralPanel::default().show(ctx, |ui| {
-            if let Some(script) = self
-                .chapter_state
-                .as_ref()
-                .and_then(|state| state.message.as_ref())
-            {
+            let message = match &self.loader {
+                ChapterLoader::Loaded(Some(state)) => state.message.as_ref(),
+                _ => None,
+            };
+            if let Some(script) = message {
                 msbt_script_editor(ui, script)
             } else {
                 ui.centered_and_justified(|ui| {

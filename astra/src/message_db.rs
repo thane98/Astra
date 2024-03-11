@@ -4,7 +4,10 @@ use std::rc::Rc;
 use std::sync::Arc;
 
 use astra_core::{Astra, OpenMessageArchive};
+use astra_formats::MsbtToken;
 use parking_lot::RwLock;
+
+use crate::{GodDataSheet, PersonSheet};
 
 #[derive(Debug, Clone)]
 struct KeyData {
@@ -32,6 +35,58 @@ impl MessageDbWrapper {
         self.0
             .borrow_mut()
             .with_message_mut(key, default_archive, consumer)
+    }
+
+    pub fn translate_script(&self, script: &str, person: &PersonSheet, god: &GodDataSheet) -> Option<String> {
+        let mut translations = HashMap::new();
+        person.read(|data| {
+            for person in data.values() {
+                let key = person.pid.strip_prefix("PID_").unwrap_or_default();
+                if !key.is_empty() {
+                    if let Some(message) = self.message(&person.name) {
+                        translations.insert(key.to_string(), message);
+                    }
+                }
+            }
+        });
+        god.read(|data| {
+            for god in data.values() {
+                let key = god.gid.strip_prefix("GID_").unwrap_or_default();
+                if !key.is_empty() {
+                    if let Some(message) = self.message(&god.mid) {
+                        translations.insert(key.to_string(), message);
+                    }
+                }
+            }
+        });
+
+        let mut entries = astra_formats::parse_astra_script(script).ok()?;
+        for entry in entries.values_mut() {
+            for token in entry {
+                match token {
+                    MsbtToken::Window { speaker, .. } => {
+                        if let Some(translation) = translations.get(speaker).cloned() {
+                            *speaker = translation;
+                        }
+                    }
+                    MsbtToken::Animation { target, .. } => {
+                        if let Some(translation) = translations.get(target).cloned() {
+                            *target = translation;
+                        }
+                    }
+                    MsbtToken::Alias { actual, .. } => {
+                        if let Some(translation) = translations.get(actual).cloned() {
+                            *actual = translation;
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+
+        // TODO: Add a utility to astra_formats so we don't have to parse repeatedly.
+        let script = astra_formats::pack_msbt_entries(&entries);
+        astra_formats::parse_msbt_script(&script).ok()
     }
 }
 

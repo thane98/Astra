@@ -1,7 +1,11 @@
 use std::collections::{BTreeSet, HashSet};
 use std::fmt::Debug;
+use std::io::{Read, Write};
+use std::net::{SocketAddr, TcpStream};
 use std::path::{Path, PathBuf};
+use std::str::FromStr;
 use std::sync::Arc;
+use std::time::Duration;
 
 use anyhow::{bail, Context, Result};
 use astra_formats::{Book, TextBundle};
@@ -53,9 +57,10 @@ impl Default for PathLocalizer {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub enum FileSystemLayer {
     Directory(DirectoryFileSystemLayer),
+    Network(NetworkFileSystemLayer),
 }
 
 impl FileSystemLayer {
@@ -65,15 +70,21 @@ impl FileSystemLayer {
         )?))
     }
 
+    pub fn network(ip: &str) -> Result<Self> {
+        Ok(FileSystemLayer::Network(NetworkFileSystemLayer::new(ip)?))
+    }
+
     pub fn read<T: AsRef<Path>>(&self, path_in_rom: T) -> Result<Vec<u8>> {
         match self {
             FileSystemLayer::Directory(directory) => directory.read(path_in_rom),
+            FileSystemLayer::Network(network) => network.read(path_in_rom),
         }
     }
 
     pub fn write<T: AsRef<Path>>(&self, path_in_rom: T, contents: &[u8]) -> Result<()> {
         match self {
             FileSystemLayer::Directory(directory) => directory.write(path_in_rom, contents),
+            _ => bail!("Layer does not support this operation"),
         }
     }
 
@@ -84,6 +95,7 @@ impl FileSystemLayer {
     ) -> Result<HashSet<PathBuf>> {
         match self {
             FileSystemLayer::Directory(directory) => directory.list_files(path_in_rom, glob),
+            _ => bail!("Layer does not support this operation"),
         }
     }
 
@@ -94,23 +106,26 @@ impl FileSystemLayer {
     ) -> Result<()> {
         match self {
             FileSystemLayer::Directory(directory) => directory.backup(path_in_rom, backup_root),
+            _ => bail!("Layer does not support this operation"),
         }
     }
 
-    pub fn exists<T: AsRef<Path>>(&self, path_in_rom: T) -> bool {
+    pub fn exists<T: AsRef<Path>>(&self, path_in_rom: T) -> Result<bool> {
         match self {
             FileSystemLayer::Directory(directory) => directory.exists(path_in_rom),
+            FileSystemLayer::Network(network) => network.exists(path_in_rom),
         }
     }
 
     pub fn root(&self) -> &Path {
         match self {
             FileSystemLayer::Directory(directory) => directory.root(),
+            _ => unimplemented!(),
         }
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct DirectoryFileSystemLayer {
     root: PathBuf,
 }
@@ -177,7 +192,7 @@ impl DirectoryFileSystemLayer {
         path_in_rom: T,
         backup_root: U,
     ) -> Result<()> {
-        if self.exists(&path_in_rom) {
+        if self.exists(&path_in_rom)? {
             let full_path = backup_root.as_ref().join(&path_in_rom);
             if let Some(parent) = full_path.parent() {
                 std::fs::create_dir_all(parent).with_context(|| {
@@ -195,8 +210,8 @@ impl DirectoryFileSystemLayer {
         Ok(())
     }
 
-    pub fn exists<T: AsRef<Path>>(&self, path_in_rom: T) -> bool {
-        self.root.join(path_in_rom).exists()
+    pub fn exists<T: AsRef<Path>>(&self, path_in_rom: T) -> Result<bool> {
+        Ok(self.root.join(path_in_rom).exists())
     }
 
     pub fn root(&self) -> &Path {
@@ -204,7 +219,80 @@ impl DirectoryFileSystemLayer {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
+pub struct NetworkFileSystemLayer {
+    addr: SocketAddr,
+}
+
+impl NetworkFileSystemLayer {
+    pub fn new(ip: &str) -> Result<Self> {
+        let addr = SocketAddr::from_str(ip)?;
+
+        Ok(Self { addr })
+    }
+
+    pub fn read<T: AsRef<Path>>(&self, path_in_rom: T) -> Result<Vec<u8>> {
+        let path = path_in_rom.as_ref().to_string_lossy().to_string();
+
+        self.read_impl(&path)
+            .with_context(|| format!("Failed to read file {} from server {}", path, self.addr))
+    }
+
+    fn read_impl(&self, path: &str) -> Result<Vec<u8>> {
+        info!("Requesting file {} from remote server...", path);
+
+        let mut stream = TcpStream::connect_timeout(&self.addr, Duration::from_secs(10))?;
+        stream.set_write_timeout(Some(Duration::from_secs(10)))?;
+        stream.set_read_timeout(Some(Duration::from_secs(10)))?;
+
+        stream.write_all(&[1])?;
+        stream.write_all(path.as_bytes())?;
+        stream.write_all("\n".as_bytes())?;
+
+        let mut result_buffer = [0u8; 1];
+        stream.read_exact(&mut result_buffer)?;
+        let mut size_buffer = [0u8; 8];
+        stream.read_exact(&mut size_buffer)?;
+        let size = u64::from_be_bytes(size_buffer);
+        let mut buffer = vec![0; size as usize];
+        stream.read_exact(&mut buffer)?;
+        if result_buffer[0] == 1 {
+            bail!("{}", String::from_utf8_lossy(&buffer));
+        }
+
+        info!("Got file of size {}", size);
+        Ok(buffer)
+    }
+
+    pub fn exists<T: AsRef<Path>>(&self, path_in_rom: T) -> Result<bool> {
+        let path = path_in_rom.as_ref().to_string_lossy().to_string();
+
+        self.exists_impl(&path).with_context(|| {
+            format!(
+                "Failed to check for path '{}' on server {}",
+                path, self.addr
+            )
+        })
+    }
+
+    fn exists_impl(&self, path: &str) -> Result<bool> {
+        info!("Checking if file {} exists on remote server...", path);
+
+        let mut stream = TcpStream::connect_timeout(&self.addr, Duration::from_secs(10))?;
+        stream.set_write_timeout(Some(Duration::from_secs(30)))?;
+        stream.set_read_timeout(Some(Duration::from_secs(30)))?;
+
+        stream.write_all(&[0])?;
+        stream.write_all(path.as_bytes())?;
+        stream.write_all("\n".as_bytes())?;
+
+        let mut buffer = [0u8; 1];
+        stream.read_exact(&mut buffer)?;
+        Ok(buffer[0] == 1)
+    }
+}
+
+#[derive(Debug)]
 pub struct LayeredFileSystem {
     layers: Vec<FileSystemLayer>,
 }
@@ -218,10 +306,9 @@ impl LayeredFileSystem {
     }
 
     pub fn read<T: AsRef<Path>>(&self, path_in_rom: T) -> Result<Vec<u8>> {
-        // TODO: Check if it's a file, not just if it exists
         let path = path_in_rom.as_ref();
         for layer in &self.layers {
-            if layer.exists(path) {
+            if layer.exists(path)? {
                 return layer.read(path);
             }
         }
@@ -240,7 +327,7 @@ impl LayeredFileSystem {
         let path = path_in_rom.as_ref();
         let mut all_layers = HashSet::new();
         for layer in &self.layers {
-            if layer.exists(path) {
+            if layer.exists(path)? {
                 all_layers.extend(layer.list_files(path, glob)?);
             }
         }
@@ -254,29 +341,25 @@ impl LayeredFileSystem {
     ) -> Result<()> {
         let path = path_in_rom.as_ref();
         let backup_root = backup_root.as_ref();
-        for layer in &self.layers {
-            if layer.exists(path) {
-                let p: &Path = path;
-                let b: &Path = backup_root;
-                info!(
-                    "Backuping up file {} to folder {}",
-                    p.display(),
-                    b.display()
-                );
-                return layer.backup(path, backup_root);
-            }
+        if self.layers[0].exists(path)? {
+            info!(
+                "Backuping up file {} to folder {}",
+                path.display(),
+                backup_root.display()
+            );
+            return self.layers[0].backup(path, backup_root);
         }
         Ok(())
     }
 
-    pub fn exists<T: AsRef<Path>>(&self, path_in_rom: T) -> bool {
+    pub fn exists<T: AsRef<Path>>(&self, path_in_rom: T) -> Result<bool> {
         let path = path_in_rom.as_ref();
         for layer in &self.layers {
-            if layer.exists(path) {
-                return true;
+            if layer.exists(path)? {
+                return Ok(true);
             }
         }
-        false
+        Ok(false)
     }
 
     pub fn root(&self) -> &Path {
@@ -368,12 +451,12 @@ impl LocalizedFileSystem {
     }
 
     pub fn exists<T: AsRef<Path>>(&self, path_in_rom: T, localized: bool) -> Result<bool> {
-        Ok(if localized {
+        if localized {
             self.file_system
                 .exists(self.path_localizer.localize(path_in_rom)?)
         } else {
             self.file_system.exists(path_in_rom)
-        })
+        }
     }
 
     pub fn root(&self) -> &Path {
@@ -439,7 +522,7 @@ impl CobaltFileSystemProxy {
         // Try reading an existing script from the Cobalt FS.
         if let Some(cobalt) = &self.cobalt_file_system {
             // For backwards compatibility, copy old scripts to the Cobalt FS.
-            if !cobalt.exists(&path_in_cobalt)
+            if !cobalt.exists(&path_in_cobalt)?
                 && self.main_file_system.exists(&script_path, false)?
             {
                 info!(
@@ -450,7 +533,7 @@ impl CobaltFileSystemProxy {
                 let raw = self.main_file_system.read(&script_path, false)?;
                 cobalt.write(&path_in_cobalt, &raw)?;
             }
-            if cobalt.exists(&path_in_cobalt) {
+            if cobalt.exists(&path_in_cobalt)? {
                 info!(
                     "Found script in Cobalt folder at {}",
                     path_in_cobalt.display()
@@ -535,7 +618,7 @@ impl CobaltFileSystemProxy {
         // Try to read a Cobalt XML.
         if let Some(cobalt) = &self.cobalt_file_system {
             let path_in_cobalt = Self::format_cobalt_xml_path(&path, Some(xml_name));
-            if cobalt.exists(&path_in_cobalt) {
+            if cobalt.exists(&path_in_cobalt)? {
                 info!(
                     "Loading book from Cobalt folder at {}",
                     path_in_cobalt.display()
@@ -642,7 +725,7 @@ impl CobaltFileSystemProxy {
     pub fn read_cobalt_msbts(&self) -> Result<Vec<(PathBuf, IndexMap<String, String>)>> {
         let mut files = vec![];
         if let Some(fs) = &self.cobalt_file_system {
-            if fs.exists(self.cobalt_msbt_dir()) {
+            if fs.exists(self.cobalt_msbt_dir())? {
                 for path in fs.list_files(self.cobalt_msbt_dir(), "*.txt")? {
                     info!("Loading Cobalt MSBT from path {}", path.display());
                     let raw = fs.read(&path)?;

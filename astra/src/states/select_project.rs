@@ -22,7 +22,7 @@ pub fn project_selector(
                 ui.heading("Select Project");
                 ui.separator();
                 if ui.button("New").clicked() {
-                    *next_state = Some(AppState::CreateProject(CreateProjectState::default()));
+                    *next_state = Some(AppState::CreateProject(Box::default()));
                 }
                 if ui.button("Settings").clicked() {
                     settings_modal.open();
@@ -75,9 +75,8 @@ fn project_table(config: &mut AppConfig, next_state: &mut Option<AppState>, ui: 
                     .add(Button::new("Edit").min_size([40., 0.].into()))
                     .clicked()
                 {
-                    *next_state = Some(AppState::CreateProject(CreateProjectState::new_edit(
-                        project.clone(),
-                        i,
+                    *next_state = Some(AppState::CreateProject(Box::new(
+                        CreateProjectState::new_edit(project.clone(), i),
                     )));
                 }
                 if ui

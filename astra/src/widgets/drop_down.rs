@@ -1,6 +1,9 @@
-use egui::{AboveOrBelow, Grid, Image, Response, ScrollArea, Ui, Widget, Sense};
+use egui::{AboveOrBelow, Grid, Image, Response, ScrollArea, Sense, Ui, Widget};
 
-use crate::{queue_transition, DecorationKind, KeyedListModel, KeyedViewItem, ListModel, Transition, ViewItem};
+use crate::{
+    queue_transition, DecorationKind, KeyedListModel, KeyedViewItem, ListModel, Transition,
+    ViewItem,
+};
 
 pub fn model_drop_down<'a, M, I, D>(
     model: &'a M,
@@ -26,22 +29,18 @@ where
     move |ui: &mut Ui| ModelDropDown::default().show_indexed(ui, model, dependencies, selected)
 }
 
-fn drop_down_item_ui<M, I, D>(
+fn drop_down_item_ui<I, D>(
     ui: &mut Ui,
-    model: &M,
     dependencies: &D,
-    index: usize,
+    item: Option<&I>,
+    text: &str,
     selected: bool,
 ) -> Response
 where
-    M: ListModel<I>,
     I: ViewItem<Dependencies = D>,
 {
-    if let Some(text) = model.item(index).map(|item| item.text(dependencies)) {
-        if let Some((decoration, scale)) = model
-            .item(index)
-            .and_then(|item| item.decoration(dependencies, DecorationKind::DropDown))
-        {
+    if let Some(item) = item {
+        if let Some((decoration, scale)) = item.decoration(dependencies, DecorationKind::DropDown) {
             ui.add(Image::new(&decoration).max_size(decoration.size_vec2() * scale));
         } else {
             ui.label("");
@@ -122,7 +121,7 @@ impl<'a> ModelDropDown<'a> {
         } else {
             AboveOrBelow::Above
         };
-        
+
         egui::popup_above_or_below_widget(ui, id, &text_edit_response, above_or_below, |ui| {
             ScrollArea::vertical().max_height(200.).show(ui, |ui| {
                 if I::decorated(DecorationKind::DropDown) {
@@ -130,16 +129,18 @@ impl<'a> ModelDropDown<'a> {
                         .num_columns(2)
                         .show(ui, |ui| {
                             for i in 0..model.len() {
-                                let text = model
-                                    .item(i)
-                                    .map(|item| item.text(dependencies))
+                                let item = model.item(i);
+                                let text =
+                                    item.map(|item| item.text(dependencies)).unwrap_or_default();
+                                let matches_search = item
+                                    .map(|item| item.matches_filter(&search, &text))
                                     .unwrap_or_default();
-                                if search.is_empty() || text.contains(&search) {
+                                if search.is_empty() || matches_search {
                                     let response = drop_down_item_ui(
                                         ui,
-                                        model,
                                         dependencies,
-                                        i,
+                                        item,
+                                        &text,
                                         Some(i) == selected_index,
                                     );
                                     ui.end_row();
@@ -151,11 +152,12 @@ impl<'a> ModelDropDown<'a> {
                         });
                 } else {
                     for i in 0..model.len() {
-                        let text = model
-                            .item(i)
-                            .map(|item| item.text(dependencies))
+                        let item = model.item(i);
+                        let text = item.map(|item| item.text(dependencies)).unwrap_or_default();
+                        let matches_search = item
+                            .map(|item| item.matches_filter(&search, &text))
                             .unwrap_or_default();
-                        if search.is_empty() || text.contains(&search) {
+                        if search.is_empty() || matches_search {
                             ui.vertical(|ui| {
                                 if ui
                                     .selectable_label(
@@ -182,7 +184,11 @@ impl<'a> ModelDropDown<'a> {
             });
         }
 
-        let mut response = ui.interact(text_edit_response.rect, id, Sense::focusable_noninteractive());
+        let mut response = ui.interact(
+            text_edit_response.rect,
+            id,
+            Sense::focusable_noninteractive(),
+        );
         if selection.is_some() {
             response.mark_changed();
         }

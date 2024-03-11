@@ -3,6 +3,7 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::marker::PhantomData;
 use std::rc::Rc;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 
 use astra_core::{Astra, OpenBook};
@@ -25,6 +26,9 @@ use super::GroupViewItem;
 pub struct EditorState {
     pub message_db: MessageDbWrapper,
     pub texture_cache: Rc<RefCell<TextureCache>>,
+    pub spawns: Arc<RwLock<HashMap<String, SpawnSheet>>>,
+    pub astra: Arc<RwLock<Astra>>,
+
     pub accessory: AccessorySheet,
     pub anim_set: AnimSetSheet,
     pub asset_table: AssetTableSheet,
@@ -48,19 +52,6 @@ pub struct EditorState {
     pub flea_market: FleaMarketSheet,
     pub accessory_shop: AccessoryShopSheet,
     pub terrain: TerrainDataSheet,
-    pub spawns: HashMap<String, SpawnSheet>,
-    pub astra: Arc<RwLock<Astra>>,
-}
-
-impl EditorState {
-    pub fn load_spawn_sheet(&mut self, file_stem: &str) -> Option<SpawnSheet> {
-        self.spawns.get(file_stem).cloned().or_else(|| {
-            self.astra
-                .write()
-                .get_dispos(file_stem)
-                .map(|dispos| SheetHandle::new(dispos, SpawnSheetRetriever))
-        })
-    }
 }
 
 /// Strategy for retrieving a sheet from its containing book.
@@ -73,7 +64,7 @@ pub trait SheetRetriever<B, S> {
 pub struct SheetHandle<R, B, S> {
     book: OpenBook<B>,
     retriever: R,
-    revision_number: Rc<RefCell<usize>>,
+    revision_number: AtomicUsize,
     phantom: PhantomData<S>,
 }
 
@@ -85,7 +76,7 @@ where
         Self {
             book: self.book.clone(),
             retriever: self.retriever.clone(),
-            revision_number: self.revision_number.clone(),
+            revision_number: AtomicUsize::new(self.revision_number.load(Ordering::Relaxed)),
             phantom: PhantomData,
         }
     }
@@ -100,7 +91,7 @@ where
         Self {
             book,
             retriever,
-            revision_number: Rc::new(RefCell::new(0)),
+            revision_number: Default::default(),
             phantom: PhantomData,
         }
     }
@@ -120,14 +111,14 @@ where
         });
         if changed {
             self.book.mark_dirty();
-            *self.revision_number.borrow_mut() += 1;
+            self.revision_number.fetch_add(1, Ordering::Relaxed);
         }
     }
 
     /// Retrieve the revision number for the sheet.
     /// This is incremented every time a write operation modifies it.
     pub fn revision_number(&self) -> usize {
-        *self.revision_number.borrow()
+        self.revision_number.load(Ordering::Relaxed)
     }
 }
 
@@ -223,20 +214,14 @@ impl ViewItem for AssetDef {
     type Dependencies = EditorState;
 
     fn text(&self, _: &Self::Dependencies) -> Cow<'_, str> {
-        let condition_text = self
-            .conditions
-            .iter()
-            .join(" and ");
+        let condition_text = self.conditions.iter().join(" and ");
 
         if self.preset_name.is_empty() && condition_text.is_empty() {
             Cow::Borrowed("{unnamed}")
         } else if self.preset_name.is_empty() {
             Cow::Owned(condition_text)
         } else {
-            Cow::Owned(format!(
-                "{}, ({})",
-                self.preset_name,condition_text
-            ))
+            Cow::Owned(format!("{}, ({})", self.preset_name, condition_text))
         }
     }
 }
@@ -785,6 +770,11 @@ impl ViewItem for Skill {
 
     fn screen() -> Option<Screens> {
         Some(Screens::Skill)
+    }
+
+    fn matches_filter(&self, filter_expr: &str, display_text: &str) -> bool {
+        display_text.to_lowercase().contains(filter_expr)
+            || self.name.to_lowercase().contains(filter_expr)
     }
 }
 

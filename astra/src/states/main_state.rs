@@ -1,5 +1,4 @@
 use std::cell::RefCell;
-use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::{Arc, OnceLock};
 
@@ -162,7 +161,7 @@ impl MainState {
                 AccessoryShopSheetRetriever,
             ),
             skill: SheetHandle::new(astra.read().get_skill_book(), SkillSheetRetriever),
-            spawns: HashMap::new(),
+            spawns: Default::default(),
             terrain: SheetHandle::new(astra.read().get_terrain_book(), TerrainDataSheetRetriever),
             message_db: MessageDbWrapper::new(message_db),
             texture_cache: Rc::new(RefCell::new(texture_cache)),

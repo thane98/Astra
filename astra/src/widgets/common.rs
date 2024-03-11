@@ -56,13 +56,15 @@ pub fn raised_heading(text: &str) -> impl Widget + '_ {
 pub fn folder_picker(value: &mut String) -> impl Widget + '_ {
     move |ui: &mut Ui| {
         ui.horizontal(|ui| {
-            ui.text_edit_singleline(value);
+            let mut response = ui.text_edit_singleline(value);
             if ui.button("Open").clicked() {
                 if let Some(path) = FileDialog::new().pick_folder() {
                     *value = path.to_string_lossy().to_string();
+                    response.mark_changed();
                 }
             }
+            response
         })
-        .response
+        .inner
     }
 }

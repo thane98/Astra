@@ -1,16 +1,17 @@
 mod cached_view;
 mod config;
 mod sheet;
+mod shortcuts;
 mod theme;
 
 pub use cached_view::*;
 pub use config::*;
-use itertools::Itertools;
+pub use shortcuts::*;
 pub use sheet::*;
 pub use theme::*;
 
 use std::borrow::Cow;
-
+use itertools::Itertools;
 use egui::TextureHandle;
 use indexmap::IndexMap;
 
@@ -50,8 +51,18 @@ pub trait ViewItem: Clone {
         None
     }
 
+    /// Get the screen this view item is associated with.
+    /// This is used to transition to that screen from drop downs containing the item.
     fn screen() -> Option<Screens> {
         None
+    }
+
+    /// Determine if this item should be displayed in a search. For performance, this
+    /// function makes some assumptions:
+    /// * `filter_expr` is in lowercase. Avoids calling `to_lowercase` on every item in the collection.
+    /// * `display_text` comes from calling `ViewItem::text`. Avoids allocating twice to search + display.
+    fn matches_filter(&self, filter_expr: &str, display_text: &str) -> bool {
+        display_text.to_lowercase().contains(filter_expr)
     }
 }
 
@@ -281,10 +292,8 @@ impl FilterProxyBuilder {
                 .item(i)
                 .map(|item| {
                     let matches_search_by_index = (i + 1).to_string() == self.filter_expr;
-                    let matches_search_by_name = item
-                        .text(dependencies)
-                        .to_lowercase()
-                        .contains(&self.filter_expr.to_lowercase());
+                    let matches_search_by_name =
+                        item.matches_filter(&self.filter_expr, &item.text(dependencies));
                     matches_search_by_index || matches_search_by_name
                 })
                 .unwrap_or_default();

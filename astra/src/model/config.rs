@@ -1,14 +1,20 @@
 use std::collections::HashMap;
-use std::path::PathBuf;
+use std::net::SocketAddrV4;
+use std::path::{Path, PathBuf};
+use std::str::FromStr;
 
 use anyhow::{bail, Result};
-use astra_core::{AstraProject, PathLocalizer};
+use astra_core::{AstraProject, PathLocalizer, RomSource};
 use directories::ProjectDirs;
 use egui::Color32;
 use maplit::hashmap;
 use serde::{Deserialize, Serialize};
 
 use crate::Theme;
+
+fn default_show_network_warning() -> bool {
+    true
+}
 
 fn default_terrain_brightness() -> f32 {
     0.7
@@ -46,6 +52,10 @@ pub struct AppConfig {
     pub terrain_brightness: f32,
     #[serde(default = "default_tile_color_overrides")]
     pub tile_color_overrides: HashMap<String, Color32>,
+    #[serde(default)]
+    pub cobalt_path: String,
+    #[serde(default = "default_show_network_warning")]
+    pub show_network_warning: bool,
 }
 
 impl AppConfig {
@@ -85,20 +95,52 @@ impl AppConfig {
     }
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(untagged)]
+pub enum RomSourceDef {
+    Directory { romfs_path: String },
+    Network { romfs_ip: String },
+}
+
+impl RomSourceDef {
+    pub fn is_valid(&self) -> bool {
+        match self {
+            Self::Directory { romfs_path } => Path::new(romfs_path).is_dir(),
+            Self::Network { romfs_ip } => SocketAddrV4::from_str(romfs_ip).is_ok(),
+        }
+    }
+}
+
+impl Default for RomSourceDef {
+    fn default() -> Self {
+        Self::Directory {
+            romfs_path: Default::default(),
+        }
+    }
+}
+
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct ProjectDef {
     pub name: String,
-    pub romfs_path: String,
+    #[serde(flatten)]
+    pub rom_source: RomSourceDef,
     pub output_mode: ProjectOutputMode,
     pub active_country_dir_name: String,
     pub active_language_dir_name: String,
 }
 
 impl ProjectDef {
+    pub fn is_valid_for_new_cobalt_project(&self) -> bool {
+        self.rom_source.is_valid()
+            && !self.name.is_empty()
+            && !self.active_country_dir_name.is_empty()
+            && !self.active_language_dir_name.is_empty()
+    }
+
     pub fn is_valid(&self) -> bool {
         self.output_mode.is_valid()
+            && self.rom_source.is_valid()
             && !(self.name.is_empty()
-                || self.romfs_path.is_empty()
                 || self.active_country_dir_name.is_empty()
                 || self.active_language_dir_name.is_empty())
     }
@@ -149,7 +191,12 @@ impl From<ProjectDef> for AstraProject {
         };
         Self {
             backup_dir: PathBuf::from("Backups"),
-            romfs_dir: value.romfs_path.into(),
+            rom_source: match value.rom_source {
+                RomSourceDef::Directory { romfs_path } => {
+                    RomSource::Directory(PathBuf::from(romfs_path))
+                }
+                RomSourceDef::Network { romfs_ip } => RomSource::Network(romfs_ip),
+            },
             output_dir,
             cobalt_dir,
             cobalt_msbt,

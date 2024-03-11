@@ -228,6 +228,7 @@ dependencies = [
  "rfd",
  "serde",
  "serde_yaml",
+ "tracing",
  "tracing-appender",
  "tracing-subscriber",
 ]
