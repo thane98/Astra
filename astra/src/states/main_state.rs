@@ -20,6 +20,7 @@ use crate::{
     RelianceBonusDataSheetRetriever, RelianceDataSheetRetriever, RelianceEditor,
     RelianceExpDataSheetRetriever, SaveScreen, ScriptManager, SheetHandle, ShopEditor, SkillEditor,
     SkillSheetRetriever, TerrainDataEditor, TerrainDataSheetRetriever, TextureCache, Theme,
+    NEXT_TAB_SHORTCUT, PREV_TAB_SHORTCUT,
 };
 
 static TRANSITION: OnceLock<Mutex<Option<Transition>>> = OnceLock::new();
@@ -76,6 +77,60 @@ pub enum Screens {
     Shop,
     Skill,
     Terrain,
+}
+
+impl Screens {
+    pub fn from_tab_index(index: usize) -> Option<Self> {
+        match index {
+            0 => Some(Screens::Accessory),
+            1 => Some(Screens::AnimSet),
+            2 => Some(Screens::AssetTable),
+            3 => Some(Screens::Chapter),
+            4 => Some(Screens::Person),
+            5 => Some(Screens::Job),
+            6 => Some(Screens::Forge),
+            7 => Some(Screens::God),
+            8 => Some(Screens::Item),
+            9 => Some(Screens::Param),
+            10 => Some(Screens::Reliance),
+            11 => Some(Screens::Scripts),
+            12 => Some(Screens::Shop),
+            13 => Some(Screens::Skill),
+            14 => Some(Screens::Terrain),
+            _ => None,
+        }
+    }
+
+    pub fn get_tab_index(&self) -> Option<usize> {
+        match self {
+            Screens::Accessory => Some(0),
+            Screens::AnimSet => Some(1),
+            Screens::AssetTable => Some(2),
+            Screens::Chapter => Some(3),
+            Screens::Person => Some(4),
+            Screens::Job => Some(5),
+            Screens::Forge => Some(6),
+            Screens::God => Some(7),
+            Screens::Item => Some(8),
+            Screens::Param => Some(9),
+            Screens::Reliance => Some(10),
+            Screens::Save => None,
+            Screens::Scripts => Some(11),
+            Screens::Shop => Some(12),
+            Screens::Skill => Some(13),
+            Screens::Terrain => Some(14),
+        }
+    }
+
+    pub fn next_tab(&self) -> Option<Self> {
+        self.get_tab_index()
+            .and_then(|index| Self::from_tab_index(if index + 1 < 14 { index + 1 } else { 0 }))
+    }
+
+    pub fn prev_tab(&self) -> Option<Self> {
+        self.get_tab_index()
+            .and_then(|index| Self::from_tab_index(if index > 0 { index - 1 } else { 14 }))
+    }
 }
 
 pub struct MainState {
@@ -293,6 +348,18 @@ pub fn main_window(
             Screens::Reliance => state.reliance_editor.tab_strip(ui),
             Screens::Shop => state.shop_editor.tab_strip(ui),
             _ => {}
+        }
+    });
+
+    ctx.input_mut(|input| {
+        if input.consume_shortcut(&PREV_TAB_SHORTCUT) {
+            if let Some(screen) = state.active_screen.prev_tab() {
+                state.active_screen = screen;
+            }
+        } else if input.consume_shortcut(&NEXT_TAB_SHORTCUT) {
+            if let Some(screen) = state.active_screen.next_tab() {
+                state.active_screen = screen;
+            }
         }
     });
 

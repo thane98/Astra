@@ -64,7 +64,7 @@ pub trait SheetRetriever<B, S> {
 pub struct SheetHandle<R, B, S> {
     book: OpenBook<B>,
     retriever: R,
-    revision_number: AtomicUsize,
+    revision_number: Arc<AtomicUsize>,
     phantom: PhantomData<S>,
 }
 
@@ -76,7 +76,9 @@ where
         Self {
             book: self.book.clone(),
             retriever: self.retriever.clone(),
-            revision_number: AtomicUsize::new(self.revision_number.load(Ordering::Relaxed)),
+            revision_number: Arc::new(AtomicUsize::new(
+                self.revision_number.load(Ordering::Relaxed),
+            )),
             phantom: PhantomData,
         }
     }

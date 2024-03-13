@@ -4,7 +4,10 @@ use egui_modal::Modal;
 use indexmap::IndexMap;
 
 use crate::model::{DecorationKind, GroupViewItem};
-use crate::{blank_slate, SheetHandle, SheetRetriever, ViewItem};
+use crate::{
+    blank_slate, SheetHandle, SheetRetriever, ViewItem, ADD_SHORTCUT, COPY_TO_SHORTCUT,
+    DELETE_SHORTCUT, DUPLICATE_SHORTCUT, INSERT_SHORTCUT, MOVE_DOWN_SHORTCUT, MOVE_UP_SHORTCUT,
+};
 
 use super::{group_add_modal_content, group_copy_modal_content, optional_image, GroupModalCommand};
 
@@ -30,7 +33,9 @@ struct GroupEntryCommand {
 }
 
 enum GroupEntryCommandKind {
+    Add,
     Insert,
+    Duplicate,
     Remove,
     MoveUp,
     MoveDown,
@@ -74,7 +79,7 @@ impl GroupCommand {
 impl GroupEntryCommand {
     pub fn act<I>(self, data: &mut IndexMap<String, Vec<I>>) -> bool
     where
-        I: Default,
+        I: Default + Clone,
     {
         let group = if let Some(group) = data.get_mut(&self.group) {
             group
@@ -82,6 +87,18 @@ impl GroupEntryCommand {
             return false;
         };
         match self.kind {
+            GroupEntryCommandKind::Add => {
+                group.push(I::default());
+                true
+            }
+            GroupEntryCommandKind::Duplicate => {
+                if self.index < group.len() {
+                    group.insert(self.index + 1, group[self.index].clone());
+                    true
+                } else {
+                    false
+                }
+            }
             GroupEntryCommandKind::Remove => {
                 if self.index < group.len() {
                     group.remove(self.index);
@@ -242,6 +259,14 @@ impl GroupEditorContent {
                         });
                     });
 
+                let no_widgets_focused = ctx.memory(|mem| mem.focus().is_none());
+                if no_widgets_focused && group_entry_command.is_none() {
+                    if let Some((group, index)) = self.selection.clone() {
+                        group_entry_command =
+                            self.process_group_entry_hot_keys(&copy_modal, ui, group, index);
+                    }
+                }
+
                 model.write(|data| {
                     let mut changed = false;
                     if let Some(command) = group_command {
@@ -367,8 +392,16 @@ impl GroupEditorContent {
     ) -> Option<GroupEntryCommand> {
         let mut command_kind = None;
         ui.menu_button("…", |ui| {
+            if ui.button("➕ Add Entry").clicked() {
+                command_kind = Some(GroupEntryCommandKind::Add);
+                ui.close_menu();
+            }
             if ui.button("⮩ Insert Below").clicked() {
                 command_kind = Some(GroupEntryCommandKind::Insert);
+                ui.close_menu();
+            }
+            if ui.button("🗐 Duplicate").clicked() {
+                command_kind = Some(GroupEntryCommandKind::Duplicate);
                 ui.close_menu();
             }
             ui.separator();
@@ -397,6 +430,45 @@ impl GroupEditorContent {
             index,
             kind,
         })
+    }
+
+    fn process_group_entry_hot_keys(
+        &mut self,
+        copy_modal: &Modal,
+        ui: &mut Ui,
+        group: String,
+        index: usize,
+    ) -> Option<GroupEntryCommand> {
+        let mut command_kind = None;
+        let mut open_modal = false;
+        ui.input_mut(|input| {
+            if input.consume_shortcut(&ADD_SHORTCUT) {
+                command_kind = Some(GroupEntryCommandKind::Add);
+            }
+            if input.consume_shortcut(&INSERT_SHORTCUT) {
+                command_kind = Some(GroupEntryCommandKind::Insert);
+            }
+            if input.consume_shortcut(&DUPLICATE_SHORTCUT) {
+                command_kind = Some(GroupEntryCommandKind::Duplicate);
+            }
+            if input.consume_shortcut(&COPY_TO_SHORTCUT) {
+                open_modal = true;
+            }
+            if input.consume_shortcut(&MOVE_UP_SHORTCUT) {
+                command_kind = Some(GroupEntryCommandKind::MoveUp);
+            }
+            if input.consume_shortcut(&MOVE_DOWN_SHORTCUT) {
+                command_kind = Some(GroupEntryCommandKind::MoveDown);
+            }
+            if input.consume_shortcut(&DELETE_SHORTCUT) {
+                command_kind = Some(GroupEntryCommandKind::Remove);
+            }
+        });
+        if open_modal {
+            self.copy_source = Some((group.to_string(), index));
+            copy_modal.open();
+        }
+        command_kind.map(|kind| GroupEntryCommand { group, index, kind })
     }
 
     pub fn content<I>(
