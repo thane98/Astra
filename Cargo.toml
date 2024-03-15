@@ -9,6 +9,7 @@ members = [
 
 [workspace.dependencies]
 anyhow = "1.0.65"
+bimap = "0.6.3"
 indexmap = "2.0.0"
 maplit = "1.0.2"
 itertools = "0.10.5"

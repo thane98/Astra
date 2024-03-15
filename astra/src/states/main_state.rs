@@ -19,8 +19,8 @@ use crate::{
     JobSheetRetriever, MessageDb, MessageDbWrapper, PersonEditor, PersonSheetRetriever,
     RelianceBonusDataSheetRetriever, RelianceDataSheetRetriever, RelianceEditor,
     RelianceExpDataSheetRetriever, SaveScreen, ScriptManager, SheetHandle, ShopEditor, SkillEditor,
-    SkillSheetRetriever, TerrainDataEditor, TerrainDataSheetRetriever, TextureCache, Theme,
-    NEXT_TAB_SHORTCUT, PREV_TAB_SHORTCUT,
+    SkillSheetRetriever, TerrainDataEditor, TerrainDataSheetRetriever, TextDataEditor,
+    TextureCache, Theme, NEXT_TAB_SHORTCUT, PREV_TAB_SHORTCUT,
 };
 
 static TRANSITION: OnceLock<Mutex<Option<Transition>>> = OnceLock::new();
@@ -77,6 +77,7 @@ pub enum Screens {
     Shop,
     Skill,
     Terrain,
+    Text,
 }
 
 impl Screens {
@@ -97,6 +98,7 @@ impl Screens {
             12 => Some(Screens::Shop),
             13 => Some(Screens::Skill),
             14 => Some(Screens::Terrain),
+            15 => Some(Screens::Text),
             _ => None,
         }
     }
@@ -119,17 +121,18 @@ impl Screens {
             Screens::Shop => Some(12),
             Screens::Skill => Some(13),
             Screens::Terrain => Some(14),
+            Screens::Text => Some(15),
         }
     }
 
     pub fn next_tab(&self) -> Option<Self> {
         self.get_tab_index()
-            .and_then(|index| Self::from_tab_index(if index + 1 < 14 { index + 1 } else { 0 }))
+            .and_then(|index| Self::from_tab_index(if index + 1 < 16 { index + 1 } else { 0 }))
     }
 
     pub fn prev_tab(&self) -> Option<Self> {
         self.get_tab_index()
-            .and_then(|index| Self::from_tab_index(if index > 0 { index - 1 } else { 14 }))
+            .and_then(|index| Self::from_tab_index(if index > 0 { index - 1 } else { 15 }))
     }
 }
 
@@ -154,6 +157,7 @@ pub struct MainState {
     shop_editor: ShopEditor,
     skill_editor: SkillEditor,
     terrain_editor: TerrainDataEditor,
+    text_data_editor: TextDataEditor,
 }
 
 impl MainState {
@@ -237,11 +241,20 @@ impl MainState {
             shop_editor: ShopEditor::new(&state),
             skill_editor: SkillEditor::new(&state),
             terrain_editor: TerrainDataEditor::new(&state),
+            text_data_editor: TextDataEditor::new(&state),
             editor_state: state,
             save_screen: SaveScreen::new(astra.clone()),
             script_manager: ScriptManager::new(astra),
             active_screen: Screens::Person,
             toasts: Toasts::default(),
+        }
+    }
+
+    fn on_leave_tab(&mut self, prev: Screens) {
+        #[allow(clippy::single_match)]
+        match prev {
+            Screens::Text => self.text_data_editor.on_leave(&self.editor_state),
+            _ => {}
         }
     }
 }
@@ -324,6 +337,7 @@ pub fn main_window(
             });
         });
         ui.separator();
+        let prev = state.active_screen;
         ui.horizontal_wrapped(|ui| {
             ui.selectable_value(&mut state.active_screen, Screens::Accessory, "Accessory");
             ui.selectable_value(&mut state.active_screen, Screens::AnimSet, "Anim Set");
@@ -340,7 +354,11 @@ pub fn main_window(
             ui.selectable_value(&mut state.active_screen, Screens::Shop, "Shop");
             ui.selectable_value(&mut state.active_screen, Screens::Skill, "Skills");
             ui.selectable_value(&mut state.active_screen, Screens::Terrain, "Terrain");
+            ui.selectable_value(&mut state.active_screen, Screens::Text, "Text");
         });
+        if state.active_screen != prev {
+            state.on_leave_tab(prev);
+        }
         match state.active_screen {
             Screens::Chapter => state.chapter_editor.tab_strip(ui, &mut state.editor_state),
             Screens::Forge => state.forge_editor.tab_strip(ui),
@@ -384,6 +402,7 @@ pub fn main_window(
         Screens::Shop => state.shop_editor.show(ctx, &mut state.editor_state),
         Screens::Skill => state.skill_editor.show(ctx, &mut state.editor_state),
         Screens::Terrain => state.terrain_editor.show(ctx, &mut state.editor_state),
+        Screens::Text => state.text_data_editor.show(ctx, &mut state.editor_state, config),
     }
 
     state.toasts.show(ctx);

@@ -287,13 +287,14 @@ impl FilterProxyBuilder {
         I: ViewItem<Dependencies = D>,
     {
         self.proxy_indices.clear();
+        let filter_expr = self.filter_expr.to_lowercase();
         for i in 0..model.len() {
             let matches_filter = model
                 .item(i)
                 .map(|item| {
                     let matches_search_by_index = (i + 1).to_string() == self.filter_expr;
                     let matches_search_by_name =
-                        item.matches_filter(&self.filter_expr, &item.text(dependencies));
+                        item.matches_filter(&filter_expr, &item.text(dependencies));
                     matches_search_by_index || matches_search_by_name
                 })
                 .unwrap_or_default();

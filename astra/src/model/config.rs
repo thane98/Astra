@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::net::SocketAddrV4;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
@@ -18,6 +18,17 @@ fn default_show_network_warning() -> bool {
 
 fn default_terrain_brightness() -> f32 {
     0.7
+}
+
+fn default_override_translation_keys_person() -> HashSet<String> {
+    let mut overrides = HashSet::new();
+    overrides.insert("PID_イル".to_string());
+    overrides.insert("PID_エル".to_string());
+    overrides
+}
+
+fn default_override_translation_keys_god() -> HashSet<String> {
+    Default::default()
 }
 
 fn default_tile_color_overrides() -> HashMap<String, Color32> {
@@ -56,6 +67,10 @@ pub struct AppConfig {
     pub cobalt_path: String,
     #[serde(default = "default_show_network_warning")]
     pub show_network_warning: bool,
+    #[serde(default = "default_override_translation_keys_person")]
+    pub override_translation_keys_person: HashSet<String>,
+    #[serde(default = "default_override_translation_keys_god")]
+    pub override_translation_keys_god: HashSet<String>,
 }
 
 impl AppConfig {

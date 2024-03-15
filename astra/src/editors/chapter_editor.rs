@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::sync::mpsc::{Receiver, TryRecvError};
 use std::sync::Arc;
 
-use astra_core::{Astra, OpenMessageScript, OpenTerrain};
+use astra_core::{Astra, OpenTerrain};
 use astra_types::{Chapter, ChapterBook, Spawn};
 use egui::{Button, CentralPanel, ComboBox, Slider, TopBottomPanel, Ui};
 use egui_modal::{Icon, Modal};
@@ -16,10 +16,9 @@ use crate::widgets::{
 };
 use crate::{
     blank_slate, dispos_grid, editor_tab_strip, f32_drag, i8_drag, indexed_model_drop_down,
-    model_drop_down, msbt_key_value_singleline, msbt_script_editor, terrain_grid, u32_drag,
-    u8_drag, AppConfig, CacheItem, CachedView, ChapterSheet, ChapterSheetRetriever, EditorState,
-    GroupEditorContent, ListEditorContent, PropertyGrid, SheetHandle, SpawnSheet,
-    SpawnSheetRetriever,
+    model_drop_down, msbt_key_value_singleline, terrain_grid, u32_drag, u8_drag, AppConfig,
+    CacheItem, CachedView, ChapterSheet, ChapterSheetRetriever, EditorState, GroupEditorContent,
+    ListEditorContent, PropertyGrid, SheetHandle, SpawnSheet, SpawnSheetRetriever,
 };
 
 const CHAPTER_FLAG_LABELS: &[&str] = &[
@@ -66,7 +65,6 @@ enum Tab {
     Core,
     Dispos,
     Terrain,
-    Dialogue,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -93,7 +91,6 @@ struct OpenChapterState {
     dispos: Option<SpawnSheet>,
     encount_dispos: Option<SpawnSheet>,
     terrain: Option<OpenTerrain>,
-    message: Option<OpenMessageScript>,
     script: String,
     encount_script: String,
     kizuna_script: String,
@@ -110,14 +107,10 @@ impl OpenChapterState {
         let encount_stem = format!("{}e", dispos_stem);
         let terrain =
             astra.get_chapter_terrain(&chapter.terrain.replace('*', cid_part).to_lowercase());
-        let message = astra
-            .open_msbt_script(&chapter.mess.replace('*', cid_part).to_lowercase())
-            .ok();
         Self {
             dispos: load_dispos_sheet(spawn_cache, astra, dispos_stem),
             encount_dispos: load_dispos_sheet(spawn_cache, astra, encount_stem),
             terrain,
-            message,
             script: chapter.script_bmap.replace('*', cid_part).to_lowercase(),
             encount_script: chapter.script_encount.replace('*', cid_part).to_lowercase(),
             kizuna_script: chapter.script_kizuna.replace('*', cid_part).to_lowercase(),
@@ -243,7 +236,7 @@ impl ChapterEditor {
 
     pub fn show(&mut self, ctx: &egui::Context, state: &mut EditorState, config: &mut AppConfig) {
         self.loader.update();
-        
+
         if self.loader.is_loading() {
             CentralPanel::default().show(ctx, |ui| {
                 ui.centered_and_justified(|ui| {
@@ -298,7 +291,6 @@ impl ChapterEditor {
             Tab::Core => self.core_tab_content(ctx, state, config),
             Tab::Dispos => self.dispos_tab_content(ctx, state, config),
             Tab::Terrain => self.terrain_tab_content(ctx, state, config),
-            Tab::Dialogue => self.dialogue_tab_content(ctx),
         }
     }
 
@@ -330,7 +322,6 @@ impl ChapterEditor {
             ui.selectable_value(&mut self.tab, Tab::Core, "Core");
             ui.selectable_value(&mut self.tab, Tab::Dispos, "Dispos");
             ui.selectable_value(&mut self.tab, Tab::Terrain, "Terrain");
-            ui.selectable_value(&mut self.tab, Tab::Dialogue, "Dialogue");
             ComboBox::from_id_source("dispos_kind")
                 .selected_text(match self.dispos_kind {
                     DisposKind::Main => "Main",
@@ -855,21 +846,5 @@ impl ChapterEditor {
                 });
             });
         }
-    }
-
-    fn dialogue_tab_content(&mut self, ctx: &egui::Context) {
-        CentralPanel::default().show(ctx, |ui| {
-            let message = match &self.loader {
-                ChapterLoader::Loaded(Some(state)) => state.message.as_ref(),
-                _ => None,
-            };
-            if let Some(script) = message {
-                msbt_script_editor(ui, script)
-            } else {
-                ui.centered_and_justified(|ui| {
-                    ui.heading("Archive not found.");
-                });
-            }
-        });
     }
 }

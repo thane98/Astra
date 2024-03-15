@@ -46,6 +46,10 @@ impl PathLocalizer {
             )
         }
     }
+
+    pub fn localization_dir(&self) -> PathBuf {
+        Path::new(&self.country_dir).join(&self.language_dir)
+    }
 }
 
 impl Default for PathLocalizer {
@@ -369,7 +373,7 @@ impl LayeredFileSystem {
 
 #[derive(Debug)]
 pub struct LocalizedFileSystem {
-    path_localizer: PathLocalizer,
+    pub path_localizer: PathLocalizer,
     file_system: LayeredFileSystem,
 }
 
@@ -512,8 +516,8 @@ impl CobaltFileSystemProxy {
     }
 
     pub fn read_script(&self, script_file_name: &str) -> Result<(PathBuf, BundlePersistFormat)> {
-        let path_in_cobalt = Path::new(r"patches\scripts")
-            .with_file_name(script_file_name)
+        let path_in_cobalt = Path::new(r"scripts")
+            .join(script_file_name)
             .with_extension("txt");
         let base_path =
             Path::new(r"StreamingAssets\aa\Switch\fe_assets_scripts").join(script_file_name);

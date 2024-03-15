@@ -14,6 +14,7 @@ mod script_manager;
 mod shop_editor;
 mod skill_editor;
 mod terrain_editor;
+mod text_data_editor;
 
 pub use accessory_editor::*;
 pub use anim_set_editor::*;
@@ -31,3 +32,4 @@ pub use script_manager::*;
 pub use shop_editor::*;
 pub use skill_editor::*;
 pub use terrain_editor::*;
+pub use text_data_editor::*;

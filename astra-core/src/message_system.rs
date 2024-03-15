@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{BTreeSet, HashMap};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
@@ -78,6 +78,7 @@ impl MessageSystem {
                 .file_name()
                 .map(|f| f.to_string_lossy().into_owned())
                 .ok_or_else(|| anyhow!("bad cobalt MSBT file name"))?;
+            println!("{}", file_name);
             archives.insert(
                 file_name,
                 OpenMessageArchive::new_cobalt(path.clone(), archive)?,
@@ -93,6 +94,35 @@ impl MessageSystem {
 
     pub fn archives(&self) -> impl Iterator<Item = &String> {
         self.archives.keys()
+    }
+
+    pub fn scripts(&self) -> BTreeSet<String> {
+        let mut scripts = BTreeSet::new();
+        let localized_path = self.file_system.path_localizer.localization_dir();
+        self.list_scripts_in_dir(&mut scripts, &localized_path);
+        let puppet_path = Path::new("pu").join("puppet");
+        self.list_scripts_in_dir(&mut scripts, &puppet_path);
+        let sound_path = Path::new("so").join("sound");
+        self.list_scripts_in_dir(&mut scripts, &sound_path);
+        scripts
+    }
+
+    fn list_scripts_in_dir(&self, out: &mut BTreeSet<String>, dir: &Path) {
+        let root = Path::new(r"StreamingAssets/aa/Switch/fe_assets_message").join(dir);
+        for archive in self
+            .file_system
+            .list_files(root, "*.bytes.bundle", false)
+            .unwrap_or_default()
+        {
+            let file_name = archive
+                .file_name()
+                .map(|f| f.to_string_lossy().to_string())
+                .unwrap_or_default();
+            let file_stem = file_name.strip_suffix(".bytes.bundle").unwrap_or_default();
+            if !self.archives.contains_key(file_stem) {
+                out.insert(dir.join(file_stem).to_string_lossy().to_string());
+            }
+        }
     }
 
     pub fn open_script(&mut self, archive_name: &str) -> Result<OpenMessageScript> {
@@ -245,7 +275,7 @@ impl OpenMessageScript {
         self.0.read().path.clone()
     }
 
-    pub fn script(&self, consumer: impl FnOnce(&mut String) -> bool) {
+    pub fn access(&self, consumer: impl FnOnce(&mut String) -> bool) {
         let mut script = self.0.write();
         if consumer(&mut script.script) {
             script.dirty = true;
@@ -262,7 +292,7 @@ struct OpenMessageScriptInner {
 
 impl OpenMessageScriptInner {
     pub fn load(file_system: &LocalizedFileSystem, path: String) -> Result<Self> {
-        let contents = file_system.read(&path, true)?;
+        let contents = file_system.read(&path, false)?;
         let mut bundle = MessageBundle::from_slice(&contents)?;
         Ok(Self {
             script: bundle.take_script()?,
@@ -274,12 +304,12 @@ impl OpenMessageScriptInner {
 
     pub fn save(&mut self, file_system: &LocalizedFileSystem, backup_root: &Path) -> Result<()> {
         if self.dirty {
-            file_system.backup(&self.path, backup_root, true)?;
+            file_system.backup(&self.path, backup_root, false)?;
             self.bundle.replace_script(&self.script)?;
             let raw_bundle = self.bundle.serialize()?;
             // Clear out the data after building the bundle to avoid a memory leak.
             self.bundle.replace_script("")?;
-            file_system.write(&self.path, &raw_bundle, true)?;
+            file_system.write(&self.path, &raw_bundle, false)?;
         }
         Ok(())
     }

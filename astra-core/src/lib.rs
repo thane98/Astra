@@ -5,8 +5,8 @@ mod message_system;
 mod script_system;
 mod terrain_system;
 
-use std::collections::HashMap;
-use std::path::PathBuf;
+use std::collections::{BTreeSet, HashMap};
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use anyhow::Result;
@@ -99,7 +99,10 @@ impl Astra {
     }
 
     pub fn cobalt_msbt(&self) -> Option<String> {
-        self.cobalt_msbt.clone()
+        self.cobalt_msbt
+            .as_deref()
+            .and_then(|path| Path::new(path).file_name())
+            .map(|file_name| file_name.to_string_lossy().to_string())
     }
 
     pub fn open_script(
@@ -122,6 +125,10 @@ impl Astra {
 
     pub fn list_archives(&self) -> impl Iterator<Item = &String> {
         self.message_system.archives()
+    }
+
+    pub fn list_msbt_scripts(&self) -> BTreeSet<String> {
+        self.message_system.scripts()
     }
 
     pub fn get_archive(&self, archive_id: &str) -> Option<&OpenMessageArchive> {
