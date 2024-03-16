@@ -56,6 +56,7 @@ pub use arena::*;
 pub use asset_table::*;
 pub use calculator::*;
 pub use chapter::*;
+pub use chart::*;
 pub use cook::*;
 pub use dispos::*;
 pub use dragon_ride::*;

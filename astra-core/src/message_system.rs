@@ -78,7 +78,6 @@ impl MessageSystem {
                 .file_name()
                 .map(|f| f.to_string_lossy().into_owned())
                 .ok_or_else(|| anyhow!("bad cobalt MSBT file name"))?;
-            println!("{}", file_name);
             archives.insert(
                 file_name,
                 OpenMessageArchive::new_cobalt(path.clone(), archive)?,
