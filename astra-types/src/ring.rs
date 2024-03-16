@@ -4,14 +4,14 @@ use astra_formats::Sheet;
 
 #[derive(AstraBook)]
 pub struct RingBook {
-    pub ring_data: Sheet<Vec<RingData>>,
+    pub ring_data: Sheet<IndexMap<String, RingData>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct RingData {
     #[astra(key = "@Out")]
     pub out: String,
-    #[astra(key = "@Rnid")]
+    #[astra(key = "@Rnid", id)]
     pub rnid: String,
     #[astra(key = "@Name")]
     pub name: String,

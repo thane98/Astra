@@ -1,21 +1,22 @@
 use astra_derive::{Astra, AstraBook};
+use astra_formats::indexmap::IndexMap;
 use astra_formats::Sheet;
 
 #[derive(AstraBook)]
 pub struct CookBook {
-    pub cook_data: Sheet<Vec<CookData>>,
-    pub food_data: Sheet<Vec<FoodData>>,
-    pub taste_data: Sheet<Vec<TasteData>>,
-    pub taste_condition_data: Sheet<Vec<TasteConditionData>>,
-    pub ingredient_data: Sheet<Vec<IngredientData>>,
-    pub food_naming_configs: Sheet<Vec<FoodNamingConfig>>,
+    pub cook_data: Sheet<IndexMap<String, CookData>>,
+    pub food_data: Sheet<IndexMap<String, FoodData>>,
+    pub taste_data: Sheet<IndexMap<String, TasteData>>,
+    pub taste_condition_data: Sheet<IndexMap<String, TasteConditionData>>,
+    pub ingredient_data: Sheet<IndexMap<String, IngredientData>>,
+    pub food_naming_configs: Sheet<IndexMap<String, FoodNamingConfig>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct CookData {
     #[astra(key = "@Out")]
     pub out: String,
-    #[astra(key = "@Pid")]
+    #[astra(key = "@Pid", id)]
     pub pid: String,
     #[astra(key = "@Taste1")]
     pub taste_1: String,
@@ -57,7 +58,7 @@ pub struct CookData {
 pub struct FoodData {
     #[astra(key = "@Out")]
     pub out: String,
-    #[astra(key = "@Fid")]
+    #[astra(key = "@Fid", id)]
     pub fid: String,
     #[astra(key = "@Name")]
     pub name: String,
@@ -87,7 +88,7 @@ pub struct FoodData {
 pub struct TasteData {
     #[astra(key = "@Out")]
     pub out: String,
-    #[astra(key = "@Tid")]
+    #[astra(key = "@Tid", id)]
     pub tid: String,
     #[astra(key = "@Name")]
     pub name: String,
@@ -127,7 +128,7 @@ pub struct TasteData {
 pub struct TasteConditionData {
     #[astra(key = "@Out")]
     pub out: String,
-    #[astra(key = "@Cid")]
+    #[astra(key = "@Cid", id)]
     pub cid: String,
     #[astra(key = "@Name")]
     pub name: String,
@@ -137,7 +138,7 @@ pub struct TasteConditionData {
 pub struct IngredientData {
     #[astra(key = "@Out")]
     pub out: String,
-    #[astra(key = "@Iid")]
+    #[astra(key = "@Iid", id)]
     pub iid: String,
     #[astra(key = "@Name")]
     pub name: String,
@@ -151,7 +152,7 @@ pub struct IngredientData {
 pub struct FoodNamingConfig {
     #[astra(key = "@Out")]
     pub out: String,
-    #[astra(key = "@Pid")]
+    #[astra(key = "@Pid", id)]
     pub pid: String,
     #[astra(key = "@NameType0")]
     pub name_type_0: Option<i8>,

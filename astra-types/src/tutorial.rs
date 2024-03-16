@@ -5,7 +5,7 @@ use astra_formats::Sheet;
 #[derive(AstraBook)]
 pub struct TutorialBook {
     pub tutorials: Sheet<IndexMap<String, Vec<TutorialData>>>,
-    pub tips: Sheet<Vec<TipData>>,
+    pub tips: Sheet<IndexMap<String, TipData>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
@@ -32,7 +32,7 @@ pub struct TutorialData {
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct TipData {
-    #[astra(key = "@ID")]
+    #[astra(key = "@ID", id)]
     pub id: String,
     #[astra(key = "@Title")]
     pub title: String,

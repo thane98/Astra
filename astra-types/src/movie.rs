@@ -1,16 +1,17 @@
 use astra_derive::{Astra, AstraBook};
+use astra_formats::indexmap::IndexMap;
 use astra_formats::Sheet;
 
 #[derive(AstraBook)]
 pub struct MovieBook {
-    pub movies: Sheet<Vec<Movie>>,
+    pub movies: Sheet<IndexMap<String, Movie>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct Movie {
     #[astra(key = "@Out")]
     pub out: String,
-    #[astra(key = "@MovieFileName")]
+    #[astra(key = "@MovieFileName", id)]
     pub movie_file_name: String,
     #[astra(key = "@Name")]
     pub name: String,

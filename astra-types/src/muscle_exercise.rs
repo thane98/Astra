@@ -1,23 +1,24 @@
 use astra_derive::{Astra, AstraBook};
+use astra_formats::indexmap::IndexMap;
 use astra_formats::Sheet;
 
 #[derive(AstraBook)]
 pub struct MuscleExerciseDataBook {
-    pub difficulty: Sheet<Vec<MuscleExerciseDifficulty>>,
-    pub setups: Sheet<Vec<MuscleExerciseSetup>>,
-    pub prizes: Sheet<Vec<MuscleExercisePrizeData>>,
-    pub sit_up_fall_data: Sheet<Vec<MuscleSitUpFallData>>,
-    pub push_up_speed: Sheet<Vec<MusclePushUpSpeedData>>,
-    pub squat_judge_area: Sheet<Vec<MuscleSquatJudgeAreaData>>,
-    pub score_list_data: Sheet<Vec<MuscleSquatScoreListData>>,
-    pub music_sheets: Sheet<Vec<MuscleSquatMusicSheet>>,
-    pub assist_data: Sheet<Vec<MuscleAssistData>>,
+    pub difficulty: Sheet<IndexMap<String, MuscleExerciseDifficulty>>,
+    pub setups: Sheet<IndexMap<String, MuscleExerciseSetup>>,
+    pub prizes: Sheet<IndexMap<String, MuscleExercisePrizeData>>,
+    pub sit_up_fall_data: Sheet<IndexMap<String, MuscleSitUpFallData>>,
+    pub push_up_speed: Sheet<IndexMap<String, MusclePushUpSpeedData>>,
+    pub squat_judge_area: Sheet<IndexMap<String, MuscleSquatJudgeAreaData>>,
+    pub score_list_data: Sheet<IndexMap<String, MuscleSquatScoreListData>>,
+    pub music_sheets: Sheet<IndexMap<String, Vec<MuscleSquatMusicSheet>>>,
+    pub assist_data: Sheet<IndexMap<String, MuscleAssistData>>,
 }
 
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct MuscleExerciseDifficulty {
-    #[astra(key = "@ID")]
+    #[astra(key = "@ID", id)]
     pub id: String,
     #[astra(key = "@ExerciseType")]
     pub exercise_type: Option<i8>,
@@ -36,7 +37,7 @@ pub struct MuscleExerciseDifficulty {
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct MuscleExerciseSetup {
-    #[astra(key = "@ID")]
+    #[astra(key = "@ID", id)]
     pub id: String,
     #[astra(key = "@Level")]
     pub level: Option<i8>,
@@ -53,7 +54,7 @@ pub struct MuscleExerciseSetup {
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct MuscleExercisePrizeData {
-    #[astra(key = "@ID")]
+    #[astra(key = "@ID", id)]
     pub id: String,
     #[astra(key = "@ExerciseType")]
     pub exercise_type: Option<i8>,
@@ -116,7 +117,7 @@ pub struct MuscleExercisePrizeData {
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct MuscleSitUpFallData {
-    #[astra(key = "@ID")]
+    #[astra(key = "@ID", id)]
     pub id: String,
     #[astra(key = "@Level")]
     pub level: Option<i8>,
@@ -131,7 +132,7 @@ pub struct MuscleSitUpFallData {
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct MusclePushUpSpeedData {
-    #[astra(key = "@ID")]
+    #[astra(key = "@ID", id)]
     pub id: String,
     #[astra(key = "@Level")]
     pub level: Option<i8>,
@@ -146,7 +147,7 @@ pub struct MusclePushUpSpeedData {
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct MuscleSquatJudgeAreaData {
-    #[astra(key = "@ID")]
+    #[astra(key = "@ID", id)]
     pub id: String,
     #[astra(key = "@BadFrameFirst")]
     pub bad_frame_first: Option<f32>,
@@ -165,7 +166,7 @@ pub struct MuscleSquatJudgeAreaData {
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct MuscleSquatScoreListData {
-    #[astra(key = "@ID")]
+    #[astra(key = "@ID", id)]
     pub id: String,
     #[astra(key = "@Level")]
     pub level: Option<i8>,
@@ -231,7 +232,7 @@ pub struct MuscleSquatMusicSheet {
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct MuscleAssistData {
-    #[astra(key = "@ID")]
+    #[astra(key = "@ID", id)]
     pub id: String,
     #[astra(key = "@Level_00")]
     pub level_00: Option<i32>,

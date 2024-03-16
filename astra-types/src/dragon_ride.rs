@@ -1,14 +1,15 @@
 use astra_derive::{Astra, AstraBook};
+use astra_formats::indexmap::IndexMap;
 use astra_formats::Sheet;
 
 #[derive(AstraBook)]
 pub struct DragonRidePresetParamDataBook {
-    pub dragon_ride_preset_param_data: Sheet<Vec<DragonRidePresetParamData>>,
+    pub dragon_ride_preset_param_data: Sheet<IndexMap<String, DragonRidePresetParamData>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct DragonRidePresetParamData {
-    #[astra(key = "@Group")]
+    #[astra(key = "@Group", id)]
     pub group: String,
     #[astra(key = "@IsTimeTest")]
     pub is_time_test: Option<i8>,
@@ -66,12 +67,12 @@ pub struct DragonRidePresetParamData {
 
 #[derive(AstraBook)]
 pub struct DragonRidePrizeListBook {
-    pub dragon_ride_prize_data: Sheet<Vec<DragonRidePrizeData>>,
+    pub dragon_ride_prize_data: Sheet<IndexMap<String, DragonRidePrizeData>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct DragonRidePrizeData {
-    #[astra(key = "@Group")]
+    #[astra(key = "@Group", id)]
     pub group: String,
     #[astra(key = "@PieceOfBond")]
     pub piece_of_bond: Option<i32>,

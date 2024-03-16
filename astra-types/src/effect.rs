@@ -1,16 +1,17 @@
 use astra_derive::{Astra, AstraBook};
+use astra_formats::indexmap::IndexMap;
 use astra_formats::Sheet;
 
 
 #[derive(AstraBook)]
 pub struct EffectBook {
-    pub effects: Sheet<Vec<Effect>>,
-    pub effect_sequences: Sheet<Vec<EffectSequence>>,
+    pub effects: Sheet<IndexMap<String, Effect>>,
+    pub effect_sequences: Sheet<IndexMap<String, EffectSequence>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct Effect {
-    #[astra(key = "@Eid")]
+    #[astra(key = "@Eid", id)]
     pub eid: String,
     #[astra(key = "@FilePath")]
     pub file_path: String,
@@ -32,7 +33,7 @@ pub struct Effect {
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct EffectSequence {
-    #[astra(key = "@Sequence")]
+    #[astra(key = "@Sequence", id)]
     pub sequence: String,
     #[astra(key = "@Active")]
     pub active: String,

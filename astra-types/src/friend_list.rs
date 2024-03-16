@@ -1,16 +1,17 @@
 use astra_derive::{Astra, AstraBook};
+use astra_formats::indexmap::IndexMap;
 use astra_formats::Sheet;
 
 #[derive(AstraBook)]
 pub struct FriendListBook {
-    pub friend_list_data: Sheet<Vec<FriendListData>>,
+    pub friend_list_data: Sheet<IndexMap<String, FriendListData>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct FriendListData {
     #[astra(key = "@Out")]
     pub out: String,
-    #[astra(key = "@FLID")]
+    #[astra(key = "@FLID", id)]
     pub flid: String,
     #[astra(key = "@PID")]
     pub pid: String,

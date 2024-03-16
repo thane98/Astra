@@ -6,7 +6,7 @@ use astra_formats::Sheet;
 pub struct EncountBook {
     pub encount_equipment: Sheet<IndexMap<String, Vec<EncountEquipment>>>,
     pub encount_weapon_categories: Sheet<IndexMap<String, Vec<EncountWeaponCategory>>>,
-    pub encount_enemy_types: Sheet<Vec<EncountEnemyType>>,
+    pub encount_enemy_types: Sheet<IndexMap<String, EncountEnemyType>>,
     pub encount_rarity_configs: Sheet<IndexMap<String, Vec<EncountRarityConfig>>>,
 }
 
@@ -38,7 +38,7 @@ pub struct EncountWeaponCategory {
 pub struct EncountEnemyType {
     #[astra(key = "@Out")]
     pub out: String,
-    #[astra(key = "@EJid")]
+    #[astra(key = "@EJid", id)]
     pub e_jid: String,
     #[astra(key = "@Jobs")]
     pub jobs: Vec<String>,

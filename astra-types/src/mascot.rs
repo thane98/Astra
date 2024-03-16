@@ -1,19 +1,20 @@
 use astra_derive::{Astra, AstraBook};
+use astra_formats::indexmap::IndexMap;
 use astra_formats::Sheet;
 
 #[derive(AstraBook)]
 pub struct MascotBook {
-    pub accessory_data: Sheet<Vec<MascotAccessoryData>>,
+    pub accessory_data: Sheet<IndexMap<String, MascotAccessoryData>>,
     pub color_data: Sheet<Vec<MascotColorData>>,
-    pub param_data: Sheet<Vec<MascotParamData>>,
-    pub food_data: Sheet<Vec<MascotFoodData>>,
+    pub param_data: Sheet<IndexMap<String, MascotParamData>>,
+    pub food_data: Sheet<IndexMap<String, MascotFoodData>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct MascotAccessoryData {
     #[astra(key = "@Out")]
     pub out: String,
-    #[astra(key = "@Aid")]
+    #[astra(key = "@Aid", id)]
     pub aid: String,
     #[astra(key = "@Type")]
     pub ty: Option<i8>,
@@ -35,7 +36,7 @@ pub struct MascotColorData {
 pub struct MascotParamData {
     #[astra(key = "@Out")]
     pub out: String,
-    #[astra(key = "@ParamName")]
+    #[astra(key = "@ParamName", id)]
     pub param_name: String,
     #[astra(key = "@Value")]
     pub value: Option<i8>,
@@ -45,7 +46,7 @@ pub struct MascotParamData {
 pub struct MascotFoodData {
     #[astra(key = "@Out")]
     pub out: String,
-    #[astra(key = "@Iid")]
+    #[astra(key = "@Iid", id)]
     pub iid: String,
     #[astra(key = "@Value")]
     pub value: Option<i8>,

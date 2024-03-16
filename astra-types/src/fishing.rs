@@ -1,19 +1,20 @@
 use astra_derive::{Astra, AstraBook};
+use astra_formats::indexmap::IndexMap;
 use astra_formats::Sheet;
 
 #[derive(AstraBook)]
 pub struct FishingFishBook {
-    pub fish: Sheet<Vec<FishingFishData>>,
-    pub size_data: Sheet<Vec<FishSizeData>>,
-    pub spawns: Sheet<Vec<FishSpawn>>,
-    pub target_list: Sheet<Vec<FishingTargetListData>>,
-    pub assist_data: Sheet<Vec<FishingAssistData>>,
-    pub radical_param_data: Sheet<Vec<FishingRadicalParamData>>,
+    pub fish: Sheet<IndexMap<String, FishingFishData>>,
+    pub size_data: Sheet<IndexMap<String, FishSizeData>>,
+    pub spawns: Sheet<IndexMap<String, FishSpawn>>,
+    pub target_list: Sheet<IndexMap<String, FishingTargetListData>>,
+    pub assist_data: Sheet<IndexMap<String, FishingAssistData>>,
+    pub radical_param_data: Sheet<IndexMap<String, FishingRadicalParamData>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct FishingFishData {
-    #[astra(key = "@ID")]
+    #[astra(key = "@ID", id)]
     pub id: String,
     #[astra(key = "@FishName")]
     pub fish_name: String,
@@ -75,7 +76,7 @@ pub struct FishingFishData {
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct FishSizeData {
-    #[astra(key = "@ID")]
+    #[astra(key = "@ID", id)]
     pub id: String,
     #[astra(key = "@SizeName")]
     pub size_name: String,
@@ -91,7 +92,7 @@ pub struct FishSizeData {
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct FishSpawn {
-    #[astra(key = "@ID")]
+    #[astra(key = "@ID", id)]
     pub id: String,
     #[astra(key = "@StickType")]
     pub stick_type: String,
@@ -107,7 +108,7 @@ pub struct FishSpawn {
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct FishingTargetListData {
-    #[astra(key = "@ID")]
+    #[astra(key = "@ID", id)]
     pub id: String,
     #[astra(key = "@FishID")]
     pub fish_id: String,
@@ -117,7 +118,7 @@ pub struct FishingTargetListData {
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct FishingAssistData {
-    #[astra(key = "@ID")]
+    #[astra(key = "@ID", id)]
     pub id: String,
     #[astra(key = "@Level_00")]
     pub level_00: Option<f32>,
@@ -145,7 +146,7 @@ pub struct FishingAssistData {
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct FishingRadicalParamData {
-    #[astra(key = "@ID")]
+    #[astra(key = "@ID", id)]
     pub id: String,
     #[astra(key = "@Sec_01")]
     pub sec_01: Option<f32>,

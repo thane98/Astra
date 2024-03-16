@@ -4,13 +4,13 @@ use astra_formats::Sheet;
 
 #[derive(AstraBook)]
 pub struct HubAreaBook {
-    pub hub_area_data: Sheet<Vec<HubAreaData>>,
-    pub hub_facility_data: Sheet<Vec<HubFacilityData>>,
+    pub hub_area_data: Sheet<IndexMap<String, HubAreaData>>,
+    pub hub_facility_data: Sheet<IndexMap<String, HubFacilityData>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct HubAreaData {
-    #[astra(key = "@AID")]
+    #[astra(key = "@AID", id)]
     pub aid: String,
     #[astra(key = "@MID")]
     pub mid: String,
@@ -30,7 +30,7 @@ pub struct HubAreaData {
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct HubFacilityData {
-    #[astra(key = "@AID")]
+    #[astra(key = "@AID", id)]
     pub aid: String,
     #[astra(key = "@MID")]
     pub mid: String,
@@ -42,12 +42,12 @@ pub struct HubFacilityData {
 
 #[derive(AstraBook)]
 pub struct HubDemoBook {
-    pub hub_demo_data: Sheet<Vec<HubDemoData>>,
+    pub hub_demo_data: Sheet<IndexMap<String, HubDemoData>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct HubDemoData {
-    #[astra(key = "@Locator")]
+    #[astra(key = "@Locator", id)]
     pub locator: String,
     #[astra(key = "@MID")]
     pub mid: String,
@@ -180,12 +180,12 @@ pub struct HubUnityBehavior {
 
 #[derive(AstraBook)]
 pub struct HubFortuneTellingBook {
-    pub fortune_telling_data: Sheet<Vec<HubFortuneTellingData>>,
+    pub fortune_telling_data: Sheet<IndexMap<String, HubFortuneTellingData>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct HubFortuneTellingData {
-    #[astra(key = "@ID")]
+    #[astra(key = "@ID", id)]
     pub id: String,
     #[astra(key = "@TextureName")]
     pub texture_name: String,
@@ -201,7 +201,7 @@ pub struct HubFortuneTellingData {
 
 #[derive(AstraBook)]
 pub struct HubInvestmentBook {
-    pub nation_data: Sheet<Vec<HubNationData>>,
+    pub nation_data: Sheet<IndexMap<String, HubNationData>>,
     pub material_bonuses: Sheet<IndexMap<String, Vec<HubMaterialBonus>>>,
     pub ingredient_bonuses: Sheet<IndexMap<String, Vec<HubIngredientBonus>>>,
     pub animal_bonuses: Sheet<IndexMap<String, Vec<HubAnimalBonus>>>,
@@ -214,7 +214,7 @@ pub struct HubInvestmentBook {
 pub struct HubNationData {
     #[astra(key = "@Out")]
     pub out: String,
-    #[astra(key = "@ID")]
+    #[astra(key = "@ID", id)]
     pub id: String,
     #[astra(key = "@Name")]
     pub name: String,
@@ -340,12 +340,12 @@ pub struct HubAnimalBonusGroup {
 
 #[derive(AstraBook)]
 pub struct HubMapIconBook {
-    pub map_icon_data: Sheet<Vec<HubMapIconData>>,
+    pub map_icon_data: Sheet<IndexMap<String, HubMapIconData>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct HubMapIconData {
-    #[astra(key = "@DisposName")]
+    #[astra(key = "@DisposName", id)]
     pub dispos_name: String,
     #[astra(key = "@IconName")]
     pub icon_name: String,
@@ -357,12 +357,12 @@ pub struct HubMapIconData {
 
 #[derive(AstraBook)]
 pub struct HubMyRoomBook {
-    pub my_room_data: Sheet<Vec<HubMyRoomData>>,
+    pub my_room_data: Sheet<IndexMap<String, HubMyRoomData>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct HubMyRoomData {
-    #[astra(key = "@PID")]
+    #[astra(key = "@PID", id)]
     pub pid: String,
     #[astra(key = "@C1")]
     pub c_1: Option<i8>,
@@ -384,26 +384,26 @@ pub struct HubMyRoomData {
 
 #[derive(AstraBook)]
 pub struct HubResourceBook {
-    pub resources: Sheet<Vec<HubResourceData>>,
+    pub resources: Sheet<IndexMap<String, HubResourceData>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct HubResourceData {
-    #[astra(key = "@Name")]
+    #[astra(key = "@Name", id)]
     pub name: String,
 }
 
 #[derive(AstraBook)]
 pub struct HubTalkBook {
-    pub talk_data: Sheet<Vec<HubTalkData>>,
-    pub relative_data: Sheet<Vec<HubTalkRelativeData>>,
-    pub talk_facility_data: Sheet<Vec<HubTalkFacilityData>>,
-    pub crystal_data: Sheet<Vec<HubCrystalData>>,
+    pub talk_data: Sheet<IndexMap<String, HubTalkData>>,
+    pub relative_data: Sheet<IndexMap<String, HubTalkRelativeData>>,
+    pub talk_facility_data: Sheet<IndexMap<String, HubTalkFacilityData>>,
+    pub crystal_data: Sheet<IndexMap<String, HubCrystalData>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct HubTalkData {
-    #[astra(key = "@KRID")]
+    #[astra(key = "@KRID", id)]
     pub krid: String,
     #[astra(key = "@Count")]
     pub count: Option<u8>,
@@ -417,7 +417,7 @@ pub struct HubTalkData {
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct HubTalkRelativeData {
-    #[astra(key = "@PID")]
+    #[astra(key = "@PID", id)]
     pub pid: String,
     #[astra(key = "@PID1")]
     pub pid_1: String,
@@ -431,7 +431,7 @@ pub struct HubTalkRelativeData {
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct HubTalkFacilityData {
-    #[astra(key = "@Pattern")]
+    #[astra(key = "@Pattern", id)]
     pub pattern: String,
     #[astra(key = "@PID")]
     pub pid: String,
@@ -439,7 +439,7 @@ pub struct HubTalkFacilityData {
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct HubCrystalData {
-    #[astra(key = "@CID")]
+    #[astra(key = "@CID", id)]
     pub cid: String,
     #[astra(key = "@Count")]
     pub count: Option<u8>,

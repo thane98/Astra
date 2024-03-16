@@ -1,17 +1,18 @@
 use astra_derive::{Astra, AstraBook};
+use astra_formats::indexmap::IndexMap;
 use astra_formats::Sheet;
 
 #[derive(AstraBook)]
 pub struct AmiiboBook {
-    pub ai_data: Sheet<Vec<AmiiboData>>,
+    pub ai_data: Sheet<IndexMap<String, AmiiboData>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct AmiiboData {
-    #[astra(key = "@NumberingID")]
+    #[astra(key = "@NumberingID", id)]
     pub numbering_id: String,
     #[astra(key = "@IIDs")]
-    pub ii_ds: Vec<String>,
+    pub items: Vec<String>,
     #[astra(key = "@AID")]
     pub aid: String,
     #[astra(key = "@BGM")]

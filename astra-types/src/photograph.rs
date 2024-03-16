@@ -4,7 +4,7 @@ use astra_formats::Sheet;
 
 #[derive(AstraBook)]
 pub struct PhotographSpotBook {
-    pub spots: Sheet<Vec<PhotographSpot>>,
+    pub spots: Sheet<IndexMap<String, PhotographSpot>>,
     pub poses: Sheet<IndexMap<String, Vec<PhotographPose>>>,
 }
 
@@ -12,7 +12,7 @@ pub struct PhotographSpotBook {
 pub struct PhotographSpot {
     #[astra(key = "@Name")]
     pub name: String,
-    #[astra(key = "@MID")]
+    #[astra(key = "@MID", id)]
     pub mid: String,
     #[astra(key = "@ConditionCid")]
     pub condition_cid: String,

@@ -4,17 +4,17 @@ use astra_formats::Sheet;
 
 #[derive(AstraBook)]
 pub struct RelayBook {
-    pub relay_data: Sheet<Vec<RelayData>>,
-    pub relay_stamp_data: Sheet<Vec<RelayStampData>>,
+    pub relay_data: Sheet<IndexMap<String, RelayData>>,
+    pub relay_stamp_data: Sheet<IndexMap<String, RelayStampData>>,
     pub relay_clear_award_data: Sheet<IndexMap<String, Vec<RelayClearAwardData>>>,
-    pub relay_award_data: Sheet<Vec<RelayAwardData>>,
+    pub relay_award_data: Sheet<IndexMap<String, RelayAwardData>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct RelayData {
     #[astra(key = "@Out")]
     pub out: String,
-    #[astra(key = "@Cid")]
+    #[astra(key = "@Cid", id)]
     pub cid: String,
     #[astra(key = "@Difficulty")]
     pub difficulty: Option<i8>,
@@ -42,7 +42,7 @@ pub struct RelayData {
 pub struct RelayStampData {
     #[astra(key = "@Out")]
     pub out: String,
-    #[astra(key = "@Name")]
+    #[astra(key = "@Name", id)]
     pub name: String,
     #[astra(key = "@SerialNo")]
     pub serial_no: Option<u8>,
@@ -80,7 +80,7 @@ pub struct RelayClearAwardData {
 pub struct RelayAwardData {
     #[astra(key = "@Out")]
     pub out: String,
-    #[astra(key = "@Raid")]
+    #[astra(key = "@Raid", id)]
     pub raid: String,
     #[astra(key = "@Name")]
     pub name: String,
