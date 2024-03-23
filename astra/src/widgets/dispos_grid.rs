@@ -142,12 +142,7 @@ pub fn dispos_grid(
                                 .terrains
                                 .get(row * 32 + col)
                                 .and_then(|tid| data.get(tid.as_str()))
-                                .map(|tile| {
-                                    (
-                                        tile.text(state),
-                                        get_tile_color(tile, config),
-                                    )
-                                })
+                                .map(|tile| (tile.text(state), get_tile_color(tile, config)))
                                 .unwrap_or_else(|| (Cow::Borrowed("???"), Color32::from_gray(0)));
 
                             // Put these in a container to please egui's grid.

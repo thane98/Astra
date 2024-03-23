@@ -67,11 +67,11 @@ impl GodEditor {
 
     pub fn show(&mut self, ctx: &egui::Context, state: &mut EditorState) {
         match self.tab {
-            Tab::Main => self.main_content.side_panel(ctx, &self.god, state),
+            Tab::Main => self.main_content.left_panel(ctx, &self.god, state),
             Tab::LevelData => self
                 .level_data_content
                 .left_panel(ctx, &self.level_data, state),
-            Tab::BondLevelData => self.bond_data_content.side_panel(ctx, &self.bond_data, &()),
+            Tab::BondLevelData => self.bond_data_content.left_panel(ctx, &self.bond_data, &()),
         }
 
         self.cache.refresh(state);

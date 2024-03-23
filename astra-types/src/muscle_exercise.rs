@@ -15,7 +15,6 @@ pub struct MuscleExerciseDataBook {
     pub assist_data: Sheet<IndexMap<String, MuscleAssistData>>,
 }
 
-
 #[derive(Debug, Default, Clone, Astra)]
 pub struct MuscleExerciseDifficulty {
     #[astra(key = "@ID", id)]
@@ -34,7 +33,6 @@ pub struct MuscleExerciseDifficulty {
     pub endless_goal_count: Option<i32>,
 }
 
-
 #[derive(Debug, Default, Clone, Astra)]
 pub struct MuscleExerciseSetup {
     #[astra(key = "@ID", id)]
@@ -50,7 +48,6 @@ pub struct MuscleExerciseSetup {
     #[astra(key = "@AreaG_Radius")]
     pub area_g_radius: Option<f32>,
 }
-
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct MuscleExercisePrizeData {
@@ -114,7 +111,6 @@ pub struct MuscleExercisePrizeData {
     pub border_f: Option<i32>,
 }
 
-
 #[derive(Debug, Default, Clone, Astra)]
 pub struct MuscleSitUpFallData {
     #[astra(key = "@ID", id)]
@@ -129,7 +125,6 @@ pub struct MuscleSitUpFallData {
     pub fall_speed: Option<f32>,
 }
 
-
 #[derive(Debug, Default, Clone, Astra)]
 pub struct MusclePushUpSpeedData {
     #[astra(key = "@ID", id)]
@@ -143,7 +138,6 @@ pub struct MusclePushUpSpeedData {
     #[astra(key = "@LevelUpCount")]
     pub level_up_count: Option<i32>,
 }
-
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct MuscleSquatJudgeAreaData {
@@ -162,7 +156,6 @@ pub struct MuscleSquatJudgeAreaData {
     #[astra(key = "@BadFrameLatter")]
     pub bad_frame_latter: Option<f32>,
 }
-
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct MuscleSquatScoreListData {
@@ -200,7 +193,6 @@ pub struct MuscleSquatScoreListData {
     pub lottery_param_5: Option<f32>,
 }
 
-
 #[derive(Debug, Default, Clone, Astra)]
 pub struct MuscleSquatMusicSheet {
     #[astra(key = "@ID", public_array)]
@@ -228,7 +220,6 @@ pub struct MuscleSquatMusicSheet {
     #[astra(key = "@Ensure")]
     pub ensure: Option<i32>,
 }
-
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct MuscleAssistData {

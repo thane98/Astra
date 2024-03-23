@@ -280,6 +280,13 @@ enum_combo_box!(skill_give_targets_drop_down, i8,
     4 => "Dance",
 );
 
+enum_combo_box!(ring_rank_drop_down, i8,
+    0 => "C",
+    1 => "B",
+    2 => "A",
+    3 => "S",
+);
+
 macro_rules! string_combo_box {
     ($name:ident, $($key:expr => $label:expr,)+) => {
         pub fn $name(value: &mut String) -> impl egui::Widget + '_ {

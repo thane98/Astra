@@ -1,4 +1,4 @@
-use egui::{Grid, Response, ScrollArea, Ui, Widget, Image};
+use egui::{Grid, Image, Response, ScrollArea, Ui, Widget};
 
 use crate::{DecorationKind, ListModel, ViewItem};
 
@@ -55,6 +55,7 @@ where
         model.len(),
         |ui, range| {
             if I::decorated(DecorationKind::List) {
+                ui.spacing_mut().item_spacing.x = 0.;
                 Grid::new(ui.auto_id_with("astra_list_view_grid"))
                     .num_columns(3)
                     .show(ui, |ui| {

@@ -1,7 +1,6 @@
 use astra_derive::{Astra, AstraBook};
 use astra_formats::Sheet;
 
-
 #[derive(AstraBook)]
 pub struct EndRollBook {
     pub end_roll_data: Sheet<Vec<EndRollData>>,

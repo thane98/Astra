@@ -1,9 +1,11 @@
-use egui::{Color32, Frame, Image, Label, Stroke, TextureHandle, Ui, Widget};
+use egui::{Color32, Frame, Image, Label, Response, Stroke, TextureHandle, Ui, Widget};
 use rfd::FileDialog;
+
+use crate::{DefaultWidget, EditorState};
 
 pub fn editor_tab_strip(ui: &mut Ui, add_contents: impl FnOnce(&mut Ui)) {
     ui.separator();
-    ui.horizontal_top(|ui| {
+    ui.horizontal_wrapped(|ui| {
         add_contents(ui);
     });
     ui.allocate_space([0., ui.spacing().item_spacing.y].into());
@@ -67,4 +69,35 @@ pub fn folder_picker(value: &mut String) -> impl Widget + '_ {
         })
         .inner
     }
+}
+
+pub fn iron_field_i8(ui: &mut Ui, state: &EditorState, value: &mut impl DefaultWidget) -> Response {
+    system_icon_field(ui, state, value, "Iron")
+}
+
+pub fn steel_field(ui: &mut Ui, state: &EditorState, value: &mut impl DefaultWidget) -> Response {
+    system_icon_field(ui, state, value, "Steel")
+}
+
+pub fn silver_field(ui: &mut Ui, state: &EditorState, value: &mut impl DefaultWidget) -> Response {
+    system_icon_field(ui, state, value, "Silver")
+}
+
+pub fn bond_fragment_field(ui: &mut Ui, state: &EditorState, value: &mut impl DefaultWidget) -> Response {
+    system_icon_field(ui, state, value, "Bonds")
+}
+
+pub fn gold_field(ui: &mut Ui, state: &EditorState, value: &mut impl DefaultWidget) -> Response {
+    system_icon_field(ui, state, value, "Coin")
+}
+
+pub fn system_icon_field(ui: &mut Ui, state: &EditorState, value: &mut impl DefaultWidget, icon: &str) -> Response {
+    ui.horizontal(|ui| {
+        let response = value.default_widget(ui);
+        if let Some(texture) = state.texture_cache.borrow_mut().get_system(icon) {
+            ui.add(Image::from_texture(&texture).max_size(texture.size_vec2() * 0.5));
+        }
+        response
+    })
+    .inner
 }

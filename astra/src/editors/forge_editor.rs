@@ -1,11 +1,10 @@
-use astra_types::{ForgeEvolveData, ForgeExchangeData, ForgeImproveData, Item, ItemBook};
+use astra_types::{ForgeExchangeData, Item, ItemBook};
 use egui::Ui;
-use indexmap::IndexMap;
 
 use crate::{
-    editor_tab_strip, model_drop_down, CacheItem, CachedView, EditorState, ForgeEvolveDataSheet,
-    ForgeExchangeDataSheet, ForgeImproveDataSheet, GroupEditorContent, ItemSheetRetriever,
-    ListEditorContent, PropertyGrid,
+    editor_tab_strip, gold_field, iron_field_i8, model_drop_down, silver_field, steel_field,
+    system_icon_field, CachedView, EditorState, ForgeEvolveDataSheet, ForgeExchangeDataSheet,
+    ForgeImproveDataSheet, GroupEditorContent, ItemSheetRetriever, ListEditorContent, PropertyGrid,
 };
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -56,74 +55,71 @@ impl ForgeEditor {
         match self.tab {
             Tab::Refine => self.refine_content.left_panel(ctx, &self.refine, state),
             Tab::Evolve => self.evolve_content.left_panel(ctx, &self.evolve, state),
-            Tab::Exchange => self.exchange_content.side_panel(ctx, &self.exchange, &()),
+            Tab::Exchange => self.exchange_content.left_panel(ctx, &self.exchange, &()),
         }
 
         match self.tab {
             Tab::Refine => self.refine.write(|data| {
-                self.refine_content
-                    .content(ctx, data, Self::refine_property_grid)
+                self.refine_content.content(ctx, data, |ui, selection| {
+                    PropertyGrid::new("forge_refine", selection)
+                        .new_section("Cost")
+                        .field("Gold", |ui, d| gold_field(ui, state, &mut d.price))
+                        .field("Iron", |ui, d| iron_field_i8(ui, state, &mut d.iron))
+                        .field("Steel", |ui, d| steel_field(ui, state, &mut d.steel))
+                        .field("Silver", |ui, d| silver_field(ui, state, &mut d.silver))
+                        .new_section("Bonuses")
+                        .default_field("Mt", |d| &mut d.power)
+                        .default_field("Wt", |d| &mut d.weight)
+                        .default_field("Hit", |d| &mut d.hit)
+                        .default_field("Crit", |d| &mut d.critical)
+                        .show(ui)
+                        .changed()
+                })
             }),
             Tab::Evolve => self.evolve.write(|data| {
                 self.evolve_content.content(ctx, data, |ui, data| {
-                    Self::evolve_property_grid(self.cache.get(), ui, data)
+                    PropertyGrid::new("forge_evolve", data)
+                        .new_section("Data")
+                        .field("Item", |ui, d| {
+                            ui.add(model_drop_down(self.cache.get(), &(), &mut d.iid))
+                        })
+                        .default_field("Level", |d| &mut d.refine_level)
+                        .field("Gold", |ui, d| gold_field(ui, state, &mut d.price))
+                        .field("Iron", |ui, d| iron_field_i8(ui, state, &mut d.iron))
+                        .field("Steel", |ui, d| steel_field(ui, state, &mut d.steel))
+                        .field("Silver", |ui, d| silver_field(ui, state, &mut d.silver))
+                        .show(ui)
+                        .changed()
                 })
             }),
             Tab::Exchange => self.exchange.write(|data| {
-                self.exchange_content
-                    .content(ctx, data, Self::exchange_property_grid)
+                self.exchange_content.content(ctx, data, |ui, selection| {
+                    PropertyGrid::new("forge_refine", selection)
+                        .new_section("Data")
+                        .default_field("Name", |d| &mut d.name)
+                        .default_field("Operation", |d| &mut d.operation)
+                        .field("Icon", |ui, d| {
+                            let icon = d.icon.clone();
+                            system_icon_field(ui, state, &mut d.icon, &icon)
+                        })
+                        .field("To Iron", |ui, d| iron_field_i8(ui, state, &mut d.to_iron))
+                        .field("To Steel", |ui, d| steel_field(ui, state, &mut d.to_steel))
+                        .field("To Silver", |ui, d| {
+                            silver_field(ui, state, &mut d.to_silver)
+                        })
+                        .field("For Iron", |ui, d| {
+                            iron_field_i8(ui, state, &mut d.for_iron)
+                        })
+                        .field("For Steel", |ui, d| {
+                            steel_field(ui, state, &mut d.for_steel)
+                        })
+                        .field("For Silver", |ui, d| {
+                            silver_field(ui, state, &mut d.for_silver)
+                        })
+                        .show(ui)
+                        .changed()
+                })
             }),
         }
-    }
-
-    fn refine_property_grid(ui: &mut Ui, data: &mut ForgeImproveData) -> bool {
-        PropertyGrid::new("forge_refine", data)
-            .new_section("Cost")
-            .default_field("Money", |d| &mut d.price)
-            .default_field("Iron", |d| &mut d.iron)
-            .default_field("Steel", |d| &mut d.steel)
-            .default_field("Silver", |d| &mut d.silver)
-            .new_section("Bonuses")
-            .default_field("Mt", |d| &mut d.power)
-            .default_field("Wt", |d| &mut d.weight)
-            .default_field("Hit", |d| &mut d.hit)
-            .default_field("Crit", |d| &mut d.critical)
-            .show(ui)
-            .changed()
-    }
-
-    fn evolve_property_grid(
-        cache: &IndexMap<String, CacheItem<Item>>,
-        ui: &mut Ui,
-        data: &mut ForgeEvolveData,
-    ) -> bool {
-        PropertyGrid::new("forge_evolve", data)
-            .new_section("Data")
-            .field("Item", |ui, d| {
-                ui.add(model_drop_down(cache, &(), &mut d.iid))
-            })
-            .default_field("Level", |d| &mut d.refine_level)
-            .default_field("Money", |d| &mut d.price)
-            .default_field("Iron", |d| &mut d.iron)
-            .default_field("Steel", |d| &mut d.steel)
-            .default_field("Silver", |d| &mut d.silver)
-            .show(ui)
-            .changed()
-    }
-
-    fn exchange_property_grid(ui: &mut Ui, data: &mut ForgeExchangeData) -> bool {
-        PropertyGrid::new("forge_refine", data)
-            .new_section("Data")
-            .default_field("Name", |d| &mut d.name)
-            .default_field("Operation", |d| &mut d.operation)
-            .default_field("Icon", |d| &mut d.icon)
-            .default_field("To Iron", |d| &mut d.to_iron)
-            .default_field("To Steel", |d| &mut d.to_steel)
-            .default_field("To Silver", |d| &mut d.to_silver)
-            .default_field("For Iron", |d| &mut d.for_iron)
-            .default_field("For Steel", |d| &mut d.for_steel)
-            .default_field("For Silver", |d| &mut d.for_silver)
-            .show(ui)
-            .changed()
     }
 }

@@ -4,7 +4,7 @@ use astra_formats::Sheet;
 
 #[derive(AstraBook)]
 pub struct AmiiboBook {
-    pub ai_data: Sheet<IndexMap<String, AmiiboData>>,
+    pub amiibo: Sheet<IndexMap<String, AmiiboData>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]

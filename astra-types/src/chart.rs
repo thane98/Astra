@@ -5,8 +5,8 @@ use astra_formats::Sheet;
 #[derive(AstraBook)]
 pub struct ChartBook {
     pub chart_data: Sheet<IndexMap<String, Vec<ChartData>>>,
-    pub chart_god_data: Sheet<Vec<ChartGodData>>,
-    pub chart_params: Sheet<Vec<ChartParam>>,
+    pub chart_god_data: Sheet<IndexMap<String, ChartGodData>>,
+    pub chart_params: Sheet<IndexMap<String, Vec<ChartParam>>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
@@ -39,7 +39,7 @@ pub struct ChartData {
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct ChartGodData {
-    #[astra(key = "@Chapter")]
+    #[astra(key = "@Chapter", id)]
     pub chapter: String,
     #[astra(key = "@MarthLevel")]
     pub marth_level: Option<i32>,

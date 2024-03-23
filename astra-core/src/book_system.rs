@@ -8,13 +8,13 @@ use astra_types::{
     AchievementBook, AiBook, AmiiboBook, AnimSetBook, AnimalBook, ArenaBook, AssetTableBook,
     CalculatorBook, ChapterBook, ChartBook, CookBook, DisposBook, DragonRidePresetParamDataBook,
     DragonRidePrizeListBook, DragonRideTargetPatternBook, EffectBook, EncountBook, EndRollBook,
-    FishingFishBook, FriendListBook, GodBook, GroundAttributeBook, HubAreaBook,
-    HubDemoBook, HubDisposBook, HubFortuneTellingBook, HubInvestmentBook, HubMapIconBook,
-    HubMyRoomBook, HubResourceBook, HubTalkBook, ItemBook, JobBook, JukeboxBook, KeyHelpDataBook,
-    KillBonusBook, LaterTalkBook, MapEditorBook, MapHistoryBook, MascotBook, MovieBook,
-    MuscleExerciseDataBook, MusicBook, ParamsBook, PersonBook, PhotographSpotBook, ProfileCardBook,
-    RangeBook, RelayBook, RelianceBook, RingBook, RingCleaningVoiceBook, ShopBook, SkillBook,
-    SoundEventBook, TerrainBook, TitleBook, TutorialBook, VibrationBook,
+    FishingFishBook, FriendListBook, GodBook, GroundAttributeBook, HubAreaBook, HubDemoBook,
+    HubDisposBook, HubFortuneTellingBook, HubInvestmentBook, HubMapIconBook, HubMyRoomBook,
+    HubResourceBook, HubTalkBook, ItemBook, JobBook, JukeboxBook, KeyHelpDataBook, KillBonusBook,
+    LaterTalkBook, MapEditorBook, MapHistoryBook, MascotBook, MovieBook, MuscleExerciseDataBook,
+    MusicBook, ParamsBook, PersonBook, PhotographSpotBook, ProfileCardBook, RangeBook, RelayBook,
+    RelianceBook, RingBook, RingCleaningVoiceBook, ShopBook, SkillBook, SoundEventBook,
+    TerrainBook, TitleBook, TutorialBook, VibrationBook,
 };
 use parking_lot::RwLock;
 use tracing::info;
@@ -256,9 +256,12 @@ impl BookSystem {
         self.chapter.save(&self.file_system, backup_root)?;
         self.chart.save(&self.file_system, backup_root)?;
         self.cook.save(&self.file_system, backup_root)?;
-        self.dragon_ride_preset_param.save(&self.file_system, backup_root)?;
-        self.dragon_ride_prize_list.save(&self.file_system, backup_root)?;
-        self.dragon_ride_target_pattern.save(&self.file_system, backup_root)?;
+        self.dragon_ride_preset_param
+            .save(&self.file_system, backup_root)?;
+        self.dragon_ride_prize_list
+            .save(&self.file_system, backup_root)?;
+        self.dragon_ride_target_pattern
+            .save(&self.file_system, backup_root)?;
         self.effect.save(&self.file_system, backup_root)?;
         self.encount.save(&self.file_system, backup_root)?;
         self.end_roll.save(&self.file_system, backup_root)?;
@@ -269,7 +272,8 @@ impl BookSystem {
         self.hub_area.save(&self.file_system, backup_root)?;
         self.hub_demo.save(&self.file_system, backup_root)?;
         self.hub_dispos.save(&self.file_system, backup_root)?;
-        self.hub_fortune_telling.save(&self.file_system, backup_root)?;
+        self.hub_fortune_telling
+            .save(&self.file_system, backup_root)?;
         self.hub_investment.save(&self.file_system, backup_root)?;
         self.hub_map_icon.save(&self.file_system, backup_root)?;
         self.hub_my_room.save(&self.file_system, backup_root)?;
@@ -295,7 +299,8 @@ impl BookSystem {
         self.relay.save(&self.file_system, backup_root)?;
         self.reliance.save(&self.file_system, backup_root)?;
         self.ring.save(&self.file_system, backup_root)?;
-        self.ring_cleaning_voice.save(&self.file_system, backup_root)?;
+        self.ring_cleaning_voice
+            .save(&self.file_system, backup_root)?;
         self.shop.save(&self.file_system, backup_root)?;
         self.skill.save(&self.file_system, backup_root)?;
         self.sound_event.save(&self.file_system, backup_root)?;

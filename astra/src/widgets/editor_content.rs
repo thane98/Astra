@@ -6,7 +6,9 @@ use egui_modal::Modal;
 
 use crate::model::{SheetHandle, SheetRetriever};
 use crate::{
-    blank_slate, list_view, FilterProxyBuilder, ListModel, ViewItem, ADD_SHORTCUT, COPY_TO_SHORTCUT, DELETE_SHORTCUT, DUPLICATE_SHORTCUT, INSERT_SHORTCUT, MOVE_DOWN_SHORTCUT, MOVE_UP_SHORTCUT
+    blank_slate, list_view, FilterProxyBuilder, ListModel, ViewItem, ADD_SHORTCUT,
+    COPY_TO_SHORTCUT, DELETE_SHORTCUT, DUPLICATE_SHORTCUT, INSERT_SHORTCUT, MOVE_DOWN_SHORTCUT,
+    MOVE_UP_SHORTCUT,
 };
 
 use super::{list_select_modal, AddModalCommand};
@@ -36,7 +38,7 @@ where
             add_command: None,
             copy_index: None,
             filter_proxy: FilterProxyBuilder::new(),
-            phantom: PhantomData,
+            phantom: Default::default(),
         }
     }
 
@@ -58,7 +60,7 @@ where
         self.selection
     }
 
-    pub fn side_panel<R, B>(
+    pub fn left_panel<R, B>(
         &mut self,
         ctx: &egui::Context,
         model: &SheetHandle<R, B, M>,

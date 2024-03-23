@@ -43,7 +43,7 @@ impl RelianceEditor {
 
     pub fn show(&mut self, ctx: &egui::Context) {
         match self.tab {
-            Tab::ExpData => self.exp_data_content.side_panel(ctx, &self.exp_data, &()),
+            Tab::ExpData => self.exp_data_content.left_panel(ctx, &self.exp_data, &()),
             Tab::Bonuses => self.bonuses_content.left_panel(ctx, &self.bonuses, &()),
         }
 

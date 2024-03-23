@@ -68,7 +68,7 @@ impl PersonEditor {
     }
 
     pub fn show(&mut self, ctx: &egui::Context, state: &mut EditorState) {
-        self.content.side_panel(ctx, &self.person, state);
+        self.content.left_panel(ctx, &self.person, state);
 
         self.cache.refresh(state);
 

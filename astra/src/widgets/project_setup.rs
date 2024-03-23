@@ -210,7 +210,11 @@ pub fn region_dir_config(project: &mut ProjectDef) -> impl Widget + '_ {
                     "kr".to_string(),
                     "Korea",
                 );
-                response |= ui.selectable_value(&mut project.active_country_dir_name, "us".to_string(), "North America");
+                response |= ui.selectable_value(
+                    &mut project.active_country_dir_name,
+                    "us".to_string(),
+                    "North America",
+                );
                 response |= ui.selectable_value(
                     &mut project.active_country_dir_name,
                     "tw".to_string(),

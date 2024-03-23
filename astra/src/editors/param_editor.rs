@@ -16,7 +16,7 @@ impl GameParamEditor {
     }
 
     pub fn show(&mut self, ctx: &egui::Context) {
-        self.content.side_panel(ctx, &self.param, &());
+        self.content.left_panel(ctx, &self.param, &());
 
         self.param.write(|data| {
             self.content.content(ctx, data, |ui, param| {

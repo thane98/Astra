@@ -72,7 +72,7 @@ impl JobEditor {
     }
 
     pub fn show(&mut self, ctx: &egui::Context, state: &mut EditorState) {
-        self.content.side_panel(ctx, &self.job, state);
+        self.content.left_panel(ctx, &self.job, state);
 
         self.cache.refresh(state);
 

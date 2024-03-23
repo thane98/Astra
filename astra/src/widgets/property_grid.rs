@@ -139,7 +139,9 @@ impl<'a, D> PropertyGrid<'a, D> {
                     ui.add(TextEdit::singleline(&mut filter).hint_text("Search fields..."));
                     ui.separator();
                     for section in &self.sections {
-                        if section.visible(&filter) && section.show(ui, self.data, &filter).changed() {
+                        if section.visible(&filter)
+                            && section.show(ui, self.data, &filter).changed()
+                        {
                             changed = true;
                         }
                     }

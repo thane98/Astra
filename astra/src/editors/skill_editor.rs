@@ -125,7 +125,7 @@ impl SkillEditor {
     }
 
     pub fn show(&mut self, ctx: &egui::Context, state: &mut EditorState) {
-        self.content.side_panel(ctx, &self.skill, state);
+        self.content.left_panel(ctx, &self.skill, state);
 
         self.cache.refresh(state);
 
@@ -141,10 +141,8 @@ impl SkillEditor {
                         msbt_key_value_multiline!(ui, state, "skill", skill.help)
                     })
                     .field("Condition", |ui, skill| {
-                        ui.vertical_centered_justified(|ui| {
-                            skill.condition.default_widget(ui)
-                        })
-                        .inner
+                        ui.vertical_centered_justified(|ui| skill.condition.default_widget(ui))
+                            .inner
                     })
                     .default_field("Cost", |skill| &mut skill.cost)
                     .default_field("Priority", |skill| &mut skill.priority)
@@ -373,10 +371,18 @@ impl SkillEditor {
                     })
                     .new_section("Other Related Skills")
                     .field("Rebirth Skill", |ui, skill| {
-                        ui.add(model_drop_down(self.cache.get(), &(), &mut skill.rebirth_sid))
+                        ui.add(model_drop_down(
+                            self.cache.get(),
+                            &(),
+                            &mut skill.rebirth_sid,
+                        ))
                     })
                     .field("Engage Skill", |ui, skill| {
-                        ui.add(model_drop_down(self.cache.get(), &(), &mut skill.engage_sid))
+                        ui.add(model_drop_down(
+                            self.cache.get(),
+                            &(),
+                            &mut skill.engage_sid,
+                        ))
                     })
                     .new_section("Overlap")
                     .default_field("Range", |skill| &mut skill.overlap_range)

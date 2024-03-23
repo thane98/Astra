@@ -27,16 +27,52 @@ impl MessageSystem {
                 "StreamingAssets/aa/Switch/fe_assets_message/accessories.bytes.bundle",
             ),
             (
+                "achieve",
+                "StreamingAssets/aa/Switch/fe_assets_message/achieve.bytes.bundle",
+            ),
+            (
                 "bondsring",
                 "StreamingAssets/aa/Switch/fe_assets_message/bondsring.bytes.bundle",
+            ),
+            (
+                "cook",
+                "StreamingAssets/aa/Switch/fe_assets_message/cook.bytes.bundle",
+            ),
+            (
+                "friendlist",
+                "StreamingAssets/aa/Switch/fe_assets_message/friendlist.bytes.bundle",
+            ),
+            (
+                "friendlist_ex",
+                "StreamingAssets/aa/Switch/fe_assets_message/friendlist_ex.bytes.bundle",
             ),
             (
                 "gamedata",
                 "StreamingAssets/aa/Switch/fe_assets_message/gamedata.bytes.bundle",
             ),
             (
-                "person",
-                "StreamingAssets/aa/Switch/fe_assets_message/person.bytes.bundle",
+                "hub",
+                "StreamingAssets/aa/Switch/fe_assets_message/hub.bytes.bundle",
+            ),
+            (
+                "hubcommon",
+                "StreamingAssets/aa/Switch/fe_assets_message/hubcommon.bytes.bundle",
+            ),
+            (
+                "hubcommon_p0",
+                "StreamingAssets/aa/Switch/fe_assets_message/hubcommon_p0.bytes.bundle",
+            ),
+            (
+                "hubcommon_p1",
+                "StreamingAssets/aa/Switch/fe_assets_message/hubcommon_p1.bytes.bundle",
+            ),
+            (
+                "hubcommon_p2",
+                "StreamingAssets/aa/Switch/fe_assets_message/hubcommon_p2.bytes.bundle",
+            ),
+            (
+                "hubcommon_p3",
+                "StreamingAssets/aa/Switch/fe_assets_message/hubcommon_p3.bytes.bundle",
             ),
             (
                 "item",
@@ -47,8 +83,28 @@ impl MessageSystem {
                 "StreamingAssets/aa/Switch/fe_assets_message/job.bytes.bundle",
             ),
             (
+                "maphistory",
+                "StreamingAssets/aa/Switch/fe_assets_message/maphistory.bytes.bundle",
+            ),
+            (
+                "moviename",
+                "StreamingAssets/aa/Switch/fe_assets_message/moviename.bytes.bundle",
+            ),
+            (
+                "musicname",
+                "StreamingAssets/aa/Switch/fe_assets_message/musicname.bytes.bundle",
+            ),
+            (
+                "network",
+                "StreamingAssets/aa/Switch/fe_assets_message/network.bytes.bundle",
+            ),
+            (
                 "skill",
                 "StreamingAssets/aa/Switch/fe_assets_message/skill.bytes.bundle",
+            ),
+            (
+                "system",
+                "StreamingAssets/aa/Switch/fe_assets_message/system.bytes.bundle",
             ),
             (
                 "patch0",
@@ -65,6 +121,34 @@ impl MessageSystem {
             (
                 "patch3",
                 "StreamingAssets/aa/Switch/fe_assets_message/patch3.bytes.bundle",
+            ),
+            (
+                "person",
+                "StreamingAssets/aa/Switch/fe_assets_message/person.bytes.bundle",
+            ),
+            (
+                "profilecard",
+                "StreamingAssets/aa/Switch/fe_assets_message/profilecard.bytes.bundle",
+            ),
+            (
+                "tutorial",
+                "StreamingAssets/aa/Switch/fe_assets_message/tutorial.bytes.bundle",
+            ),
+            (
+                "tutorial_p0",
+                "StreamingAssets/aa/Switch/fe_assets_message/tutorial_p0.bytes.bundle",
+            ),
+            (
+                "tutorial_p1",
+                "StreamingAssets/aa/Switch/fe_assets_message/tutorial_p1.bytes.bundle",
+            ),
+            (
+                "tutorial_p2",
+                "StreamingAssets/aa/Switch/fe_assets_message/tutorial_p2.bytes.bundle",
+            ),
+            (
+                "tutorial_p3",
+                "StreamingAssets/aa/Switch/fe_assets_message/tutorial_p3.bytes.bundle",
             ),
         ];
         let mut archives = HashMap::new();

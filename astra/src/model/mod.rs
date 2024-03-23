@@ -6,14 +6,14 @@ mod theme;
 
 pub use cached_view::*;
 pub use config::*;
-pub use shortcuts::*;
 pub use sheet::*;
+pub use shortcuts::*;
 pub use theme::*;
 
-use std::borrow::Cow;
-use itertools::Itertools;
 use egui::TextureHandle;
 use indexmap::IndexMap;
+use itertools::Itertools;
+use std::borrow::Cow;
 
 use crate::Screens;
 

@@ -18,7 +18,6 @@ pub struct ProfileCardBook {
     pub default_comment: Sheet<IndexMap<String, ProfileCardDefaultCommentData>>,
 }
 
-
 #[derive(Debug, Default, Clone, Astra)]
 pub struct ProfileCardImageComponent {
     #[astra(key = "@Out")]
@@ -32,7 +31,6 @@ pub struct ProfileCardImageComponent {
     #[astra(key = "@Arg")]
     pub arg: String,
 }
-
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct ProfileCardColorComponent {
@@ -48,7 +46,6 @@ pub struct ProfileCardColorComponent {
     pub arg: String,
 }
 
-
 #[derive(Debug, Default, Clone, Astra)]
 pub struct ProfileCardNameComponent {
     #[astra(key = "@Out")]
@@ -62,7 +59,6 @@ pub struct ProfileCardNameComponent {
     #[astra(key = "@Arg")]
     pub arg: String,
 }
-
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct ProfileCardCategorizedComponent {
@@ -80,7 +76,6 @@ pub struct ProfileCardCategorizedComponent {
     pub arg: String,
 }
 
-
 #[derive(Debug, Default, Clone, Astra)]
 pub struct ProfileCardCategorizedImageComponent {
     #[astra(key = "@Out")]
@@ -97,7 +92,6 @@ pub struct ProfileCardCategorizedImageComponent {
     pub arg: String,
 }
 
-
 #[derive(Debug, Default, Clone, Astra)]
 pub struct ProfileCardFavoriteMapData {
     #[astra(key = "@Out")]
@@ -111,7 +105,6 @@ pub struct ProfileCardFavoriteMapData {
     #[astra(key = "@Arg")]
     pub arg: String,
 }
-
 
 #[derive(Debug, Default, Clone, Astra)]
 pub struct ProfileCardDefaultCommentData {

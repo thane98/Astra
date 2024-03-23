@@ -23,7 +23,7 @@ impl AnimSetEditor {
     }
 
     pub fn show(&mut self, ctx: &egui::Context) {
-        self.content.side_panel(ctx, &self.anim_set, &());
+        self.content.left_panel(ctx, &self.anim_set, &());
 
         self.anim_set.write(|data| {
             self.content.content(ctx, data, |ui, animset| {

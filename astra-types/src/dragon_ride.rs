@@ -94,7 +94,7 @@ pub struct DragonRidePrizeData {
 
 #[derive(AstraBook)]
 pub struct DragonRideTargetPatternBook {
-    pub dragon_ride_target_patterns: Sheet<Vec<DragonRideTargetPattern>>,
+    pub dragon_ride_target_patterns: Sheet<IndexMap<String, Vec<DragonRideTargetPattern>>>,
 }
 
 #[derive(Debug, Default, Clone, Astra)]

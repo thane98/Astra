@@ -2,9 +2,9 @@ use astra_types::{Accessory, ItemBook};
 use indexmap::IndexMap;
 
 use crate::{
-    id_field, keyed_add_modal_content, model_drop_down, msbt_key_value_multiline,
-    msbt_key_value_singleline, AccessorySheet, AccessorySheetRetriever, CachedView, EditorState,
-    ListEditorContent, PropertyGrid,
+    gold_field, id_field, iron_field_i8, keyed_add_modal_content, model_drop_down,
+    msbt_key_value_multiline, msbt_key_value_singleline, silver_field, steel_field, AccessorySheet,
+    AccessorySheetRetriever, CachedView, EditorState, ListEditorContent, PropertyGrid,
 };
 
 pub struct AccessoryEditor {
@@ -28,7 +28,7 @@ impl AccessoryEditor {
     }
 
     pub fn show(&mut self, ctx: &egui::Context, state: &mut EditorState) {
-        self.content.side_panel(ctx, &self.accessory, state);
+        self.content.left_panel(ctx, &self.accessory, state);
 
         self.cache.refresh(state);
 
@@ -68,10 +68,10 @@ impl AccessoryEditor {
                             .god
                             .read(|data| ui.add(model_drop_down(data, state, &mut acc.gid)))
                     })
-                    .default_field("Price", |acc| &mut acc.price)
-                    .default_field("Iron", |acc| &mut acc.iron)
-                    .default_field("Steel", |acc| &mut acc.steel)
-                    .default_field("Silver", |acc| &mut acc.silver)
+                    .field("Price", |ui, acc| gold_field(ui, state, &mut acc.price))
+                    .field("Iron", |ui, d| iron_field_i8(ui, state, &mut d.iron))
+                    .field("Steel", |ui, d| steel_field(ui, state, &mut d.steel))
+                    .field("Silver", |ui, d| silver_field(ui, state, &mut d.silver))
                     .default_field("Mask", |acc| &mut acc.mask)
                     .show(ui)
                     .changed()

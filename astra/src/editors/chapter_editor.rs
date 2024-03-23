@@ -4,7 +4,7 @@ use std::sync::mpsc::{Receiver, TryRecvError};
 use std::sync::Arc;
 
 use astra_core::{Astra, OpenTerrain};
-use astra_types::{Chapter, ChapterBook, Spawn};
+use astra_types::{Chapter, ChapterBook, Spawn, TerrainData};
 use egui::{Button, CentralPanel, ComboBox, Slider, TopBottomPanel, Ui};
 use egui_modal::{Icon, Modal};
 use indexmap::IndexMap;
@@ -197,8 +197,7 @@ pub struct ChapterEditor {
     script_open_error: Option<String>,
     selected_chapter_index: Option<usize>,
 
-    terrain_content:
-        ListEditorContent<IndexMap<String, astra_types::TerrainData>, astra_types::TerrainData>,
+    terrain_content: ListEditorContent<IndexMap<String, TerrainData>, TerrainData>,
     dispos_content: GroupEditorContent,
 
     astra: Arc<RwLock<Astra>>,
@@ -824,7 +823,7 @@ impl ChapterEditor {
                 });
             });
 
-            self.terrain_content.side_panel(ctx, &state.terrain, state);
+            self.terrain_content.left_panel(ctx, &state.terrain, state);
 
             CentralPanel::default().show(ctx, |ui| {
                 chapter_terrain.write(|terrain_data| {

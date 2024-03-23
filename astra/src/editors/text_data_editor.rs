@@ -54,7 +54,6 @@ impl TextDataEditor {
             }
             self.changed = false;
         }
-        
     }
 
     pub fn show(&mut self, ctx: &egui::Context, state: &mut EditorState, config: &AppConfig) {

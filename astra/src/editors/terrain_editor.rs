@@ -31,7 +31,7 @@ impl TerrainDataEditor {
     }
 
     pub fn show(&mut self, ctx: &egui::Context, state: &mut EditorState) {
-        self.content.side_panel(ctx, &self.terrain, state);
+        self.content.left_panel(ctx, &self.terrain, state);
 
         self.cache.refresh(state);
 

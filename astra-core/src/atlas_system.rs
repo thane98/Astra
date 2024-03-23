@@ -12,19 +12,66 @@ pub struct AtlasSystem {
 
 impl AtlasSystem {
     pub fn load(file_system: &LocalizedFileSystem) -> Result<Self> {
-        let entries =
-            vec![
-            // ("system", "StreamingAssets/aa/Switch/fe_assets_ui/icon/system/system.bundle"),
-            ("item", "StreamingAssets/aa/Switch/fe_assets_ui/icon/item/item.bundle"),
-            ("skill", "StreamingAssets/aa/Switch/fe_assets_ui/icon/skill/skill.bundle"),
+        let entries = vec![
+            (
+                "achievement",
+                "StreamingAssets/aa/Switch/fe_assets_ui/icon/achievement/achievement.bundle",
+            ),
+            (
+                "hub_icons",
+                "StreamingAssets/aa/Switch/fe_assets_ui/hub/minimap/textures/minimap.bundle",
+            ),
+            (
+                "hub_cafe_icons",
+                "StreamingAssets/aa/Switch/fe_assets_ui/hub/cafeterrace/cafe/textures/cafe.bundle",
+            ),
+            (
+                "system",
+                "StreamingAssets/aa/Switch/fe_assets_ui/icon/system/system.bundle",
+            ),
+            (
+                "fishing",
+                "StreamingAssets/aa/Switch/fe_assets_ui/hub/fishing/textures/fishing.bundle",
+            ),
+            (
+                "godring",
+                "StreamingAssets/aa/Switch/fe_assets_ui/icon/godring/godring.bundle",
+            ),
+            (
+                "item",
+                "StreamingAssets/aa/Switch/fe_assets_ui/icon/item/item.bundle",
+            ),
+            (
+                "notebook",
+                "StreamingAssets/aa/Switch/fe_assets_ui/hub/notebook/stamps/allstamps.bundle",
+            ),
+            (
+                "skill",
+                "StreamingAssets/aa/Switch/fe_assets_ui/icon/skill/skill.bundle",
+            ),
             (
                 "facethumb",
                 "StreamingAssets/aa/Switch/fe_assets_ui/common/unitlist/facethumb/facethumb.bundle",
             ),
-            ("unit_indexes", "StreamingAssets/aa/Switch/fe_assets_ui/icon/unit/unitindexes.bundle"),
+            (
+                "unit_indexes",
+                "StreamingAssets/aa/Switch/fe_assets_ui/icon/unit/unitindexes.bundle",
+            ),
             (
                 "unit_palettes",
                 "StreamingAssets/aa/Switch/fe_assets_ui/icon/unit/unitpallettes.bundle",
+            ),
+            (
+                "versus",
+                "StreamingAssets/aa/Switch/fe_assets_ui/network/versus/textures/versus.bundle",
+            ),
+            (
+                "relaystamp",
+                "StreamingAssets/aa/Switch/fe_assets_ui/network/relaystamp/relaystamp.bundle",
+            ),
+            (
+                "mapstatus",
+                "StreamingAssets/aa/Switch/fe_assets_map/textures/mapstatus/mapstatus.bundle",
             ),
         ];
         let mut atlases = HashMap::new();

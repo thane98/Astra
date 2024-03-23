@@ -3,7 +3,6 @@ use egui::{FontId, Id, ScrollArea, Stroke, TextEdit, Ui};
 use egui_extras::{Size, StripBuilder};
 use itertools::Itertools;
 
-
 const MIN_LINES: usize = 10;
 const FONT_SIZE: f32 = 14.;
 
@@ -22,7 +21,10 @@ impl<'a> MsbtScriptEditor<'a> {
         }
     }
 
-    pub fn on_focus_lost<F>(self, listener: F) -> Self where F: FnOnce(&str) + 'a {
+    pub fn on_focus_lost<F>(self, listener: F) -> Self
+    where
+        F: FnOnce(&str) + 'a,
+    {
         Self {
             on_focus_lost: Some(Box::new(listener)),
             ..self

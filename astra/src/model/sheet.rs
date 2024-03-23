@@ -19,7 +19,36 @@ use indexmap::IndexMap;
 use itertools::Itertools;
 use parking_lot::RwLock;
 
-use crate::{DecorationKind, KeyedViewItem, MessageDbWrapper, Screens, TextureCache, ViewItem};
+use crate::{
+    AchievementSheet, AiSheet, AmiiboSheet, AnimalSheet, ArenaSheet, BelongSheet, CalculatorSheet,
+    ChartGodDataSheet, ChartParamSheet, ChartSheet, CookSheet, DecorationKind,
+    DragonRidePresetParamSheet, DragonRidePrizeSheet, DragonRideTargetPatternSheet,
+    EffectSequenceSheet, EffectSheet, EncountEnemyTypeSheet, EncountEquipmentSheet,
+    EncountRarityConfigSheet, EncountWeaponCategorySheet, EndRollDataSheet, ExpTableSheet,
+    FishSizeDataSheet, FishSpawnSheet, FishingAssistDataSheet, FishingFishDataSheet,
+    FishingRadicalParamDataSheet, FishingTargetListDataSheet, FoodNamingSheet, FoodSheet,
+    FriendListDataSheet, GroundAttributeSheet, HubAnimalBonusGroupSheet, HubAnimalBonusSheet,
+    HubAreaDataSheet, HubCrystalDataSheet, HubDemoDataSheet, HubFacilityDataSheet,
+    HubFortuneTellingDataSheet, HubIngredientBonusGroupSheet, HubIngredientBonusSheet,
+    HubItemBonusSheet, HubMapIconDataSheet, HubMaterialBonusSheet, HubMyRoomDataSheet,
+    HubNationDataSheet, HubResourceDataSheet, HubSpawnRandomSetSheet, HubSpawnSheet,
+    HubTalkDataSheet, HubTalkFacilityDataSheet, HubTalkRelativeDataSheet, HubUnityBehaviorSheet,
+    IngredientSheet, JukeboxDataSheet, KeyHelpDataSheet, KeyedViewItem, KillBonus1Sheet,
+    KillBonus2Sheet, MapEditorCategorySheet, MapEditorObjectSheet, MapHistorySheet,
+    MascotAccessoryDataSheet, MascotColorDataSheet, MascotFoodDataSheet, MascotParamDataSheet,
+    MessageDbWrapper, MovieSheet, MuscleAssistDataSheet, MuscleExerciseDifficultySheet,
+    MuscleExercisePrizeDataSheet, MuscleExerciseSetupSheet, MusclePushUpSpeedDataSheet,
+    MuscleSitUpFallDataSheet, MuscleSquatJudgeAreaDataSheet, MuscleSquatMusicSheetSheet,
+    MuscleSquatScoreListDataSheet, MusicDataSheet, PhotographPoseSheet, PhotographSpotSheet,
+    PostBattleConversationSheet, ProfileCardCategorizedComponentSheet,
+    ProfileCardCategorizedImageComponentSheet, ProfileCardColorComponentSheet,
+    ProfileCardDefaultCommentDataSheet, ProfileCardFavoriteMapDataSheet,
+    ProfileCardImageComponentSheet, ProfileCardNameComponentSheet, RangeDataSheet,
+    RelayAwardDataSheet, RelayClearAwardDataSheet, RelayDataSheet, RelayStampDataSheet,
+    RingDataSheet, RingPolishVoiceDataSheet, Screens, SoundEventSheet, TasteConditionSheet,
+    TasteSheet, TextureCache, TipDataSheet, TitleCallDataSheet, TitlePedestalDataSheet,
+    TutorialDataSheet, VibrationDefineDataSheet, ViewItem,
+};
 
 use super::GroupViewItem;
 
@@ -30,28 +59,134 @@ pub struct EditorState {
     pub astra: Arc<RwLock<Astra>>,
 
     pub accessory: AccessorySheet,
+    pub accessory_shop: AccessoryShopSheet,
+    pub achieve: AchievementSheet,
+    pub ai: AiSheet,
+    pub amiibo: AmiiboSheet,
     pub anim_set: AnimSetSheet,
+    pub animal: AnimalSheet,
+    pub arena: ArenaSheet,
+    pub armory_shop: ArmoryShopSheet,
     pub asset_table: AssetTableSheet,
+    pub belong: BelongSheet,
+    pub calculator: CalculatorSheet,
     pub chapter: ChapterSheet,
+    pub chart: ChartSheet,
+    pub chart_god: ChartGodDataSheet,
+    pub chart_param: ChartParamSheet,
+    pub cook: CookSheet,
+    pub dragon_ride_presets: DragonRidePresetParamSheet,
+    pub dragon_ride_prizes: DragonRidePrizeSheet,
+    pub dragon_ride_target_patterns: DragonRideTargetPatternSheet,
+    pub effect: EffectSheet,
+    pub effect_sequence: EffectSequenceSheet,
+    pub encount_equipment: EncountEquipmentSheet,
+    pub encount_weapon_categories: EncountWeaponCategorySheet,
+    pub encount_enemy_types: EncountEnemyTypeSheet,
+    pub encount_rarity_configs: EncountRarityConfigSheet,
+    pub end_roll_data: EndRollDataSheet,
+    pub exp_table: ExpTableSheet,
+    pub fishing_fish_data: FishingFishDataSheet,
+    pub fishing_size_data: FishSizeDataSheet,
+    pub fish_spawns: FishSpawnSheet,
+    pub fishing_target_list: FishingTargetListDataSheet,
+    pub fishing_assist_data: FishingAssistDataSheet,
+    pub fishing_radical_param_data: FishingRadicalParamDataSheet,
+    pub flea_market: FleaMarketSheet,
+    pub food: FoodSheet,
+    pub food_naming: FoodNamingSheet,
     pub forge_improve: ForgeImproveDataSheet,
     pub forge_evolve: ForgeEvolveDataSheet,
     pub forge_exchange: ForgeExchangeDataSheet,
+    pub friend_list_data: FriendListDataSheet,
     pub god: GodDataSheet,
     pub god_level_data: GodLevelDataSheet,
     pub god_bond_level_data: GodBondLevelDataSheet,
+    pub ground_attributes: GroundAttributeSheet,
+    pub hub_area_data: HubAreaDataSheet,
+    pub hub_facility_data: HubFacilityDataSheet,
+    pub hub_demo_data: HubDemoDataSheet,
+    pub hub_spawns: HubSpawnSheet,
+    pub hub_random_sets: HubSpawnRandomSetSheet,
+    pub hub_unity_behavior: HubUnityBehaviorSheet,
+    pub hub_fortune_telling_data: HubFortuneTellingDataSheet,
+    pub hub_nation_data: HubNationDataSheet,
+    pub hub_material_bonuses: HubMaterialBonusSheet,
+    pub hub_ingredient_bonuses: HubIngredientBonusSheet,
+    pub hub_animal_bonuses: HubAnimalBonusSheet,
+    pub hub_item_bonuses: HubItemBonusSheet,
+    pub hub_ingredient_bonus_groups: HubIngredientBonusGroupSheet,
+    pub hub_animal_bonus_groups: HubAnimalBonusGroupSheet,
+    pub hub_map_icon_data: HubMapIconDataSheet,
+    pub hub_my_room_data: HubMyRoomDataSheet,
+    pub hub_resources: HubResourceDataSheet,
+    pub hub_talk_data: HubTalkDataSheet,
+    pub hub_relative_data: HubTalkRelativeDataSheet,
+    pub hub_talk_facility_data: HubTalkFacilityDataSheet,
+    pub hub_crystal_data: HubCrystalDataSheet,
+    pub item: ItemSheet,
+    pub item_shop: ItemShopSheet,
+    pub ingredient: IngredientSheet,
     pub job: JobSheet,
+    pub jukebox_data: JukeboxDataSheet,
+    pub key_help_data: KeyHelpDataSheet,
+    pub kill_bonuses_1: KillBonus1Sheet,
+    pub kill_bonuses_2: KillBonus2Sheet,
+    pub map_editor_objects: MapEditorObjectSheet,
+    pub map_editor_categories: MapEditorCategorySheet,
+    pub map_history: MapHistorySheet,
+    pub mascot_accessory_data: MascotAccessoryDataSheet,
+    pub mascot_color_data: MascotColorDataSheet,
+    pub mascot_param_data: MascotParamDataSheet,
+    pub mascot_food_data: MascotFoodDataSheet,
+    pub movies: MovieSheet,
+    pub muscle_exercise_difficulty: MuscleExerciseDifficultySheet,
+    pub muscle_exercise_setups: MuscleExerciseSetupSheet,
+    pub muscle_exercise_prizes: MuscleExercisePrizeDataSheet,
+    pub muscle_exercise_sit_up_fall_data: MuscleSitUpFallDataSheet,
+    pub muscle_exercise_push_up_speed: MusclePushUpSpeedDataSheet,
+    pub muscle_exercise_squat_judge_area: MuscleSquatJudgeAreaDataSheet,
+    pub muscle_exercise_score_list_data: MuscleSquatScoreListDataSheet,
+    pub muscle_exercise_music_sheets: MuscleSquatMusicSheetSheet,
+    pub muscle_exercise_assist_data: MuscleAssistDataSheet,
+    pub music: MusicDataSheet,
     pub param: GameParamSheet,
     pub person: PersonSheet,
-    pub item: ItemSheet,
+    pub post_battle_conversations: PostBattleConversationSheet,
+    pub photograph_spots: PhotographSpotSheet,
+    pub photograph_poses: PhotographPoseSheet,
+    pub profile_card_bg: ProfileCardImageComponentSheet,
+    pub profile_card_frames: ProfileCardImageComponentSheet,
+    pub profile_card_lettering: ProfileCardImageComponentSheet,
+    pub profile_card_text_colors: ProfileCardColorComponentSheet,
+    pub profile_card_stamp_data_1: ProfileCardImageComponentSheet,
+    pub profile_card_stamp_data_2: ProfileCardCategorizedImageComponentSheet,
+    pub profile_card_title: ProfileCardNameComponentSheet,
+    pub profile_card_favorite_character: ProfileCardNameComponentSheet,
+    pub profile_card_favorite_map: ProfileCardFavoriteMapDataSheet,
+    pub profile_card_comment: ProfileCardCategorizedComponentSheet,
+    pub profile_card_favorite_map_editor_theme: ProfileCardCategorizedComponentSheet,
+    pub profile_card_default_comment: ProfileCardDefaultCommentDataSheet,
+    pub ranges: RangeDataSheet,
+    pub relay_data: RelayDataSheet,
+    pub relay_stamp_data: RelayStampDataSheet,
+    pub relay_clear_award_data: RelayClearAwardDataSheet,
+    pub relay_award_data: RelayAwardDataSheet,
     pub reliance: RelianceDataSheet,
     pub reliance_exp_data: RelianceExpDataSheet,
     pub reliance_bonus_data: RelianceBonusDataSheet,
+    pub ring_data: RingDataSheet,
+    pub ring_polish_voice: RingPolishVoiceDataSheet,
     pub skill: SkillSheet,
-    pub armory_shop: ArmoryShopSheet,
-    pub item_shop: ItemShopSheet,
-    pub flea_market: FleaMarketSheet,
-    pub accessory_shop: AccessoryShopSheet,
+    pub sound_events: SoundEventSheet,
+    pub taste: TasteSheet,
+    pub taste_condition: TasteConditionSheet,
+    pub title_call_data: TitleCallDataSheet,
+    pub title_pedestal_data: TitlePedestalDataSheet,
+    pub tips: TipDataSheet,
+    pub tutorials: TutorialDataSheet,
     pub terrain: TerrainDataSheet,
+    pub vibration_data: VibrationDefineDataSheet,
 }
 
 /// Strategy for retrieving a sheet from its containing book.
@@ -124,13 +259,14 @@ where
     }
 }
 
+#[macro_export]
 macro_rules! sheet_retriever {
     ($name:ident, $book:ty, $sheet:ident, $con:ty) => {
         paste::paste! {
-            #[derive(Debug, Clone)]
+            #[derive(Debug, Clone, Default)]
             pub struct [<$name SheetRetriever>];
 
-            impl SheetRetriever<$book, $con> for [<$name SheetRetriever>] {
+            impl $crate::SheetRetriever<$book, $con> for [<$name SheetRetriever>] {
                 fn retrieve<'a>(&self, book: &'a $book) -> &'a $con {
                     &book.$sheet.data
                 }
@@ -140,11 +276,12 @@ macro_rules! sheet_retriever {
                 }
             }
 
-            pub type [<$name Sheet>] = SheetHandle<[<$name SheetRetriever>], $book, $con>;
+            pub type [<$name Sheet>] = $crate::SheetHandle<[<$name SheetRetriever>], $book, $con>;
         }
     };
 }
 
+#[macro_export]
 macro_rules! standard_keyed_display {
     ($this:ident, $dependencies:ident, $key:ident) => {
         $dependencies
@@ -169,6 +306,27 @@ impl ViewItem for Accessory {
 
     fn text(&self, dependencies: &Self::Dependencies) -> Cow<'_, str> {
         standard_keyed_display!(self, dependencies, aid)
+    }
+
+    fn decorated(_: DecorationKind<'_>) -> bool {
+        true
+    }
+
+    fn decoration(
+        &self,
+        dependencies: &Self::Dependencies,
+        _: DecorationKind<'_>,
+    ) -> Option<(TextureHandle, f32)> {
+        let decoration_id = if self.mask.unwrap_or_default() & 1 == 0 {
+            "Face"
+        } else {
+            "Clothes"
+        };
+        dependencies
+            .texture_cache
+            .borrow_mut()
+            .get_system(decoration_id)
+            .map(|texture| (texture, 0.5))
     }
 
     fn screen() -> Option<Screens> {
@@ -385,6 +543,30 @@ impl ViewItem for GodData {
 
     fn text(&self, dependencies: &Self::Dependencies) -> Cow<'_, str> {
         standard_keyed_display!(self, dependencies, gid, mid)
+    }
+
+    fn decorated(_: DecorationKind<'_>) -> bool {
+        true
+    }
+
+    fn decoration(
+        &self,
+        dependencies: &Self::Dependencies,
+        _: DecorationKind<'_>,
+    ) -> Option<(TextureHandle, f32)> {
+        let darkness = self.flag.unwrap_or_default() & 0b100 != 0;
+        let decoration_id = if self.face_icon_name == "Face_Lueur" {
+            "Face_Lueur_Female"
+        } else if darkness {
+            &self.face_icon_name_darkness
+        } else {
+            &self.face_icon_name
+        };
+        dependencies
+            .texture_cache
+            .borrow_mut()
+            .get_map_status(decoration_id)
+            .map(|texture| (texture, 1.))
     }
 
     fn screen() -> Option<Screens> {
@@ -738,6 +920,21 @@ impl ViewItem for AccessoryShopInventory {
             data.get(&self.aid)
                 .map(|acc| acc.text(dependencies).into_owned().into())
                 .unwrap_or_else(|| Cow::Borrowed("{unknown accessory}"))
+        })
+    }
+
+    fn decorated(kind: crate::DecorationKind<'_>) -> bool {
+        Accessory::decorated(kind)
+    }
+
+    fn decoration(
+        &self,
+        dependencies: &Self::Dependencies,
+        kind: crate::DecorationKind<'_>,
+    ) -> Option<(egui::TextureHandle, f32)> {
+        dependencies.accessory.read(|data| {
+            data.get(&self.aid)
+                .and_then(|d| d.decoration(dependencies, kind))
         })
     }
 }
