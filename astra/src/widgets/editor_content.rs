@@ -188,7 +188,6 @@ where
                         .selection
                         .and_then(|source_index| self.filter_proxy.proxy_index(source_index));
                     ui.add(list_view(
-                        20.,
                         &self.filter_proxy.model(changed, data, dependencies),
                         dependencies,
                         &mut proxy_index,
