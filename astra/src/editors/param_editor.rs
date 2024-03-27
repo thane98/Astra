@@ -4,7 +4,7 @@ use crate::{f32_drag, EditorState, GameParamSheet, ListEditorContent, PropertyGr
 
 pub struct GameParamEditor {
     param: GameParamSheet,
-    content: ListEditorContent<Vec<GameParam>, GameParam>,
+    content: ListEditorContent<Vec<GameParam>, GameParam, ()>,
 }
 
 impl GameParamEditor {

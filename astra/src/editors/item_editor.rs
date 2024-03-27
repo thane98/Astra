@@ -43,7 +43,7 @@ const FLAG_LABELS: &[&str] = &[
 
 pub struct ItemEditor {
     item: ItemSheet,
-    content: ListEditorContent<IndexMap<String, Item>, Item>,
+    content: ListEditorContent<IndexMap<String, Item>, Item, EditorState>,
     cache: CachedView<ItemSheetRetriever, ItemBook, Item>,
 }
 

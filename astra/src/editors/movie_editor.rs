@@ -1,10 +1,11 @@
 use std::borrow::Cow;
 
-
 use indexmap::IndexMap;
 
 use crate::{
-    id_field, msbt_key_value_multiline, msbt_key_value_singleline, sheet_retriever, standard_keyed_display, EditorState, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem
+    id_field, keyed_add_modal_content, msbt_key_value_multiline, msbt_key_value_singleline,
+    sheet_retriever, standard_keyed_display, EditorState, KeyedViewItem, ListEditorContent,
+    PropertyGrid, ViewItem,
 };
 
 use astra_types::{Movie, MovieBook};
@@ -31,14 +32,15 @@ impl KeyedViewItem for Movie {
 
 pub struct MovieEditor {
     movies: MovieSheet,
-    movies_content: ListEditorContent<IndexMap<String, Movie>, Movie>,
+    movies_content: ListEditorContent<IndexMap<String, Movie>, Movie, EditorState>,
 }
 
 impl MovieEditor {
     pub fn new(state: &EditorState) -> Self {
         Self {
             movies: state.movies.clone(),
-            movies_content: ListEditorContent::new("movies_editor"),
+            movies_content: ListEditorContent::new("movies_editor")
+                .with_add_modal_content(keyed_add_modal_content),
         }
     }
 
@@ -49,9 +51,15 @@ impl MovieEditor {
             self.movies_content.content(ctx, data, |ui, selection| {
                 PropertyGrid::new("movies", selection)
                     .new_section("")
-                    .field("Movie File Name", |ui, d| ui.add(id_field(&mut d.movie_file_name)))
-                    .field("Name", |ui, d| msbt_key_value_singleline!(ui, state, "moviename", d.name))
-                    .field("Help", |ui, d| msbt_key_value_multiline!(ui, state, "moviename", d.help))
+                    .field("Movie File Name", |ui, d| {
+                        ui.add(id_field(&mut d.movie_file_name))
+                    })
+                    .field("Name", |ui, d| {
+                        msbt_key_value_singleline!(ui, state, "moviename", d.name)
+                    })
+                    .field("Help", |ui, d| {
+                        msbt_key_value_multiline!(ui, state, "moviename", d.help)
+                    })
                     .default_field("Condition", |d| &mut d.condition)
                     .default_field("No", |d| &mut d.no)
                     .default_field("Before Sound Event Name 1", |d| {

@@ -9,7 +9,7 @@ use crate::{
 
 pub struct AccessoryEditor {
     accessory: AccessorySheet,
-    content: ListEditorContent<IndexMap<String, Accessory>, Accessory>,
+    content: ListEditorContent<IndexMap<String, Accessory>, Accessory, EditorState>,
     cache: CachedView<AccessorySheetRetriever, ItemBook, Accessory>,
 }
 

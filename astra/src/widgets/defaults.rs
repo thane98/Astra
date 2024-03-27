@@ -1,7 +1,8 @@
 use egui::{Response, Ui};
 
 use crate::{
-    editable_list, f32_drag, i16_drag, i32_drag, i8_drag, optional_checkbox, u16_drag, u32_drag, u8_drag
+    editable_list, f32_drag, i16_drag, i32_drag, i8_drag, optional_checkbox, u16_drag, u32_drag,
+    u8_drag,
 };
 
 /// Trait for types which support a "default" widget.
@@ -65,7 +66,10 @@ impl DefaultWidget for Option<f32> {
     }
 }
 
-impl<T> DefaultWidget for Vec<T> where T: DefaultWidget + Default {
+impl<T> DefaultWidget for Vec<T>
+where
+    T: DefaultWidget + Default,
+{
     fn default_widget(&mut self, ui: &mut Ui) -> Response {
         ui.add(editable_list(self, |_, d, ui| {
             DefaultWidget::default_widget(d, ui)

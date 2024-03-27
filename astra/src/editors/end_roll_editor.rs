@@ -23,7 +23,7 @@ impl ViewItem for EndRollData {
 
 pub struct EndRollEditor {
     end_roll_data: EndRollDataSheet,
-    end_roll_data_content: ListEditorContent<Vec<EndRollData>, EndRollData>,
+    end_roll_data_content: ListEditorContent<Vec<EndRollData>, EndRollData, EditorState>,
 }
 
 impl EndRollEditor {

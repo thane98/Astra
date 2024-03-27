@@ -4,7 +4,8 @@ use astra_types::{ArenaBook, ArenaData};
 use indexmap::IndexMap;
 
 use crate::{
-    model_drop_down, sheet_retriever, EditorState, GroupEditorContent, GroupViewItem, PropertyGrid, ViewItem
+    model_drop_down, sheet_retriever, EditorState, GroupEditorContent, GroupViewItem, PropertyGrid,
+    ViewItem,
 };
 
 sheet_retriever!(Arena, ArenaBook, arena_data, IndexMap<String, Vec<ArenaData>>);
@@ -55,9 +56,9 @@ impl ArenaEditor {
                     .default_field("Rate", |d| &mut d.rate)
                     .default_field("Pid", |d| &mut d.pid)
                     .field("Item", |ui, d| {
-                        state.item.read(|data| {
-                            ui.add(model_drop_down(data, state, &mut d.iid))
-                        })
+                        state
+                            .item
+                            .read(|data| ui.add(model_drop_down(data, state, &mut d.iid)))
                     })
                     .show(ui)
                     .changed()

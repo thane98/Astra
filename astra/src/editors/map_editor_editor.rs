@@ -4,8 +4,8 @@ use egui::Ui;
 use indexmap::IndexMap;
 
 use crate::{
-    editor_tab_strip, id_field, model_drop_down, sheet_retriever, CachedView, EditorState,
-    KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem,
+    editor_tab_strip, id_field, keyed_add_modal_content, model_drop_down, sheet_retriever,
+    CachedView, EditorState, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem,
 };
 
 use astra_types::{MapEditorBook, MapEditorCategory, MapEditorObject};
@@ -92,8 +92,10 @@ pub struct MapEditorEditor {
     objects: MapEditorObjectSheet,
     categories: MapEditorCategorySheet,
     categories_cache: CachedView<MapEditorCategorySheetRetriever, MapEditorBook, MapEditorCategory>,
-    objects_content: ListEditorContent<IndexMap<String, MapEditorObject>, MapEditorObject>,
-    categories_content: ListEditorContent<IndexMap<String, MapEditorCategory>, MapEditorCategory>,
+    objects_content:
+        ListEditorContent<IndexMap<String, MapEditorObject>, MapEditorObject, EditorState>,
+    categories_content:
+        ListEditorContent<IndexMap<String, MapEditorCategory>, MapEditorCategory, EditorState>,
 }
 
 impl MapEditorEditor {
@@ -103,8 +105,10 @@ impl MapEditorEditor {
             objects: state.map_editor_objects.clone(),
             categories: state.map_editor_categories.clone(),
             categories_cache: CachedView::new(state.map_editor_categories.clone(), state),
-            objects_content: ListEditorContent::new("objects_editor"),
-            categories_content: ListEditorContent::new("categories_editor"),
+            objects_content: ListEditorContent::new("objects_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            categories_content: ListEditorContent::new("categories_editor")
+                .with_add_modal_content(keyed_add_modal_content),
         }
     }
 

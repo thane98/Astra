@@ -5,11 +5,11 @@ use egui_extras::Size;
 use indexmap::IndexMap;
 
 use crate::{
-    editable_list, editor_tab_strip, id_field, model_drop_down, msbt_key_value_multiline,
-    msbt_key_value_singleline, optional_image, rgb_color_picker, ring_rank_drop_down,
-    sheet_retriever, standard_keyed_display, stat_column_headers_no_sight, stats_row_no_sight,
-    DecorationKind, EditorState, GroupEditorContent, GroupViewItem, KeyedViewItem,
-    ListEditorContent, PropertyGrid, ViewItem,
+    editable_list, editor_tab_strip, id_field, keyed_add_modal_content, model_drop_down,
+    msbt_key_value_multiline, msbt_key_value_singleline, optional_image, rgb_color_picker,
+    ring_rank_drop_down, sheet_retriever, standard_keyed_display, stat_column_headers_no_sight,
+    stats_row_no_sight, DecorationKind, EditorState, GroupEditorContent, GroupViewItem,
+    KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem,
 };
 
 use astra_types::{RingBook, RingCleaningVoiceBook, RingData, RingPolishVoiceData};
@@ -94,7 +94,7 @@ pub struct RingEditor {
     tab: Tab,
     ring_data: RingDataSheet,
     ring_polish_voice: RingPolishVoiceDataSheet,
-    ring_data_content: ListEditorContent<IndexMap<String, RingData>, RingData>,
+    ring_data_content: ListEditorContent<IndexMap<String, RingData>, RingData, EditorState>,
     ring_polish_voice_content: GroupEditorContent,
 }
 
@@ -104,7 +104,8 @@ impl RingEditor {
             tab: Tab::RingData,
             ring_data: state.ring_data.clone(),
             ring_polish_voice: state.ring_polish_voice.clone(),
-            ring_data_content: ListEditorContent::new("ring_data_editor"),
+            ring_data_content: ListEditorContent::new("ring_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
             ring_polish_voice_content: GroupEditorContent::new("ring_data_editor"),
         }
     }

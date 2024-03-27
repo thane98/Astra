@@ -8,7 +8,7 @@ use crate::{
 
 pub struct AssetTableEditor {
     asset_table: AssetTableSheet,
-    content: ListEditorContent<Vec<AssetDef>, AssetDef>,
+    content: ListEditorContent<Vec<AssetDef>, AssetDef, EditorState>,
 }
 
 impl AssetTableEditor {

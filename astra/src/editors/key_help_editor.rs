@@ -1,10 +1,10 @@
 use std::borrow::Cow;
 
-
 use indexmap::IndexMap;
 
 use crate::{
-    msbt_key_value_multiline, sheet_retriever, standard_keyed_display, EditorState, GroupEditorContent, GroupViewItem, PropertyGrid, ViewItem
+    msbt_key_value_multiline, sheet_retriever, standard_keyed_display, EditorState,
+    GroupEditorContent, GroupViewItem, PropertyGrid, ViewItem,
 };
 
 use astra_types::{KeyHelpData, KeyHelpDataBook};
@@ -50,7 +50,9 @@ impl KeyHelpDataEditor {
                     PropertyGrid::new("key_help_data", selection)
                         .new_section("")
                         .default_field("Button Index", |d| &mut d.button_index)
-                        .field("MID", |ui, d| msbt_key_value_multiline!(ui, state, "system", d.mid))
+                        .field("MID", |ui, d| {
+                            msbt_key_value_multiline!(ui, state, "system", d.mid)
+                        })
                         .show(ui)
                         .changed()
                 })

@@ -5,8 +5,8 @@ use egui::Ui;
 use indexmap::IndexMap;
 
 use crate::{
-    editor_tab_strip, id_field, model_drop_down, sheet_retriever, CachedView, EditorState,
-    KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem,
+    editor_tab_strip, id_field, keyed_add_modal_content, model_drop_down, sheet_retriever,
+    CachedView, EditorState, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem,
 };
 
 sheet_retriever!(Effect, EffectBook, effects, IndexMap<String, Effect>);
@@ -60,8 +60,9 @@ pub struct EffectEditor {
     effect: EffectSheet,
     sequence: EffectSequenceSheet,
     effect_cache: CachedView<EffectSheetRetriever, EffectBook, Effect>,
-    effect_content: ListEditorContent<IndexMap<String, Effect>, Effect>,
-    sequence_content: ListEditorContent<IndexMap<String, EffectSequence>, EffectSequence>,
+    effect_content: ListEditorContent<IndexMap<String, Effect>, Effect, EditorState>,
+    sequence_content:
+        ListEditorContent<IndexMap<String, EffectSequence>, EffectSequence, EditorState>,
 }
 
 impl EffectEditor {
@@ -71,8 +72,10 @@ impl EffectEditor {
             effect: state.effect.clone(),
             sequence: state.effect_sequence.clone(),
             effect_cache: CachedView::new(state.effect.clone(), state),
-            effect_content: ListEditorContent::new("effect"),
-            sequence_content: ListEditorContent::new("effect_sequence"),
+            effect_content: ListEditorContent::new("effect")
+                .with_add_modal_content(keyed_add_modal_content),
+            sequence_content: ListEditorContent::new("effect_sequence")
+                .with_add_modal_content(keyed_add_modal_content),
         }
     }
 

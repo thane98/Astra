@@ -6,17 +6,17 @@ use egui_modal::Modal;
 
 use crate::model::{SheetHandle, SheetRetriever};
 use crate::{
-    blank_slate, list_view, FilterProxyBuilder, ListModel, ViewItem, ADD_SHORTCUT,
-    COPY_TO_SHORTCUT, DELETE_SHORTCUT, DUPLICATE_SHORTCUT, INSERT_SHORTCUT, MOVE_DOWN_SHORTCUT,
-    MOVE_UP_SHORTCUT,
+    blank_slate, list_view, AddModalRenderer, FilterProxyBuilder, ListModel, ViewItem,
+    ADD_SHORTCUT, COPY_TO_SHORTCUT, DELETE_SHORTCUT, DUPLICATE_SHORTCUT, INSERT_SHORTCUT,
+    MOVE_DOWN_SHORTCUT, MOVE_UP_SHORTCUT,
 };
 
 use super::{list_select_modal, AddModalCommand};
 
-pub struct ListEditorContent<M, I> {
+pub struct ListEditorContent<M, I, D> {
     phantom: PhantomData<I>,
     id_source: &'static str,
-    add_modal_fn: Option<Box<dyn Fn(&str, &Modal, &mut Ui, &mut M, AddModalCommand) -> bool>>,
+    add_modal_renderer: Option<Box<dyn AddModalRenderer<M, I, D>>>,
     filter_proxy: FilterProxyBuilder,
     selection: Option<usize>,
     prev_model_revision: Option<usize>,
@@ -24,16 +24,16 @@ pub struct ListEditorContent<M, I> {
     copy_index: Option<usize>,
 }
 
-impl<M, I> ListEditorContent<M, I>
+impl<M, I, D> ListEditorContent<M, I, D>
 where
     M: ListModel<I>,
-    I: ViewItem + Default + Clone,
+    I: ViewItem<Dependencies = D> + Default + Clone,
 {
     pub fn new(id_source: &'static str) -> Self {
         Self {
             id_source,
             selection: None,
-            add_modal_fn: None,
+            add_modal_renderer: None,
             prev_model_revision: None,
             add_command: None,
             copy_index: None,
@@ -44,10 +44,10 @@ where
 
     pub fn with_add_modal_content(
         self,
-        renderer: impl Fn(&str, &Modal, &mut Ui, &mut M, AddModalCommand) -> bool + 'static,
+        renderer: impl AddModalRenderer<M, I, D> + 'static,
     ) -> Self {
         Self {
-            add_modal_fn: Some(Box::new(renderer)),
+            add_modal_renderer: Some(Box::new(renderer)),
             ..self
         }
     }
@@ -64,15 +64,26 @@ where
         &mut self,
         ctx: &egui::Context,
         model: &SheetHandle<R, B, M>,
-        dependencies: &I::Dependencies,
+        dependencies: &D,
     ) where
         R: SheetRetriever<B, M>,
     {
         // TODO: Fix out of bounds selection
         let add_modal = Modal::new(ctx, self.id_source);
-        if let (Some(modal_fn), Some(add_command)) = (&self.add_modal_fn, self.add_command) {
+        if let (Some(add_modal_renderer), Some(add_command)) =
+            (&mut self.add_modal_renderer, self.add_command)
+        {
             add_modal.show(|ui| {
-                model.write(|data| modal_fn(self.id_source, &add_modal, ui, data, add_command))
+                model.write(|data| {
+                    add_modal_renderer.show(
+                        self.id_source,
+                        &add_modal,
+                        ui,
+                        data,
+                        dependencies,
+                        add_command,
+                    )
+                })
             });
         }
 
@@ -218,7 +229,7 @@ where
     where
         R: SheetRetriever<B, M>,
     {
-        if self.add_modal_fn.is_some() {
+        if self.add_modal_renderer.is_some() {
             self.add_command = Some(AddModalCommand::Add);
             add_modal.open();
         } else {
@@ -234,7 +245,7 @@ where
         R: SheetRetriever<B, M>,
     {
         if let Some(selection) = self.selection {
-            if self.add_modal_fn.is_some() {
+            if self.add_modal_renderer.is_some() {
                 self.add_command = Some(AddModalCommand::Insert(selection + 1));
                 add_modal.open();
             } else {
@@ -251,7 +262,7 @@ where
         R: SheetRetriever<B, M>,
     {
         if let Some(selection) = self.selection {
-            if self.add_modal_fn.is_some() {
+            if self.add_modal_renderer.is_some() {
                 self.add_command = Some(AddModalCommand::Duplicate(selection));
                 add_modal.open();
             } else {

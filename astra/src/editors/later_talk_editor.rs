@@ -1,10 +1,10 @@
 use std::borrow::Cow;
 
-
 use indexmap::IndexMap;
 
 use crate::{
-    model_drop_down, sheet_retriever, EditorState, GroupEditorContent, GroupViewItem, PropertyGrid, ViewItem
+    model_drop_down, sheet_retriever, EditorState, GroupEditorContent, GroupViewItem, PropertyGrid,
+    ViewItem,
 };
 
 use astra_types::{LaterTalkBook, Person, PostBattleConversation};
@@ -26,7 +26,8 @@ impl ViewItem for PostBattleConversation {
         dependencies
             .person
             .read(|data| {
-                data.get(&self.person).map(|person| person.text(dependencies).to_string())
+                data.get(&self.person)
+                    .map(|person| person.text(dependencies).to_string())
             })
             .map(Cow::Owned)
             .unwrap_or(Cow::Borrowed(&self.person))
@@ -75,9 +76,11 @@ impl LaterTalkEditor {
                 .content(ctx, data, |ui, selection| {
                     PropertyGrid::new("post_battle_conversations", selection)
                         .new_section("")
-                        .field("Person", |ui, d| state.person.read(|data| {
-                            ui.add(model_drop_down(data, state, &mut d.person))
-                        }))
+                        .field("Person", |ui, d| {
+                            state
+                                .person
+                                .read(|data| ui.add(model_drop_down(data, state, &mut d.person)))
+                        })
                         .default_field("Field", |d| &mut d.field)
                         .default_field("Back Degree", |d| &mut d.back_degree)
                         .default_field("Light Degree", |d| &mut d.light_degree)

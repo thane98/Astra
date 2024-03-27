@@ -4,8 +4,9 @@ use egui::Ui;
 use indexmap::IndexMap;
 
 use crate::{
-    editable_list, editor_tab_strip, model_drop_down, sheet_retriever, EditorState,
-    GroupEditorContent, GroupViewItem, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem,
+    editable_list, editor_tab_strip, keyed_add_modal_content, model_drop_down, sheet_retriever,
+    EditorState, GroupEditorContent, GroupViewItem, KeyedViewItem, ListEditorContent, PropertyGrid,
+    ViewItem,
 };
 
 use astra_types::{
@@ -126,7 +127,7 @@ pub struct EncountEditor {
     encount_equipment_content: GroupEditorContent,
     encount_weapon_categories_content: GroupEditorContent,
     encount_enemy_types_content:
-        ListEditorContent<IndexMap<String, EncountEnemyType>, EncountEnemyType>,
+        ListEditorContent<IndexMap<String, EncountEnemyType>, EncountEnemyType, EditorState>,
     encount_rarity_configs_content: GroupEditorContent,
 }
 
@@ -142,7 +143,8 @@ impl EncountEditor {
             encount_weapon_categories_content: GroupEditorContent::new(
                 "encount_weapon_categories_editor",
             ),
-            encount_enemy_types_content: ListEditorContent::new("encount_enemy_types_editor"),
+            encount_enemy_types_content: ListEditorContent::new("encount_enemy_types_editor")
+                .with_add_modal_content(keyed_add_modal_content),
             encount_rarity_configs_content: GroupEditorContent::new(
                 "encount_rarity_configs_editor",
             ),

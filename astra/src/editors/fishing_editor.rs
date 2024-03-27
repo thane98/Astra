@@ -4,7 +4,7 @@ use egui::Ui;
 use indexmap::IndexMap;
 
 use crate::{
-    editor_tab_strip, id_field, model_drop_down, msbt_key_value_multiline,
+    editor_tab_strip, id_field, keyed_add_modal_content, model_drop_down, msbt_key_value_multiline,
     msbt_key_value_singleline, sheet_retriever, standard_keyed_display, EditorState, KeyedViewItem,
     ListEditorContent, PropertyGrid, ViewItem,
 };
@@ -168,14 +168,22 @@ pub struct FishingFishEditor {
     target_list: FishingTargetListDataSheet,
     assist_data: FishingAssistDataSheet,
     radical_param_data: FishingRadicalParamDataSheet,
-    fish_content: ListEditorContent<IndexMap<String, FishingFishData>, FishingFishData>,
-    size_data_content: ListEditorContent<IndexMap<String, FishSizeData>, FishSizeData>,
-    spawns_content: ListEditorContent<IndexMap<String, FishSpawn>, FishSpawn>,
-    target_list_content:
-        ListEditorContent<IndexMap<String, FishingTargetListData>, FishingTargetListData>,
-    assist_data_content: ListEditorContent<IndexMap<String, FishingAssistData>, FishingAssistData>,
-    radical_param_data_content:
-        ListEditorContent<IndexMap<String, FishingRadicalParamData>, FishingRadicalParamData>,
+    fish_content:
+        ListEditorContent<IndexMap<String, FishingFishData>, FishingFishData, EditorState>,
+    size_data_content: ListEditorContent<IndexMap<String, FishSizeData>, FishSizeData, EditorState>,
+    spawns_content: ListEditorContent<IndexMap<String, FishSpawn>, FishSpawn, EditorState>,
+    target_list_content: ListEditorContent<
+        IndexMap<String, FishingTargetListData>,
+        FishingTargetListData,
+        EditorState,
+    >,
+    assist_data_content:
+        ListEditorContent<IndexMap<String, FishingAssistData>, FishingAssistData, EditorState>,
+    radical_param_data_content: ListEditorContent<
+        IndexMap<String, FishingRadicalParamData>,
+        FishingRadicalParamData,
+        EditorState,
+    >,
 }
 
 impl FishingFishEditor {
@@ -188,12 +196,18 @@ impl FishingFishEditor {
             target_list: state.fishing_target_list.clone(),
             assist_data: state.fishing_assist_data.clone(),
             radical_param_data: state.fishing_radical_param_data.clone(),
-            fish_content: ListEditorContent::new("fish_editor"),
-            size_data_content: ListEditorContent::new("size_data_editor"),
-            spawns_content: ListEditorContent::new("spawns_editor"),
-            target_list_content: ListEditorContent::new("target_list_editor"),
-            assist_data_content: ListEditorContent::new("assist_data_editor"),
-            radical_param_data_content: ListEditorContent::new("radical_param_data_editor"),
+            fish_content: ListEditorContent::new("fish_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            size_data_content: ListEditorContent::new("size_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            spawns_content: ListEditorContent::new("spawns_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            target_list_content: ListEditorContent::new("target_list_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            assist_data_content: ListEditorContent::new("assist_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            radical_param_data_content: ListEditorContent::new("radical_param_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
         }
     }
 

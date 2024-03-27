@@ -3,8 +3,8 @@ use std::borrow::Cow;
 use indexmap::IndexMap;
 
 use crate::{
-    id_field, model_drop_down, msbt_key_value_multiline, sheet_retriever, EditorState,
-    KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem,
+    id_field, keyed_add_modal_content, model_drop_down, msbt_key_value_multiline, sheet_retriever,
+    EditorState, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem,
 };
 
 use astra_types::{FriendListBook, FriendListData};
@@ -54,14 +54,16 @@ impl KeyedViewItem for FriendListData {
 
 pub struct FriendListEditor {
     friend_list_data: FriendListDataSheet,
-    friend_list_data_content: ListEditorContent<IndexMap<String, FriendListData>, FriendListData>,
+    friend_list_data_content:
+        ListEditorContent<IndexMap<String, FriendListData>, FriendListData, EditorState>,
 }
 
 impl FriendListEditor {
     pub fn new(state: &EditorState) -> Self {
         Self {
             friend_list_data: state.friend_list_data.clone(),
-            friend_list_data_content: ListEditorContent::new("friend_list_data_editor"),
+            friend_list_data_content: ListEditorContent::new("friend_list_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
         }
     }
 

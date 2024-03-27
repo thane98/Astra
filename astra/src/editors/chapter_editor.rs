@@ -197,7 +197,7 @@ pub struct ChapterEditor {
     script_open_error: Option<String>,
     selected_chapter_index: Option<usize>,
 
-    terrain_content: ListEditorContent<IndexMap<String, TerrainData>, TerrainData>,
+    terrain_content: ListEditorContent<IndexMap<String, TerrainData>, TerrainData, EditorState>,
     dispos_content: GroupEditorContent,
 
     astra: Arc<RwLock<Astra>>,

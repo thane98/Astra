@@ -5,7 +5,9 @@ use egui::Ui;
 use indexmap::IndexMap;
 
 use crate::{
-    editor_tab_strip, id_field, model_drop_down, sheet_retriever, EditorState, GroupEditorContent, GroupViewItem, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem
+    editor_tab_strip, id_field, keyed_add_modal_content, model_drop_down, sheet_retriever,
+    EditorState, GroupEditorContent, GroupViewItem, KeyedViewItem, ListEditorContent, PropertyGrid,
+    ViewItem,
 };
 
 sheet_retriever!(Chart, ChartBook, chart_data, IndexMap<String, Vec<ChartData>>);
@@ -93,7 +95,7 @@ pub struct ChartEditor {
     chart_god: ChartGodDataSheet,
     chart_param: ChartParamSheet,
     chart_content: GroupEditorContent,
-    chart_god_content: ListEditorContent<IndexMap<String, ChartGodData>, ChartGodData>,
+    chart_god_content: ListEditorContent<IndexMap<String, ChartGodData>, ChartGodData, EditorState>,
     chart_param_content: GroupEditorContent,
 }
 
@@ -105,7 +107,8 @@ impl ChartEditor {
             chart_god: state.chart_god.clone(),
             chart_param: state.chart_param.clone(),
             chart_content: GroupEditorContent::new("chart_editor"),
-            chart_god_content: ListEditorContent::new("chart_god_editor"),
+            chart_god_content: ListEditorContent::new("chart_god_editor")
+                .with_add_modal_content(keyed_add_modal_content),
             chart_param_content: GroupEditorContent::new("chart_param_editor"),
         }
     }
@@ -127,17 +130,17 @@ impl ChartEditor {
                         PropertyGrid::new("chart", selection)
                             .new_section("")
                             .field("PID", |ui, d| {
-                                state.person.read(|data| {
-                                    ui.add(model_drop_down(data, state, &mut d.pid))
-                                })
+                                state
+                                    .person
+                                    .read(|data| ui.add(model_drop_down(data, state, &mut d.pid)))
                             })
                             .default_field("Level N", |d| &mut d.level_n)
                             .default_field("Level H", |d| &mut d.level_h)
                             .default_field("Level L", |d| &mut d.level_l)
                             .field("Class", |ui, d| {
-                                state.job.read(|data| {
-                                    ui.add(model_drop_down(data, state, &mut d.jid))
-                                })
+                                state
+                                    .job
+                                    .read(|data| ui.add(model_drop_down(data, state, &mut d.jid)))
                             })
                             .field("Item 1", |ui, d| {
                                 state.item.read(|data| {

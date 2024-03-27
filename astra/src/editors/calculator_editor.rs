@@ -43,8 +43,8 @@ pub struct CalculatorEditor {
     tab: Tab,
     common_functions: CalculatorSheet,
     exp_table: ExpTableSheet,
-    common_functions_content: ListEditorContent<Vec<CalculatorCommon>, CalculatorCommon>,
-    exp_table_content: ListEditorContent<Vec<ExpTableEntry>, ExpTableEntry>,
+    common_functions_content: ListEditorContent<Vec<CalculatorCommon>, CalculatorCommon, ()>,
+    exp_table_content: ListEditorContent<Vec<ExpTableEntry>, ExpTableEntry, ()>,
 }
 
 impl CalculatorEditor {

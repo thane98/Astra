@@ -18,7 +18,7 @@ pub struct RelianceEditor {
     tab: Tab,
     exp_data: RelianceExpDataSheet,
     bonuses: RelianceBonusDataSheet,
-    exp_data_content: ListEditorContent<IndexMap<String, RelianceExpData>, RelianceExpData>,
+    exp_data_content: ListEditorContent<IndexMap<String, RelianceExpData>, RelianceExpData, ()>,
     bonuses_content: GroupEditorContent,
 }
 

@@ -1,10 +1,11 @@
 use std::borrow::Cow;
 
-
 use indexmap::IndexMap;
 
 use crate::{
-    model_drop_down, msbt_key_value_multiline, msbt_key_value_singleline, sheet_retriever, standard_keyed_display, EditorState, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem
+    keyed_add_modal_content, model_drop_down, msbt_key_value_multiline, msbt_key_value_singleline,
+    sheet_retriever, standard_keyed_display, EditorState, KeyedViewItem, ListEditorContent,
+    PropertyGrid, ViewItem,
 };
 
 use astra_types::{MusicBook, MusicData};
@@ -31,14 +32,15 @@ impl KeyedViewItem for MusicData {
 
 pub struct MusicEditor {
     music: MusicDataSheet,
-    music_content: ListEditorContent<IndexMap<String, MusicData>, MusicData>,
+    music_content: ListEditorContent<IndexMap<String, MusicData>, MusicData, EditorState>,
 }
 
 impl MusicEditor {
     pub fn new(state: &EditorState) -> Self {
         Self {
             music: state.music.clone(),
-            music_content: ListEditorContent::new("music_editor"),
+            music_content: ListEditorContent::new("music_editor")
+                .with_add_modal_content(keyed_add_modal_content),
         }
     }
 
@@ -50,16 +52,22 @@ impl MusicEditor {
                 PropertyGrid::new("music", selection)
                     .new_section("")
                     .default_field("Event Name", |d| &mut d.event_name)
-                    .field("Name", |ui, d| msbt_key_value_singleline!(ui, state, "musicname", d.name))
-                    .field("Help", |ui, d| msbt_key_value_multiline!(ui, state, "gamedata", d.help))
+                    .field("Name", |ui, d| {
+                        msbt_key_value_singleline!(ui, state, "musicname", d.name)
+                    })
+                    .field("Help", |ui, d| {
+                        msbt_key_value_multiline!(ui, state, "gamedata", d.help)
+                    })
                     .default_field("Help", |d| &mut d.help)
                     .default_field("Condition", |d| &mut d.condition)
                     .default_field("Amiibo", |d| &mut d.amiibo)
                     .default_field("Change Event Name", |d| &mut d.change_event_name)
                     .default_field("Is Change", |d| &mut d.is_change)
-                    .field("Emblem", |ui, d| state.god.read(|data| {
-                        ui.add(model_drop_down(data, state, &mut d.gid))
-                    }))
+                    .field("Emblem", |ui, d| {
+                        state
+                            .god
+                            .read(|data| ui.add(model_drop_down(data, state, &mut d.gid)))
+                    })
                     .show(ui)
                     .changed()
             })

@@ -4,7 +4,9 @@ use egui::Ui;
 use indexmap::IndexMap;
 
 use crate::{
-    editor_tab_strip, id_field, model_drop_down, msbt_key_value_multiline, msbt_key_value_singleline, sheet_retriever, standard_keyed_display, EditorState, GroupEditorContent, GroupViewItem, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem
+    editor_tab_strip, id_field, keyed_add_modal_content, model_drop_down, msbt_key_value_multiline,
+    msbt_key_value_singleline, sheet_retriever, standard_keyed_display, EditorState,
+    GroupEditorContent, GroupViewItem, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem,
 };
 
 use astra_types::{TipData, TutorialBook, TutorialData};
@@ -58,7 +60,7 @@ pub struct TutorialEditor {
     tutorials: TutorialDataSheet,
     tips: TipDataSheet,
     tutorials_content: GroupEditorContent,
-    tips_content: ListEditorContent<IndexMap<String, TipData>, TipData>,
+    tips_content: ListEditorContent<IndexMap<String, TipData>, TipData, EditorState>,
 }
 
 impl TutorialEditor {
@@ -68,7 +70,8 @@ impl TutorialEditor {
             tutorials: state.tutorials.clone(),
             tips: state.tips.clone(),
             tutorials_content: GroupEditorContent::new("tutorials_editor"),
-            tips_content: ListEditorContent::new("tips_editor"),
+            tips_content: ListEditorContent::new("tips_editor")
+                .with_add_modal_content(keyed_add_modal_content),
         }
     }
 
@@ -98,9 +101,9 @@ impl TutorialEditor {
                             .default_field("Ty", |d| &mut d.ty)
                             .default_field("Notice", |d| &mut d.notice)
                             .field("Chapter", |ui, d| {
-                                state.chapter.read(|data| {
-                                    ui.add(model_drop_down(data, state, &mut d.cid))
-                                })
+                                state
+                                    .chapter
+                                    .read(|data| ui.add(model_drop_down(data, state, &mut d.cid)))
                             })
                             .default_field("No", |d| &mut d.no)
                             .default_field("Ss Type", |d| &mut d.ss_type)

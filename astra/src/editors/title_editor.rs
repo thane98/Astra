@@ -4,7 +4,8 @@ use egui::Ui;
 use indexmap::IndexMap;
 
 use crate::{
-    editor_tab_strip, id_field, model_drop_down, sheet_retriever, EditorState, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem
+    editor_tab_strip, id_field, keyed_add_modal_content, model_drop_down, sheet_retriever,
+    EditorState, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem,
 };
 
 use astra_types::{TitleBook, TitleCallData, TitlePedestalData};
@@ -59,9 +60,10 @@ pub struct TitleEditor {
     tab: Tab,
     call_data: TitleCallDataSheet,
     pedestal_data: TitlePedestalDataSheet,
-    call_data_content: ListEditorContent<IndexMap<String, TitleCallData>, TitleCallData>,
+    call_data_content:
+        ListEditorContent<IndexMap<String, TitleCallData>, TitleCallData, EditorState>,
     pedestal_data_content:
-        ListEditorContent<IndexMap<String, TitlePedestalData>, TitlePedestalData>,
+        ListEditorContent<IndexMap<String, TitlePedestalData>, TitlePedestalData, EditorState>,
 }
 
 impl TitleEditor {
@@ -70,8 +72,10 @@ impl TitleEditor {
             tab: Tab::TitleCallData,
             call_data: state.title_call_data.clone(),
             pedestal_data: state.title_pedestal_data.clone(),
-            call_data_content: ListEditorContent::new("call_data_editor"),
-            pedestal_data_content: ListEditorContent::new("pedestal_data_editor"),
+            call_data_content: ListEditorContent::new("call_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            pedestal_data_content: ListEditorContent::new("pedestal_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
         }
     }
 
@@ -92,9 +96,11 @@ impl TitleEditor {
                         PropertyGrid::new("call_data", selection)
                             .new_section("")
                             .field("PID or GID", |ui, d| ui.add(id_field(&mut d.pid_or_gid)))
-                            .field("Chapter", |ui, d| state.chapter.read(|data| {
-                                ui.add(model_drop_down(data, state, &mut d.cid))
-                            }))
+                            .field("Chapter", |ui, d| {
+                                state
+                                    .chapter
+                                    .read(|data| ui.add(model_drop_down(data, state, &mut d.cid)))
+                            })
                             .show(ui)
                             .changed()
                     })
@@ -110,9 +116,11 @@ impl TitleEditor {
                             PropertyGrid::new("pedestal_data", selection)
                                 .new_section("")
                                 .field("Pedestal", |ui, d| ui.add(id_field(&mut d.pedestal_name)))
-                                .field("Chapter", |ui, d| state.chapter.read(|data| {
-                                    ui.add(model_drop_down(data, state, &mut d.cid))
-                                }))
+                                .field("Chapter", |ui, d| {
+                                    state.chapter.read(|data| {
+                                        ui.add(model_drop_down(data, state, &mut d.cid))
+                                    })
+                                })
                                 .show(ui)
                                 .changed()
                         })

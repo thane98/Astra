@@ -4,14 +4,21 @@ use egui::Ui;
 use indexmap::IndexMap;
 
 use crate::{
-    bond_fragment_field, editable_list, editor_tab_strip, id_field, iron_field_i8, model_drop_down,
-    msbt_key_value_multiline, msbt_key_value_singleline, sheet_retriever, silver_field,
-    standard_keyed_display, steel_field, CachedView, EditorState, GroupEditorContent,
-    GroupViewItem, KeyedViewItem, ListEditorContent, ModelDropDown, PropertyGrid, ViewItem,
+    bond_fragment_field, editable_list, editor_tab_strip, id_field, iron_field_i8,
+    keyed_add_modal_content, model_drop_down, msbt_key_value_multiline, msbt_key_value_singleline,
+    sheet_retriever, silver_field, standard_keyed_display, steel_field, CachedView, DropDownModal,
+    EditorState, GroupEditorContent, GroupViewItem, KeyedViewItem, ListEditorContent,
+    ModelDropDown, PropertyGrid, ViewItem,
 };
 
 use astra_types::{
-    AnimalData, HubAnimalBonus, HubAnimalBonusGroup, HubAreaBook, HubAreaData, HubCrystalData, HubDemoBook, HubDemoData, HubDisposBook, HubFacilityData, HubFortuneTellingBook, HubFortuneTellingData, HubIngredientBonus, HubIngredientBonusGroup, HubInvestmentBook, HubItemBonus, HubMapIconBook, HubMapIconData, HubMaterialBonus, HubMyRoomBook, HubMyRoomData, HubNationData, HubResourceBook, HubResourceData, HubSpawn, HubSpawnRandomSet, HubTalkBook, HubTalkData, HubTalkFacilityData, HubTalkRelativeData, HubUnityBehavior, IngredientData, Item, Person
+    AnimalData, HubAnimalBonus, HubAnimalBonusGroup, HubAreaBook, HubAreaData, HubCrystalData,
+    HubDemoBook, HubDemoData, HubDisposBook, HubFacilityData, HubFortuneTellingBook,
+    HubFortuneTellingData, HubIngredientBonus, HubIngredientBonusGroup, HubInvestmentBook,
+    HubItemBonus, HubMapIconBook, HubMapIconData, HubMaterialBonus, HubMyRoomBook, HubMyRoomData,
+    HubNationData, HubResourceBook, HubResourceData, HubSpawn, HubSpawnRandomSet, HubTalkBook,
+    HubTalkData, HubTalkFacilityData, HubTalkRelativeData, HubUnityBehavior, IngredientData, Item,
+    Person,
 };
 
 sheet_retriever!(HubAreaData, HubAreaBook, hub_area_data, IndexMap<String, HubAreaData>);
@@ -729,30 +736,39 @@ pub struct HubAreaEditor {
     talk_facility_data: HubTalkFacilityDataSheet,
     crystal_data: HubCrystalDataSheet,
     facility_data_cache: CachedView<HubFacilityDataSheetRetriever, HubAreaBook, HubFacilityData>,
-    hub_area_data_content: ListEditorContent<IndexMap<String, HubAreaData>, HubAreaData>,
+    hub_area_data_content:
+        ListEditorContent<IndexMap<String, HubAreaData>, HubAreaData, EditorState>,
     hub_facility_data_content:
-        ListEditorContent<IndexMap<String, HubFacilityData>, HubFacilityData>,
-    hub_demo_data_content: ListEditorContent<IndexMap<String, HubDemoData>, HubDemoData>,
-    spawns_content: ListEditorContent<Vec<HubSpawn>, HubSpawn>,
+        ListEditorContent<IndexMap<String, HubFacilityData>, HubFacilityData, EditorState>,
+    hub_demo_data_content:
+        ListEditorContent<IndexMap<String, HubDemoData>, HubDemoData, EditorState>,
+    spawns_content: ListEditorContent<Vec<HubSpawn>, HubSpawn, EditorState>,
     random_sets_content: GroupEditorContent,
     unity_behavior_content: GroupEditorContent,
-    fortune_telling_data_content:
-        ListEditorContent<IndexMap<String, HubFortuneTellingData>, HubFortuneTellingData>,
-    nation_data_content: ListEditorContent<IndexMap<String, HubNationData>, HubNationData>,
+    fortune_telling_data_content: ListEditorContent<
+        IndexMap<String, HubFortuneTellingData>,
+        HubFortuneTellingData,
+        EditorState,
+    >,
+    nation_data_content:
+        ListEditorContent<IndexMap<String, HubNationData>, HubNationData, EditorState>,
     material_bonuses_content: GroupEditorContent,
     ingredient_bonuses_content: GroupEditorContent,
     animal_bonuses_content: GroupEditorContent,
     item_bonuses_content: GroupEditorContent,
     ingredient_bonus_groups_content: GroupEditorContent,
     animal_bonus_groups_content: GroupEditorContent,
-    map_icon_data_content: ListEditorContent<IndexMap<String, HubMapIconData>, HubMapIconData>,
-    my_room_data_content: ListEditorContent<IndexMap<String, HubMyRoomData>, HubMyRoomData>,
-    talk_data_content: ListEditorContent<IndexMap<String, HubTalkData>, HubTalkData>,
+    map_icon_data_content:
+        ListEditorContent<IndexMap<String, HubMapIconData>, HubMapIconData, EditorState>,
+    my_room_data_content:
+        ListEditorContent<IndexMap<String, HubMyRoomData>, HubMyRoomData, EditorState>,
+    talk_data_content: ListEditorContent<IndexMap<String, HubTalkData>, HubTalkData, EditorState>,
     relative_data_content:
-        ListEditorContent<IndexMap<String, HubTalkRelativeData>, HubTalkRelativeData>,
+        ListEditorContent<IndexMap<String, HubTalkRelativeData>, HubTalkRelativeData, EditorState>,
     talk_facility_data_content:
-        ListEditorContent<IndexMap<String, HubTalkFacilityData>, HubTalkFacilityData>,
-    crystal_data_content: ListEditorContent<IndexMap<String, HubCrystalData>, HubCrystalData>,
+        ListEditorContent<IndexMap<String, HubTalkFacilityData>, HubTalkFacilityData, EditorState>,
+    crystal_data_content:
+        ListEditorContent<IndexMap<String, HubCrystalData>, HubCrystalData, EditorState>,
 }
 
 impl HubAreaEditor {
@@ -780,14 +796,19 @@ impl HubAreaEditor {
             talk_facility_data: state.hub_talk_facility_data.clone(),
             crystal_data: state.hub_crystal_data.clone(),
             facility_data_cache: CachedView::new(state.hub_facility_data.clone(), state),
-            hub_area_data_content: ListEditorContent::new("hub_area_data_editor"),
-            hub_facility_data_content: ListEditorContent::new("hub_facility_data_editor"),
-            hub_demo_data_content: ListEditorContent::new("hub_demo_data_editor"),
+            hub_area_data_content: ListEditorContent::new("hub_area_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            hub_facility_data_content: ListEditorContent::new("hub_facility_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            hub_demo_data_content: ListEditorContent::new("hub_demo_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
             spawns_content: ListEditorContent::new("spawns_editor"),
             random_sets_content: GroupEditorContent::new("random_sets_editor"),
             unity_behavior_content: GroupEditorContent::new("unity_behavior_editor"),
-            fortune_telling_data_content: ListEditorContent::new("fortune_telling_data_editor"),
-            nation_data_content: ListEditorContent::new("nation_data_editor"),
+            fortune_telling_data_content: ListEditorContent::new("fortune_telling_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            nation_data_content: ListEditorContent::new("nation_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
             material_bonuses_content: GroupEditorContent::new("material_bonuses_editor"),
             ingredient_bonuses_content: GroupEditorContent::new("ingredient_bonuses_editor"),
             animal_bonuses_content: GroupEditorContent::new("animal_bonuses_editor"),
@@ -796,12 +817,18 @@ impl HubAreaEditor {
                 "ingredient_bonus_groups_editor",
             ),
             animal_bonus_groups_content: GroupEditorContent::new("animal_bonus_groups_editor"),
-            map_icon_data_content: ListEditorContent::new("map_icon_data_editor"),
-            my_room_data_content: ListEditorContent::new("my_room_data_editor"),
-            talk_data_content: ListEditorContent::new("talk_data_editor"),
-            relative_data_content: ListEditorContent::new("relative_data_editor"),
-            talk_facility_data_content: ListEditorContent::new("talk_facility_data_editor"),
-            crystal_data_content: ListEditorContent::new("crystal_data_editor"),
+            map_icon_data_content: ListEditorContent::new("map_icon_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            my_room_data_content: ListEditorContent::new("my_room_data_editor")
+                .with_add_modal_content(DropDownModal::new(state.person.clone())),
+            talk_data_content: ListEditorContent::new("talk_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            relative_data_content: ListEditorContent::new("relative_data_editor")
+                .with_add_modal_content(DropDownModal::new(state.person.clone())),
+            talk_facility_data_content: ListEditorContent::new("talk_facility_data_editor")
+                .with_add_modal_content(DropDownModal::new(state.person.clone())),
+            crystal_data_content: ListEditorContent::new("crystal_data_editor")
+                .with_add_modal_content(DropDownModal::new(state.chapter.clone())),
         }
     }
 
@@ -1289,9 +1316,9 @@ impl HubAreaEditor {
                             .default_field("Args 0", |d| &mut d.args_0)
                             .default_field("Args 1", |d| &mut d.args_1)
                             .field("Item", |ui, d| {
-                                state.item.read(|data| {
-                                    ui.add(model_drop_down(data, state, &mut d.item))
-                                })
+                                state
+                                    .item
+                                    .read(|data| ui.add(model_drop_down(data, state, &mut d.item)))
                             })
                             .show(ui)
                             .changed()

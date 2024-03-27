@@ -8,8 +8,9 @@ use egui::Ui;
 use indexmap::IndexMap;
 
 use crate::{
-    editor_tab_strip, id_field, sheet_retriever, EditorState, GroupEditorContent,
-    GroupViewItem, KeyedViewItem, ListEditorContent, ModelDropDown, PropertyGrid, ViewItem,
+    editor_tab_strip, id_field, keyed_add_modal_content, sheet_retriever, EditorState,
+    GroupEditorContent, GroupViewItem, KeyedViewItem, ListEditorContent, ModelDropDown,
+    PropertyGrid, ViewItem,
 };
 
 sheet_retriever!(
@@ -118,9 +119,13 @@ pub struct DragonRideEditor {
     preset_params: DragonRidePresetParamSheet,
     prizes: DragonRidePrizeSheet,
     target_patterns: DragonRideTargetPatternSheet,
-    preset_params_content:
-        ListEditorContent<IndexMap<String, DragonRidePresetParamData>, DragonRidePresetParamData>,
-    prizes_content: ListEditorContent<IndexMap<String, DragonRidePrizeData>, DragonRidePrizeData>,
+    preset_params_content: ListEditorContent<
+        IndexMap<String, DragonRidePresetParamData>,
+        DragonRidePresetParamData,
+        EditorState,
+    >,
+    prizes_content:
+        ListEditorContent<IndexMap<String, DragonRidePrizeData>, DragonRidePrizeData, EditorState>,
     target_patterns_content: GroupEditorContent,
 }
 
@@ -131,8 +136,10 @@ impl DragonRideEditor {
             preset_params: state.dragon_ride_presets.clone(),
             prizes: state.dragon_ride_prizes.clone(),
             target_patterns: state.dragon_ride_target_patterns.clone(),
-            preset_params_content: ListEditorContent::new("dragon_ride_preset_params"),
-            prizes_content: ListEditorContent::new("dragon_ride_prizes"),
+            preset_params_content: ListEditorContent::new("dragon_ride_preset_params")
+                .with_add_modal_content(keyed_add_modal_content),
+            prizes_content: ListEditorContent::new("dragon_ride_prizes")
+                .with_add_modal_content(keyed_add_modal_content),
             target_patterns_content: GroupEditorContent::new("dragon_ride_target_patterns"),
         }
     }

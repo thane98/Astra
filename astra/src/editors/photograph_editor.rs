@@ -4,7 +4,9 @@ use egui::Ui;
 use indexmap::IndexMap;
 
 use crate::{
-    editable_list, editor_tab_strip, id_field, model_drop_down, sheet_retriever, EditorState, GroupEditorContent, GroupViewItem, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem
+    editable_list, editor_tab_strip, id_field, keyed_add_modal_content, model_drop_down,
+    sheet_retriever, EditorState, GroupEditorContent, GroupViewItem, KeyedViewItem,
+    ListEditorContent, PropertyGrid, ViewItem,
 };
 
 use astra_types::{PhotographPose, PhotographSpot, PhotographSpotBook};
@@ -57,7 +59,7 @@ pub struct PhotographSpotEditor {
     tab: Tab,
     spots: PhotographSpotSheet,
     poses: PhotographPoseSheet,
-    spots_content: ListEditorContent<IndexMap<String, PhotographSpot>, PhotographSpot>,
+    spots_content: ListEditorContent<IndexMap<String, PhotographSpot>, PhotographSpot, EditorState>,
     poses_content: GroupEditorContent,
 }
 
@@ -67,7 +69,8 @@ impl PhotographSpotEditor {
             tab: Tab::PhotographSpot,
             spots: state.photograph_spots.clone(),
             poses: state.photograph_poses.clone(),
-            spots_content: ListEditorContent::new("spots_editor"),
+            spots_content: ListEditorContent::new("spots_editor")
+                .with_add_modal_content(keyed_add_modal_content),
             poses_content: GroupEditorContent::new("poses_editor"),
         }
     }
@@ -89,9 +92,11 @@ impl PhotographSpotEditor {
                             .new_section("")
                             .field("MID", |ui, d| ui.add(id_field(&mut d.mid)))
                             .default_field("Name", |d| &mut d.name)
-                            .field("Condition Chapter", |ui, d| state.chapter.read(|data| {
-                                ui.add(model_drop_down(data, state, &mut d.condition_cid))
-                            }))
+                            .field("Condition Chapter", |ui, d| {
+                                state.chapter.read(|data| {
+                                    ui.add(model_drop_down(data, state, &mut d.condition_cid))
+                                })
+                            })
                             .default_field("Locator Count", |d| &mut d.locator_count)
                             .default_field("Pause Group Name List 1", |d| {
                                 &mut d.pause_group_name_list_1
@@ -122,11 +127,13 @@ impl PhotographSpotEditor {
                             .default_field("No", |d| &mut d.no)
                             .default_field("Anime Frame", |d| &mut d.anime_frame)
                             .default_field("Face Anime", |d| &mut d.face_anime)
-                            .field("Characters", |ui, d| state.person.read(|data| {
-                                ui.add(editable_list(&mut d.chara_id_list, |_, d, ui| {
-                                    ui.add(model_drop_down(data, state, d))
-                                }))
-                            }))
+                            .field("Characters", |ui, d| {
+                                state.person.read(|data| {
+                                    ui.add(editable_list(&mut d.chara_id_list, |_, d, ui| {
+                                        ui.add(model_drop_down(data, state, d))
+                                    }))
+                                })
+                            })
                             .show(ui)
                             .changed()
                     })

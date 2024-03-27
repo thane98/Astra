@@ -4,8 +4,8 @@ use astra_types::{AmiiboBook, AmiiboData};
 use indexmap::IndexMap;
 
 use crate::{
-    editable_list, id_field, model_drop_down, sheet_retriever, EditorState, KeyedViewItem,
-    ListEditorContent, PropertyGrid, ViewItem,
+    editable_list, id_field, keyed_add_modal_content, model_drop_down, sheet_retriever,
+    EditorState, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem,
 };
 
 sheet_retriever!(Amiibo, AmiiboBook, amiibo, IndexMap<String, AmiiboData>);
@@ -30,14 +30,15 @@ impl KeyedViewItem for AmiiboData {
 
 pub struct AmiiboEditor {
     sheet: AmiiboSheet,
-    content: ListEditorContent<IndexMap<String, AmiiboData>, AmiiboData>,
+    content: ListEditorContent<IndexMap<String, AmiiboData>, AmiiboData, ()>,
 }
 
 impl AmiiboEditor {
     pub fn new(state: &EditorState) -> Self {
         Self {
             sheet: state.amiibo.clone(),
-            content: ListEditorContent::new("amiibo_editor"),
+            content: ListEditorContent::new("amiibo_editor")
+                .with_add_modal_content(keyed_add_modal_content),
         }
     }
 

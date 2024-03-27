@@ -4,12 +4,13 @@ use egui::Ui;
 use indexmap::IndexMap;
 
 use crate::{
-    editor_tab_strip, model_drop_down, rgb_color_picker, sheet_retriever, EditorState,
-    KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem,
+    editor_tab_strip, keyed_add_modal_content, model_drop_down, rgb_color_picker, sheet_retriever,
+    DropDownModal, EditorState, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem,
 };
 
 use astra_types::{
-    Accessory, IngredientData, MascotAccessoryData, MascotBook, MascotColorData, MascotFoodData, MascotParamData
+    Accessory, IngredientData, MascotAccessoryData, MascotBook, MascotColorData, MascotFoodData,
+    MascotParamData,
 };
 
 sheet_retriever!(MascotAccessoryData, MascotBook, accessory_data, IndexMap<String, MascotAccessoryData>);
@@ -152,10 +153,12 @@ pub struct MascotEditor {
     param_data: MascotParamDataSheet,
     food_data: MascotFoodDataSheet,
     accessory_data_content:
-        ListEditorContent<IndexMap<String, MascotAccessoryData>, MascotAccessoryData>,
-    color_data_content: ListEditorContent<Vec<MascotColorData>, MascotColorData>,
-    param_data_content: ListEditorContent<IndexMap<String, MascotParamData>, MascotParamData>,
-    food_data_content: ListEditorContent<IndexMap<String, MascotFoodData>, MascotFoodData>,
+        ListEditorContent<IndexMap<String, MascotAccessoryData>, MascotAccessoryData, EditorState>,
+    color_data_content: ListEditorContent<Vec<MascotColorData>, MascotColorData, EditorState>,
+    param_data_content:
+        ListEditorContent<IndexMap<String, MascotParamData>, MascotParamData, EditorState>,
+    food_data_content:
+        ListEditorContent<IndexMap<String, MascotFoodData>, MascotFoodData, EditorState>,
 }
 
 impl MascotEditor {
@@ -166,10 +169,13 @@ impl MascotEditor {
             color_data: state.mascot_color_data.clone(),
             param_data: state.mascot_param_data.clone(),
             food_data: state.mascot_food_data.clone(),
-            accessory_data_content: ListEditorContent::new("accessory_data_editor"),
+            accessory_data_content: ListEditorContent::new("accessory_data_editor")
+                .with_add_modal_content(DropDownModal::new(state.accessory.clone())),
             color_data_content: ListEditorContent::new("color_data_editor"),
-            param_data_content: ListEditorContent::new("param_data_editor"),
-            food_data_content: ListEditorContent::new("food_data_editor"),
+            param_data_content: ListEditorContent::new("param_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            food_data_content: ListEditorContent::new("food_data_editor")
+                .with_add_modal_content(DropDownModal::new(state.ingredient.clone())),
         }
     }
 

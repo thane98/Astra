@@ -1,10 +1,10 @@
 use std::borrow::Cow;
 
-
 use indexmap::IndexMap;
 
 use crate::{
-    id_field, msbt_key_value_singleline, sheet_retriever, EditorState, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem
+    id_field, keyed_add_modal_content, msbt_key_value_singleline, sheet_retriever, EditorState,
+    KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem,
 };
 
 use astra_types::{MapHistory, MapHistoryBook};
@@ -31,14 +31,15 @@ impl KeyedViewItem for MapHistory {
 
 pub struct MapHistoryEditor {
     history: MapHistorySheet,
-    history_content: ListEditorContent<IndexMap<String, MapHistory>, MapHistory>,
+    history_content: ListEditorContent<IndexMap<String, MapHistory>, MapHistory, EditorState>,
 }
 
 impl MapHistoryEditor {
     pub fn new(state: &EditorState) -> Self {
         Self {
             history: state.map_history.clone(),
-            history_content: ListEditorContent::new("history_editor"),
+            history_content: ListEditorContent::new("history_editor")
+                .with_add_modal_content(keyed_add_modal_content),
         }
     }
 
@@ -50,7 +51,9 @@ impl MapHistoryEditor {
                 PropertyGrid::new("history", selection)
                     .new_section("")
                     .field("MHID", |ui, d| ui.add(id_field(&mut d.mhid)))
-                    .field("Action", |ui, d| msbt_key_value_singleline!(ui, state, "maphistory", d.action))
+                    .field("Action", |ui, d| {
+                        msbt_key_value_singleline!(ui, state, "maphistory", d.action)
+                    })
                     .default_field("Priority", |d| &mut d.priority)
                     .show(ui)
                     .changed()

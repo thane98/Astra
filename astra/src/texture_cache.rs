@@ -66,7 +66,9 @@ impl TextureCache {
             ),
             hub_cafe_icons_cache: Self::build_cache(
                 &ctx,
-                astra.consume_sprite_atlas("hub_cafe_icons").unwrap_or_default(),
+                astra
+                    .consume_sprite_atlas("hub_cafe_icons")
+                    .unwrap_or_default(),
                 TextureOptions::LINEAR,
             ),
             fish_cache: Self::build_cache(
@@ -76,7 +78,9 @@ impl TextureCache {
             ),
             achievement_cache: Self::build_cache(
                 &ctx,
-                astra.consume_sprite_atlas("achievement").unwrap_or_default(),
+                astra
+                    .consume_sprite_atlas("achievement")
+                    .unwrap_or_default(),
                 TextureOptions::LINEAR,
             ),
             notebook_cache: Self::build_cache(
@@ -125,9 +129,7 @@ impl TextureCache {
     }
 
     pub fn get_godring(&mut self, key: &str) -> Option<TextureHandle> {
-        self.godring_cache
-            .get(key)
-            .cloned()
+        self.godring_cache.get(key).cloned()
     }
 
     pub fn get_facethumb(&mut self, key: &str) -> Option<TextureHandle> {

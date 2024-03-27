@@ -106,7 +106,7 @@ const SKILL_FLAG_LABELS: &[&str] = &[
 
 pub struct SkillEditor {
     skill: SkillSheet,
-    content: ListEditorContent<IndexMap<String, Skill>, Skill>,
+    content: ListEditorContent<IndexMap<String, Skill>, Skill, EditorState>,
     cache: CachedView<SkillSheetRetriever, SkillBook, Skill>,
 }
 

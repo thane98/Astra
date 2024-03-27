@@ -4,7 +4,9 @@ use egui::Ui;
 use indexmap::IndexMap;
 
 use crate::{
-    editor_tab_strip, id_field, model_drop_down, msbt_key_value_singleline, sheet_retriever, standard_keyed_display, CachedView, EditorState, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem
+    editor_tab_strip, id_field, keyed_add_modal_content, model_drop_down,
+    msbt_key_value_singleline, sheet_retriever, standard_keyed_display, CachedView, EditorState,
+    KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem,
 };
 
 use astra_types::{
@@ -188,37 +190,65 @@ pub struct ProfileCardEditor {
         ProfileCardBook,
         ProfileCardCategorizedComponent,
     >,
-    bg_content:
-        ListEditorContent<IndexMap<String, ProfileCardImageComponent>, ProfileCardImageComponent>,
-    frames_content:
-        ListEditorContent<IndexMap<String, ProfileCardImageComponent>, ProfileCardImageComponent>,
-    lettering_content:
-        ListEditorContent<IndexMap<String, ProfileCardImageComponent>, ProfileCardImageComponent>,
-    text_colors_content:
-        ListEditorContent<IndexMap<String, ProfileCardColorComponent>, ProfileCardColorComponent>,
-    stamp_data_1_content:
-        ListEditorContent<IndexMap<String, ProfileCardImageComponent>, ProfileCardImageComponent>,
+    bg_content: ListEditorContent<
+        IndexMap<String, ProfileCardImageComponent>,
+        ProfileCardImageComponent,
+        EditorState,
+    >,
+    frames_content: ListEditorContent<
+        IndexMap<String, ProfileCardImageComponent>,
+        ProfileCardImageComponent,
+        EditorState,
+    >,
+    lettering_content: ListEditorContent<
+        IndexMap<String, ProfileCardImageComponent>,
+        ProfileCardImageComponent,
+        EditorState,
+    >,
+    text_colors_content: ListEditorContent<
+        IndexMap<String, ProfileCardColorComponent>,
+        ProfileCardColorComponent,
+        EditorState,
+    >,
+    stamp_data_1_content: ListEditorContent<
+        IndexMap<String, ProfileCardImageComponent>,
+        ProfileCardImageComponent,
+        EditorState,
+    >,
     stamp_data_2_content: ListEditorContent<
         IndexMap<String, ProfileCardCategorizedImageComponent>,
         ProfileCardCategorizedImageComponent,
+        EditorState,
     >,
-    title_content:
-        ListEditorContent<IndexMap<String, ProfileCardNameComponent>, ProfileCardNameComponent>,
-    favorite_character_content:
-        ListEditorContent<IndexMap<String, ProfileCardNameComponent>, ProfileCardNameComponent>,
-    favorite_map_content:
-        ListEditorContent<IndexMap<String, ProfileCardFavoriteMapData>, ProfileCardFavoriteMapData>,
+    title_content: ListEditorContent<
+        IndexMap<String, ProfileCardNameComponent>,
+        ProfileCardNameComponent,
+        EditorState,
+    >,
+    favorite_character_content: ListEditorContent<
+        IndexMap<String, ProfileCardNameComponent>,
+        ProfileCardNameComponent,
+        EditorState,
+    >,
+    favorite_map_content: ListEditorContent<
+        IndexMap<String, ProfileCardFavoriteMapData>,
+        ProfileCardFavoriteMapData,
+        EditorState,
+    >,
     comment_content: ListEditorContent<
         IndexMap<String, ProfileCardCategorizedComponent>,
         ProfileCardCategorizedComponent,
+        EditorState,
     >,
     favorite_map_editor_theme_content: ListEditorContent<
         IndexMap<String, ProfileCardCategorizedComponent>,
         ProfileCardCategorizedComponent,
+        EditorState,
     >,
     default_comment_content: ListEditorContent<
         IndexMap<String, ProfileCardDefaultCommentData>,
         ProfileCardDefaultCommentData,
+        EditorState,
     >,
 }
 
@@ -239,20 +269,32 @@ impl ProfileCardEditor {
             favorite_map_editor_theme: state.profile_card_favorite_map_editor_theme.clone(),
             default_comment: state.profile_card_default_comment.clone(),
             comment_cache: CachedView::new(state.profile_card_comment.clone(), state),
-            bg_content: ListEditorContent::new("bg_editor"),
-            frames_content: ListEditorContent::new("frames_editor"),
-            lettering_content: ListEditorContent::new("lettering_editor"),
-            text_colors_content: ListEditorContent::new("text_colors_editor"),
-            stamp_data_1_content: ListEditorContent::new("stamp_data_1_editor"),
-            stamp_data_2_content: ListEditorContent::new("stamp_data_2_editor"),
-            title_content: ListEditorContent::new("title_editor"),
-            favorite_character_content: ListEditorContent::new("favorite_character_editor"),
-            favorite_map_content: ListEditorContent::new("favorite_map_editor"),
-            comment_content: ListEditorContent::new("comment_editor"),
+            bg_content: ListEditorContent::new("bg_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            frames_content: ListEditorContent::new("frames_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            lettering_content: ListEditorContent::new("lettering_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            text_colors_content: ListEditorContent::new("text_colors_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            stamp_data_1_content: ListEditorContent::new("stamp_data_1_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            stamp_data_2_content: ListEditorContent::new("stamp_data_2_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            title_content: ListEditorContent::new("title_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            favorite_character_content: ListEditorContent::new("favorite_character_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            favorite_map_content: ListEditorContent::new("favorite_map_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            comment_content: ListEditorContent::new("comment_editor")
+                .with_add_modal_content(keyed_add_modal_content),
             favorite_map_editor_theme_content: ListEditorContent::new(
                 "favorite_map_editor_theme_editor",
-            ),
-            default_comment_content: ListEditorContent::new("default_comment_editor"),
+            )
+            .with_add_modal_content(keyed_add_modal_content),
+            default_comment_content: ListEditorContent::new("default_comment_editor")
+                .with_add_modal_content(keyed_add_modal_content),
         }
     }
 
@@ -362,7 +404,9 @@ impl ProfileCardEditor {
                         PropertyGrid::new(id, selection)
                             .new_section("")
                             .field("ID", |ui, d| ui.add(id_field(&mut d.id)))
-                            .field("Name", |ui, d| msbt_key_value_singleline!(ui, state, "person", d.name))
+                            .field("Name", |ui, d| {
+                                msbt_key_value_singleline!(ui, state, "person", d.name)
+                            })
                             .default_field("Condition", |d| &mut d.condition)
                             .default_field("Arg", |d| &mut d.arg)
                             .show(ui)
@@ -380,9 +424,11 @@ impl ProfileCardEditor {
                             PropertyGrid::new("favorite_map", selection)
                                 .new_section("")
                                 .field("ID", |ui, d| ui.add(id_field(&mut d.id)))
-                                .field("Chapter", |ui, d| state.chapter.read(|data| {
-                                    ui.add(model_drop_down(data, state, &mut d.cid))
-                                }))
+                                .field("Chapter", |ui, d| {
+                                    state.chapter.read(|data| {
+                                        ui.add(model_drop_down(data, state, &mut d.cid))
+                                    })
+                                })
                                 .default_field("Condition", |d| &mut d.condition)
                                 .default_field("Arg", |d| &mut d.arg)
                                 .show(ui)
@@ -407,7 +453,9 @@ impl ProfileCardEditor {
                         PropertyGrid::new(id, selection)
                             .new_section("")
                             .field("ID", |ui, d| ui.add(id_field(&mut d.id)))
-                            .field("Name", |ui, d| msbt_key_value_singleline!(ui, state, "profilecard", d.name))
+                            .field("Name", |ui, d| {
+                                msbt_key_value_singleline!(ui, state, "profilecard", d.name)
+                            })
                             .default_field("Category", |d| &mut d.category)
                             .default_field("Condition", |d| &mut d.condition)
                             .default_field("Arg", |d| &mut d.arg)
@@ -425,9 +473,27 @@ impl ProfileCardEditor {
                             PropertyGrid::new("default_comment", selection)
                                 .new_section("")
                                 .field("Language", |ui, d| ui.add(id_field(&mut d.language)))
-                                .field("Comment 1", |ui, d| ui.add(model_drop_down(self.comment_cache.get(), &(), &mut d.id_1)))
-                                .field("Comment 2", |ui, d| ui.add(model_drop_down(self.comment_cache.get(), &(), &mut d.id_2)))
-                                .field("Comment 3", |ui, d| ui.add(model_drop_down(self.comment_cache.get(), &(), &mut d.id_3)))
+                                .field("Comment 1", |ui, d| {
+                                    ui.add(model_drop_down(
+                                        self.comment_cache.get(),
+                                        &(),
+                                        &mut d.id_1,
+                                    ))
+                                })
+                                .field("Comment 2", |ui, d| {
+                                    ui.add(model_drop_down(
+                                        self.comment_cache.get(),
+                                        &(),
+                                        &mut d.id_2,
+                                    ))
+                                })
+                                .field("Comment 3", |ui, d| {
+                                    ui.add(model_drop_down(
+                                        self.comment_cache.get(),
+                                        &(),
+                                        &mut d.id_3,
+                                    ))
+                                })
                                 .show(ui)
                                 .changed()
                         })

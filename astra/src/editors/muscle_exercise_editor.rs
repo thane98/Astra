@@ -4,8 +4,8 @@ use egui::Ui;
 use indexmap::IndexMap;
 
 use crate::{
-    editor_tab_strip, id_field, sheet_retriever, EditorState, GroupEditorContent, GroupViewItem,
-    KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem,
+    editor_tab_strip, id_field, keyed_add_modal_content, sheet_retriever, EditorState,
+    GroupEditorContent, GroupViewItem, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem,
 };
 
 use astra_types::{
@@ -228,21 +228,38 @@ pub struct MuscleExerciseDataEditor {
     score_list_data: MuscleSquatScoreListDataSheet,
     music_sheets: MuscleSquatMusicSheetSheet,
     assist_data: MuscleAssistDataSheet,
-    difficulty_content:
-        ListEditorContent<IndexMap<String, MuscleExerciseDifficulty>, MuscleExerciseDifficulty>,
-    setups_content: ListEditorContent<IndexMap<String, MuscleExerciseSetup>, MuscleExerciseSetup>,
-    prizes_content:
-        ListEditorContent<IndexMap<String, MuscleExercisePrizeData>, MuscleExercisePrizeData>,
+    difficulty_content: ListEditorContent<
+        IndexMap<String, MuscleExerciseDifficulty>,
+        MuscleExerciseDifficulty,
+        EditorState,
+    >,
+    setups_content:
+        ListEditorContent<IndexMap<String, MuscleExerciseSetup>, MuscleExerciseSetup, EditorState>,
+    prizes_content: ListEditorContent<
+        IndexMap<String, MuscleExercisePrizeData>,
+        MuscleExercisePrizeData,
+        EditorState,
+    >,
     sit_up_fall_data_content:
-        ListEditorContent<IndexMap<String, MuscleSitUpFallData>, MuscleSitUpFallData>,
-    push_up_speed_content:
-        ListEditorContent<IndexMap<String, MusclePushUpSpeedData>, MusclePushUpSpeedData>,
-    squat_judge_area_content:
-        ListEditorContent<IndexMap<String, MuscleSquatJudgeAreaData>, MuscleSquatJudgeAreaData>,
-    score_list_data_content:
-        ListEditorContent<IndexMap<String, MuscleSquatScoreListData>, MuscleSquatScoreListData>,
+        ListEditorContent<IndexMap<String, MuscleSitUpFallData>, MuscleSitUpFallData, EditorState>,
+    push_up_speed_content: ListEditorContent<
+        IndexMap<String, MusclePushUpSpeedData>,
+        MusclePushUpSpeedData,
+        EditorState,
+    >,
+    squat_judge_area_content: ListEditorContent<
+        IndexMap<String, MuscleSquatJudgeAreaData>,
+        MuscleSquatJudgeAreaData,
+        EditorState,
+    >,
+    score_list_data_content: ListEditorContent<
+        IndexMap<String, MuscleSquatScoreListData>,
+        MuscleSquatScoreListData,
+        EditorState,
+    >,
     music_sheets_content: GroupEditorContent,
-    assist_data_content: ListEditorContent<IndexMap<String, MuscleAssistData>, MuscleAssistData>,
+    assist_data_content:
+        ListEditorContent<IndexMap<String, MuscleAssistData>, MuscleAssistData, EditorState>,
 }
 
 impl MuscleExerciseDataEditor {
@@ -258,15 +275,23 @@ impl MuscleExerciseDataEditor {
             score_list_data: state.muscle_exercise_score_list_data.clone(),
             music_sheets: state.muscle_exercise_music_sheets.clone(),
             assist_data: state.muscle_exercise_assist_data.clone(),
-            difficulty_content: ListEditorContent::new("difficulty_editor"),
-            setups_content: ListEditorContent::new("setups_editor"),
-            prizes_content: ListEditorContent::new("prizes_editor"),
-            sit_up_fall_data_content: ListEditorContent::new("sit_up_fall_data_editor"),
-            push_up_speed_content: ListEditorContent::new("push_up_speed_editor"),
-            squat_judge_area_content: ListEditorContent::new("squat_judge_area_editor"),
-            score_list_data_content: ListEditorContent::new("score_list_data_editor"),
+            difficulty_content: ListEditorContent::new("difficulty_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            setups_content: ListEditorContent::new("setups_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            prizes_content: ListEditorContent::new("prizes_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            sit_up_fall_data_content: ListEditorContent::new("sit_up_fall_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            push_up_speed_content: ListEditorContent::new("push_up_speed_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            squat_judge_area_content: ListEditorContent::new("squat_judge_area_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            score_list_data_content: ListEditorContent::new("score_list_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
             music_sheets_content: GroupEditorContent::new("music_sheets_editor"),
-            assist_data_content: ListEditorContent::new("assist_data_editor"),
+            assist_data_content: ListEditorContent::new("assist_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
         }
     }
 

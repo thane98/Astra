@@ -33,9 +33,9 @@ pub struct GodEditor {
     cache: CachedView<GodDataSheetRetriever, GodBook, GodData>,
     level_data: GodLevelDataSheet,
     bond_data: GodBondLevelDataSheet,
-    main_content: ListEditorContent<IndexMap<String, GodData>, GodData>,
+    main_content: ListEditorContent<IndexMap<String, GodData>, GodData, EditorState>,
     level_data_content: GroupEditorContent,
-    bond_data_content: ListEditorContent<Vec<GodBondLevelData>, GodBondLevelData>,
+    bond_data_content: ListEditorContent<Vec<GodBondLevelData>, GodBondLevelData, ()>,
 }
 
 impl GodEditor {
@@ -47,7 +47,7 @@ impl GodEditor {
             level_data: state.god_level_data.clone(),
             bond_data: state.god_bond_level_data.clone(),
             main_content: ListEditorContent::new("gods")
-                .with_add_modal_content(keyed_add_modal_content),
+                .with_add_modal_content(&keyed_add_modal_content),
             level_data_content: GroupEditorContent::new("level_data"),
             bond_data_content: ListEditorContent::new("bond_data"),
         }

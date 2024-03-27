@@ -8,10 +8,10 @@ use egui::Ui;
 use indexmap::IndexMap;
 
 use crate::{
-    editable_list, editor_tab_strip, id_field, model_drop_down, msbt_key_value_multiline,
-    msbt_key_value_singleline, nation_drop_down, rgb_color_picker, sheet_retriever,
-    standard_keyed_display, CachedView, EditorState, KeyedViewItem, ListEditorContent,
-    PropertyGrid, ViewItem,
+    editable_list, editor_tab_strip, id_field, keyed_add_modal_content, model_drop_down,
+    msbt_key_value_multiline, msbt_key_value_singleline, nation_drop_down, rgb_color_picker,
+    sheet_retriever, standard_keyed_display, CachedView, DropDownModal, EditorState, KeyedViewItem,
+    ListEditorContent, PropertyGrid, ViewItem,
 };
 
 sheet_retriever!(Cook, CookBook, cook_data, IndexMap<String, CookData>);
@@ -224,13 +224,15 @@ pub struct CookEditor {
     taste_cache: CachedView<TasteSheetRetriever, CookBook, TasteData>,
     taste_condition_cache: CachedView<TasteConditionSheetRetriever, CookBook, TasteConditionData>,
     ingredient_cache: CachedView<IngredientSheetRetriever, CookBook, IngredientData>,
-    cook_content: ListEditorContent<IndexMap<String, CookData>, CookData>,
-    food_content: ListEditorContent<IndexMap<String, FoodData>, FoodData>,
-    taste_content: ListEditorContent<IndexMap<String, TasteData>, TasteData>,
+    cook_content: ListEditorContent<IndexMap<String, CookData>, CookData, EditorState>,
+    food_content: ListEditorContent<IndexMap<String, FoodData>, FoodData, EditorState>,
+    taste_content: ListEditorContent<IndexMap<String, TasteData>, TasteData, EditorState>,
     taste_condition_content:
-        ListEditorContent<IndexMap<String, TasteConditionData>, TasteConditionData>,
-    ingredient_content: ListEditorContent<IndexMap<String, IngredientData>, IngredientData>,
-    food_naming_content: ListEditorContent<IndexMap<String, FoodNamingConfig>, FoodNamingConfig>,
+        ListEditorContent<IndexMap<String, TasteConditionData>, TasteConditionData, EditorState>,
+    ingredient_content:
+        ListEditorContent<IndexMap<String, IngredientData>, IngredientData, EditorState>,
+    food_naming_content:
+        ListEditorContent<IndexMap<String, FoodNamingConfig>, FoodNamingConfig, EditorState>,
 }
 
 impl CookEditor {
@@ -247,12 +249,18 @@ impl CookEditor {
             taste_cache: CachedView::new(state.taste.clone(), state),
             taste_condition_cache: CachedView::new(state.taste_condition.clone(), state),
             ingredient_cache: CachedView::new(state.ingredient.clone(), state),
-            cook_content: ListEditorContent::new("cook_editor"),
-            food_content: ListEditorContent::new("food_editor"),
-            taste_content: ListEditorContent::new("taste_editor"),
-            taste_condition_content: ListEditorContent::new("taste_condition_editor"),
-            ingredient_content: ListEditorContent::new("ingredient_data"),
-            food_naming_content: ListEditorContent::new("food_naming_editor"),
+            cook_content: ListEditorContent::new("cook_editor")
+                .with_add_modal_content(DropDownModal::new(state.person.clone())),
+            food_content: ListEditorContent::new("food_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            taste_content: ListEditorContent::new("taste_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            taste_condition_content: ListEditorContent::new("taste_condition_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            ingredient_content: ListEditorContent::new("ingredient_data")
+                .with_add_modal_content(keyed_add_modal_content),
+            food_naming_content: ListEditorContent::new("food_naming_editor")
+                .with_add_modal_content(DropDownModal::new(state.person.clone())),
         }
     }
 

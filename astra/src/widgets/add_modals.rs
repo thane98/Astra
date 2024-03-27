@@ -1,10 +1,105 @@
+use std::marker::PhantomData;
+
 use egui::{Button, ComboBox, Id, Ui};
 use egui_modal::Modal;
 use indexmap::IndexMap;
 
 use crate::model::{KeyedListModel, KeyedViewItem, ListModel, ViewItem};
+use crate::{model_drop_down, SheetHandle, SheetRetriever};
 
 use super::indexed_model_drop_down;
+
+pub trait AddModalRenderer<Model, Item, Dependencies> {
+    fn show(
+        &mut self,
+        id_source: &str,
+        modal: &Modal,
+        ui: &mut Ui,
+        model: &mut Model,
+        dependencies: &Dependencies,
+        command: AddModalCommand,
+    ) -> bool;
+}
+
+impl<Model, Item, Function, Dependencies> AddModalRenderer<Model, Item, Dependencies> for Function
+where
+    Function: FnMut(&str, &Modal, &mut Ui, &mut Model, AddModalCommand) -> bool,
+{
+    fn show(
+        &mut self,
+        id_source: &str,
+        modal: &Modal,
+        ui: &mut Ui,
+        model: &mut Model,
+        _: &Dependencies,
+        command: AddModalCommand,
+    ) -> bool {
+        self(id_source, modal, ui, model, command)
+    }
+}
+
+pub struct DropDownModal<Retriever, Book, Model, Item> {
+    handle: SheetHandle<Retriever, Book, Model>,
+    id: String,
+    phantom: PhantomData<Item>,
+}
+
+impl<Retriever, Book, Model, Item> DropDownModal<Retriever, Book, Model, Item>
+where
+    Retriever: SheetRetriever<Book, Model>,
+    Model: KeyedListModel<Item>,
+    Item: KeyedViewItem + Default + Clone,
+{
+    pub fn new(handle: SheetHandle<Retriever, Book, Model>) -> Self {
+        Self {
+            handle,
+            id: Default::default(),
+            phantom: PhantomData,
+        }
+    }
+}
+
+impl<Retriever, Book, Model1, Item1, Model2, Item2, Dependencies>
+    AddModalRenderer<Model2, Item2, Dependencies> for DropDownModal<Retriever, Book, Model1, Item1>
+where
+    Retriever: SheetRetriever<Book, Model1>,
+    Model1: KeyedListModel<Item1>,
+    Item1: KeyedViewItem<Dependencies = Dependencies> + Default + Clone,
+    Model2: KeyedListModel<Item2>,
+    Item2: KeyedViewItem<Dependencies = Dependencies> + Default + Clone,
+{
+    fn show(
+        &mut self,
+        _: &str,
+        modal: &Modal,
+        ui: &mut Ui,
+        model: &mut Model2,
+        dependencies: &Dependencies,
+        command: AddModalCommand,
+    ) -> bool {
+        let mut changed = false;
+
+        self.handle.read(|data| {
+            let valid = !self.id.is_empty() && !data.contains(&self.id);
+            ui.horizontal_top(|ui| {
+                ui.label("ID");
+                ui.add(model_drop_down(data, dependencies, &mut self.id));
+            });
+            if !valid && !self.id.is_empty() {
+                ui.colored_label(ui.visuals().error_fg_color, "ID must be unique.");
+            }
+            modal.buttons(ui, |ui| {
+                modal.button(ui, "Close");
+                if ui.add_enabled(valid, Button::new("Add")).clicked() {
+                    changed = command.act(model, std::mem::take(&mut self.id));
+                    modal.close();
+                }
+            });
+        });
+
+        changed
+    }
+}
 
 #[derive(Debug, Clone, Copy)]
 pub enum AddModalCommand {

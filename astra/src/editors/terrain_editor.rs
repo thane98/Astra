@@ -12,7 +12,7 @@ use crate::{
 
 pub struct TerrainDataEditor {
     terrain: TerrainDataSheet,
-    content: ListEditorContent<IndexMap<String, TerrainData>, TerrainData>,
+    content: ListEditorContent<IndexMap<String, TerrainData>, TerrainData, EditorState>,
     cache: CachedView<TerrainDataSheetRetriever, TerrainBook, TerrainData>,
 }
 

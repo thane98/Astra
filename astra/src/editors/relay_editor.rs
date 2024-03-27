@@ -4,12 +4,15 @@ use egui::Ui;
 use indexmap::IndexMap;
 
 use crate::{
-    editable_list, editor_tab_strip, id_field, model_drop_down, msbt_key_value_multiline,
-    msbt_key_value_singleline, sheet_retriever, standard_keyed_display, EditorState,
-    GroupEditorContent, GroupViewItem, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem,
+    editable_list, editor_tab_strip, id_field, keyed_add_modal_content, model_drop_down,
+    msbt_key_value_multiline, msbt_key_value_singleline, sheet_retriever, standard_keyed_display,
+    DropDownModal, EditorState, GroupEditorContent, GroupViewItem, KeyedViewItem,
+    ListEditorContent, PropertyGrid, ViewItem,
 };
 
-use astra_types::{Item, RelayAwardData, RelayBook, RelayClearAwardData, RelayData, RelayStampData};
+use astra_types::{
+    Item, RelayAwardData, RelayBook, RelayClearAwardData, RelayData, RelayStampData,
+};
 
 sheet_retriever!(RelayData, RelayBook, relay_data, IndexMap<String, RelayData>);
 
@@ -152,10 +155,12 @@ pub struct RelayEditor {
     relay_stamp_data: RelayStampDataSheet,
     relay_clear_award_data: RelayClearAwardDataSheet,
     relay_award_data: RelayAwardDataSheet,
-    relay_data_content: ListEditorContent<IndexMap<String, RelayData>, RelayData>,
-    relay_stamp_data_content: ListEditorContent<IndexMap<String, RelayStampData>, RelayStampData>,
+    relay_data_content: ListEditorContent<IndexMap<String, RelayData>, RelayData, EditorState>,
+    relay_stamp_data_content:
+        ListEditorContent<IndexMap<String, RelayStampData>, RelayStampData, EditorState>,
     relay_clear_award_data_content: GroupEditorContent,
-    relay_award_data_content: ListEditorContent<IndexMap<String, RelayAwardData>, RelayAwardData>,
+    relay_award_data_content:
+        ListEditorContent<IndexMap<String, RelayAwardData>, RelayAwardData, EditorState>,
 }
 
 impl RelayEditor {
@@ -166,12 +171,15 @@ impl RelayEditor {
             relay_stamp_data: state.relay_stamp_data.clone(),
             relay_clear_award_data: state.relay_clear_award_data.clone(),
             relay_award_data: state.relay_award_data.clone(),
-            relay_data_content: ListEditorContent::new("relay_data_editor"),
-            relay_stamp_data_content: ListEditorContent::new("relay_stamp_data_editor"),
+            relay_data_content: ListEditorContent::new("relay_data_editor")
+                .with_add_modal_content(DropDownModal::new(state.chapter.clone())),
+            relay_stamp_data_content: ListEditorContent::new("relay_stamp_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
             relay_clear_award_data_content: GroupEditorContent::new(
                 "relay_clear_award_data_editor",
             ),
-            relay_award_data_content: ListEditorContent::new("relay_award_data_editor"),
+            relay_award_data_content: ListEditorContent::new("relay_award_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
         }
     }
 

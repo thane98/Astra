@@ -6,7 +6,7 @@ use crate::{AnimSetSheet, EditorState, ListEditorContent, PropertyGrid};
 
 pub struct AnimSetEditor {
     anim_set: AnimSetSheet,
-    content: ListEditorContent<IndexMap<String, AnimSet>, AnimSet>,
+    content: ListEditorContent<IndexMap<String, AnimSet>, AnimSet, ()>,
 }
 
 impl AnimSetEditor {

@@ -83,7 +83,11 @@ pub fn silver_field(ui: &mut Ui, state: &EditorState, value: &mut impl DefaultWi
     system_icon_field(ui, state, value, "Silver")
 }
 
-pub fn bond_fragment_field(ui: &mut Ui, state: &EditorState, value: &mut impl DefaultWidget) -> Response {
+pub fn bond_fragment_field(
+    ui: &mut Ui,
+    state: &EditorState,
+    value: &mut impl DefaultWidget,
+) -> Response {
     system_icon_field(ui, state, value, "Bonds")
 }
 
@@ -91,7 +95,12 @@ pub fn gold_field(ui: &mut Ui, state: &EditorState, value: &mut impl DefaultWidg
     system_icon_field(ui, state, value, "Coin")
 }
 
-pub fn system_icon_field(ui: &mut Ui, state: &EditorState, value: &mut impl DefaultWidget, icon: &str) -> Response {
+pub fn system_icon_field(
+    ui: &mut Ui,
+    state: &EditorState,
+    value: &mut impl DefaultWidget,
+    icon: &str,
+) -> Response {
     ui.horizontal(|ui| {
         let response = value.default_widget(ui);
         if let Some(texture) = state.texture_cache.borrow_mut().get_system(icon) {

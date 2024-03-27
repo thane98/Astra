@@ -49,7 +49,7 @@ const ATTR_LABELS: &[&str] = &[
 
 pub struct PersonEditor {
     person: PersonSheet,
-    content: ListEditorContent<IndexMap<String, Person>, Person>,
+    content: ListEditorContent<IndexMap<String, Person>, Person, EditorState>,
     cache: CachedView<PersonSheetRetriever, PersonBook, Person>,
 }
 

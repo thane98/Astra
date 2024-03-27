@@ -4,7 +4,9 @@ use astra_types::{AnimalBook, AnimalData};
 use indexmap::IndexMap;
 
 use crate::{
-    id_field, model_drop_down, msbt_key_value_multiline, msbt_key_value_singleline, sheet_retriever, standard_keyed_display, EditorState, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem
+    id_field, keyed_add_modal_content, model_drop_down, msbt_key_value_multiline,
+    msbt_key_value_singleline, sheet_retriever, standard_keyed_display, EditorState, KeyedViewItem,
+    ListEditorContent, PropertyGrid, ViewItem,
 };
 
 sheet_retriever!(Animal, AnimalBook, animals, IndexMap<String, AnimalData>);
@@ -45,14 +47,15 @@ impl KeyedViewItem for AnimalData {
 
 pub struct AnimalEditor {
     sheet: AnimalSheet,
-    content: ListEditorContent<IndexMap<String, AnimalData>, AnimalData>,
+    content: ListEditorContent<IndexMap<String, AnimalData>, AnimalData, EditorState>,
 }
 
 impl AnimalEditor {
     pub fn new(state: &EditorState) -> Self {
         Self {
             sheet: state.animal.clone(),
-            content: ListEditorContent::new("animal"),
+            content: ListEditorContent::new("animal")
+                .with_add_modal_content(keyed_add_modal_content),
         }
     }
 

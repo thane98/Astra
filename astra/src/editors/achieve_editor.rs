@@ -5,8 +5,9 @@ use egui::Ui;
 use indexmap::IndexMap;
 
 use crate::{
-    editor_tab_strip, id_field, model_drop_down, msbt_key_value_singleline, sheet_retriever,
-    standard_keyed_display, EditorState, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem,
+    editor_tab_strip, id_field, keyed_add_modal_content, model_drop_down,
+    msbt_key_value_singleline, sheet_retriever, standard_keyed_display, EditorState, KeyedViewItem,
+    ListEditorContent, PropertyGrid, ViewItem,
 };
 
 sheet_retriever!(Achievement, AchievementBook, achievements, IndexMap<String, AchieveData>);
@@ -83,8 +84,8 @@ pub struct AchieveEditor {
     tab: Tab,
     achieve: AchievementSheet,
     belong: BelongSheet,
-    achieve_content: ListEditorContent<IndexMap<String, AchieveData>, AchieveData>,
-    belong_content: ListEditorContent<IndexMap<String, BelongData>, BelongData>,
+    achieve_content: ListEditorContent<IndexMap<String, AchieveData>, AchieveData, EditorState>,
+    belong_content: ListEditorContent<IndexMap<String, BelongData>, BelongData, EditorState>,
 }
 
 impl AchieveEditor {
@@ -93,8 +94,10 @@ impl AchieveEditor {
             tab: Tab::Achievement,
             achieve: state.achieve.clone(),
             belong: state.belong.clone(),
-            achieve_content: ListEditorContent::new("achieve_editor"),
-            belong_content: ListEditorContent::new("belong_editor"),
+            achieve_content: ListEditorContent::new("achieve_editor")
+                .with_add_modal_content(keyed_add_modal_content),
+            belong_content: ListEditorContent::new("belong_editor")
+                .with_add_modal_content(keyed_add_modal_content),
         }
     }
 

@@ -53,7 +53,7 @@ fn item_key_reverse_transform(key: &str) -> String {
 
 pub struct JobEditor {
     job: JobSheet,
-    content: ListEditorContent<IndexMap<String, Job>, Job>,
+    content: ListEditorContent<IndexMap<String, Job>, Job, EditorState>,
     cache: CachedView<JobSheetRetriever, JobBook, Job>,
 }
 

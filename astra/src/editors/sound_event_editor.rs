@@ -1,10 +1,10 @@
 use std::borrow::Cow;
 
-
 use indexmap::IndexMap;
 
 use crate::{
-    id_field, sheet_retriever, EditorState, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem
+    id_field, keyed_add_modal_content, sheet_retriever, EditorState, KeyedViewItem,
+    ListEditorContent, PropertyGrid, ViewItem,
 };
 
 use astra_types::{SoundEvent, SoundEventBook};
@@ -31,14 +31,15 @@ impl KeyedViewItem for SoundEvent {
 
 pub struct SoundEventEditor {
     sound_events: SoundEventSheet,
-    sound_events_content: ListEditorContent<IndexMap<String, SoundEvent>, SoundEvent>,
+    sound_events_content: ListEditorContent<IndexMap<String, SoundEvent>, SoundEvent, EditorState>,
 }
 
 impl SoundEventEditor {
     pub fn new(state: &EditorState) -> Self {
         Self {
             sound_events: state.sound_events.clone(),
-            sound_events_content: ListEditorContent::new("sound_events_editor"),
+            sound_events_content: ListEditorContent::new("sound_events_editor")
+                .with_add_modal_content(keyed_add_modal_content),
         }
     }
 
@@ -51,7 +52,9 @@ impl SoundEventEditor {
                 .content(ctx, data, |ui, selection| {
                     PropertyGrid::new("sound_events", selection)
                         .new_section("")
-                        .field("Movie File Name", |ui, d| ui.add(id_field(&mut d.movie_file_name)))
+                        .field("Movie File Name", |ui, d| {
+                            ui.add(id_field(&mut d.movie_file_name))
+                        })
                         .default_field("Event Name 1", |d| &mut d.event_name_1)
                         .default_field("Event Name 2", |d| &mut d.event_name_2)
                         .default_field("Event Name 3", |d| &mut d.event_name_3)

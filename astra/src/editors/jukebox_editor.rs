@@ -1,10 +1,10 @@
 use std::borrow::Cow;
 
-
 use indexmap::IndexMap;
 
 use crate::{
-    id_field, sheet_retriever, EditorState, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem
+    id_field, keyed_add_modal_content, sheet_retriever, EditorState, KeyedViewItem,
+    ListEditorContent, PropertyGrid, ViewItem,
 };
 
 use astra_types::{JukeboxBook, JukeboxData};
@@ -31,14 +31,16 @@ impl KeyedViewItem for JukeboxData {
 
 pub struct JukeboxEditor {
     jukebox_data: JukeboxDataSheet,
-    jukebox_data_content: ListEditorContent<IndexMap<String, JukeboxData>, JukeboxData>,
+    jukebox_data_content:
+        ListEditorContent<IndexMap<String, JukeboxData>, JukeboxData, EditorState>,
 }
 
 impl JukeboxEditor {
     pub fn new(state: &EditorState) -> Self {
         Self {
             jukebox_data: state.jukebox_data.clone(),
-            jukebox_data_content: ListEditorContent::new("jukebox_data_editor"),
+            jukebox_data_content: ListEditorContent::new("jukebox_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
         }
     }
 

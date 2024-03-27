@@ -38,7 +38,7 @@ pub fn first_run(config: &mut AppConfig, next_state: &mut Option<AppState>, ctx:
                         "Path does not go to Cobalt's \"engage\" folder.",
                     );
                 }
-                ui.horizontal(|ui| {  
+                ui.horizontal(|ui| {
                     ui.add_enabled_ui(is_valid_cobalt_dir, |ui| {
                         if ui.button("Next").clicked() {
                             *next_state =

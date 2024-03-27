@@ -1,10 +1,10 @@
 use std::borrow::Cow;
 
-
 use indexmap::IndexMap;
 
 use crate::{
-    id_field, sheet_retriever, EditorState, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem
+    id_field, keyed_add_modal_content, sheet_retriever, EditorState, KeyedViewItem,
+    ListEditorContent, PropertyGrid, ViewItem,
 };
 
 use astra_types::{VibrationBook, VibrationDefineData};
@@ -32,14 +32,15 @@ impl KeyedViewItem for VibrationDefineData {
 pub struct VibrationEditor {
     vibration_data: VibrationDefineDataSheet,
     vibration_data_content:
-        ListEditorContent<IndexMap<String, VibrationDefineData>, VibrationDefineData>,
+        ListEditorContent<IndexMap<String, VibrationDefineData>, VibrationDefineData, EditorState>,
 }
 
 impl VibrationEditor {
     pub fn new(state: &EditorState) -> Self {
         Self {
             vibration_data: state.vibration_data.clone(),
-            vibration_data_content: ListEditorContent::new("vibration_data_editor"),
+            vibration_data_content: ListEditorContent::new("vibration_data_editor")
+                .with_add_modal_content(keyed_add_modal_content),
         }
     }
 

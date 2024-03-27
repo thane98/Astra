@@ -21,7 +21,7 @@ pub struct ForgeEditor {
     exchange: ForgeExchangeDataSheet,
     refine_content: GroupEditorContent,
     evolve_content: GroupEditorContent,
-    exchange_content: ListEditorContent<Vec<ForgeExchangeData>, ForgeExchangeData>,
+    exchange_content: ListEditorContent<Vec<ForgeExchangeData>, ForgeExchangeData, ()>,
 
     // Must use a cached view of items since they are contained in the same book.
     cache: CachedView<ItemSheetRetriever, ItemBook, Item>,

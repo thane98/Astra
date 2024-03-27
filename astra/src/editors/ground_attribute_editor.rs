@@ -3,7 +3,8 @@ use std::borrow::Cow;
 use indexmap::IndexMap;
 
 use crate::{
-    id_field, sheet_retriever, EditorState, KeyedViewItem, ListEditorContent, PropertyGrid, ViewItem
+    id_field, keyed_add_modal_content, sheet_retriever, EditorState, KeyedViewItem,
+    ListEditorContent, PropertyGrid, ViewItem,
 };
 
 use astra_types::{GroundAttribute, GroundAttributeBook};
@@ -31,14 +32,15 @@ impl KeyedViewItem for GroundAttribute {
 pub struct GroundAttributeEditor {
     ground_attributes: GroundAttributeSheet,
     ground_attributes_content:
-        ListEditorContent<IndexMap<String, GroundAttribute>, GroundAttribute>,
+        ListEditorContent<IndexMap<String, GroundAttribute>, GroundAttribute, EditorState>,
 }
 
 impl GroundAttributeEditor {
     pub fn new(state: &EditorState) -> Self {
         Self {
             ground_attributes: state.ground_attributes.clone(),
-            ground_attributes_content: ListEditorContent::new("ground_attributes_editor"),
+            ground_attributes_content: ListEditorContent::new("ground_attributes_editor")
+                .with_add_modal_content(keyed_add_modal_content),
         }
     }
 
