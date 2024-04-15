@@ -191,6 +191,7 @@ pub fn list_select_modal<M, I, D>(
     model: &mut M,
     dependencies: &D,
     source_index: usize,
+    title: &str,
 ) -> bool
 where
     M: ListModel<I>,
@@ -200,7 +201,7 @@ where
     let id = Id::new(id_source).with("list_select_modal");
     let mut selected =
         ui.memory_mut(|mem| *mem.data.get_persisted_mut_or_default::<Option<usize>>(id));
-    modal.title(ui, "Select an entry");
+    modal.title(ui, format!("{} - Select an entry", title));
     ui.add(indexed_model_drop_down(model, dependencies, &mut selected));
     modal.buttons(ui, |ui| {
         modal.button(ui, "Close");

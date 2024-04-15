@@ -100,6 +100,7 @@ impl<'a> ModelDropDown<'a> {
                 .get_persisted_mut_or_insert_with::<String>(id, || display_text.to_string())
                 .to_owned()
         });
+        let lower_search = search.to_lowercase();
 
         let text_edit_response = ui.text_edit_singleline(&mut search);
         if text_edit_response.gained_focus() {
@@ -133,7 +134,7 @@ impl<'a> ModelDropDown<'a> {
                                 let text =
                                     item.map(|item| item.text(dependencies)).unwrap_or_default();
                                 let matches_search = item
-                                    .map(|item| item.matches_filter(&search, &text))
+                                    .map(|item| item.matches_filter(&lower_search, &text))
                                     .unwrap_or_default();
                                 if search.is_empty() || matches_search {
                                     let response = drop_down_item_ui(
@@ -155,7 +156,7 @@ impl<'a> ModelDropDown<'a> {
                         let item = model.item(i);
                         let text = item.map(|item| item.text(dependencies)).unwrap_or_default();
                         let matches_search = item
-                            .map(|item| item.matches_filter(&search, &text))
+                            .map(|item| item.matches_filter(&lower_search, &text))
                             .unwrap_or_default();
                         if search.is_empty() || matches_search {
                             ui.vertical(|ui| {
