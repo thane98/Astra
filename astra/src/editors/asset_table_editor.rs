@@ -166,29 +166,54 @@ impl AssetTableEditor {
                     })
                     .new_section("Animation")
                     .field("Body Anim", |ui, def| {
-                        state
-                            .anim_set
-                            .read(|data| ui.add(model_drop_down(data, &(), &mut def.body_anim)))
+                        ui.vertical(|ui| {
+                            let mut response = state
+                                .anim_set
+                                .read(|data| ui.add(model_drop_down(data, &(), &mut def.body_anim)));
+                            response |= ui.text_edit_singleline(&mut def.body_anim);
+                            response
+                        })
+                        .inner
                     })
                     .field("Info Anim", |ui, def| {
-                        state
-                            .anim_set
-                            .read(|data| ui.add(model_drop_down(data, &(), &mut def.info_anim)))
+                        ui.vertical(|ui| {
+                            let mut response = state
+                                .anim_set
+                                .read(|data| ui.add(model_drop_down(data, &(), &mut def.info_anim)));
+                            response |= ui.text_edit_singleline(&mut def.info_anim);
+                            response
+                        })
+                        .inner
                     })
                     .field("Talk Anim", |ui, def| {
-                        state
-                            .anim_set
-                            .read(|data| ui.add(model_drop_down(data, &(), &mut def.talk_anim)))
+                        ui.vertical(|ui| {
+                            let mut response = state
+                                .anim_set
+                                .read(|data| ui.add(model_drop_down(data, &(), &mut def.talk_anim)));
+                            response |= ui.text_edit_singleline(&mut def.talk_anim);
+                            response
+                        })
+                        .inner
                     })
                     .field("Demo Anim", |ui, def| {
-                        state
-                            .anim_set
-                            .read(|data| ui.add(model_drop_down(data, &(), &mut def.demo_anim)))
+                        ui.vertical(|ui| {
+                            let mut response = state
+                                .anim_set
+                                .read(|data| ui.add(model_drop_down(data, &(), &mut def.demo_anim)));
+                            response |= ui.text_edit_singleline(&mut def.demo_anim);
+                            response
+                        })
+                        .inner
                     })
                     .field("Hub Anim", |ui, def| {
-                        state
-                            .anim_set
-                            .read(|data| ui.add(model_drop_down(data, &(), &mut def.hub_anim)))
+                        ui.vertical(|ui| {
+                            let mut response = state
+                                .anim_set
+                                .read(|data| ui.add(model_drop_down(data, &(), &mut def.hub_anim)));
+                            response |= ui.text_edit_singleline(&mut def.hub_anim);
+                            response
+                        })
+                        .inner
                     })
                     .new_section("Scale")
                     .field("Scale (All)", |ui, def| {
