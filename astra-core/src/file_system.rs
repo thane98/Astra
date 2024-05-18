@@ -13,7 +13,7 @@ use indexmap::IndexMap;
 use normpath::PathExt;
 use quick_xml::events::Event;
 use quick_xml::{Reader, Writer};
-use tracing::info;
+use tracing::{error, info};
 
 use crate::OpenBook;
 
@@ -235,64 +235,72 @@ impl NetworkFileSystemLayer {
         Ok(Self { addr })
     }
 
-    pub fn read<T: AsRef<Path>>(&self, path_in_rom: T) -> Result<Vec<u8>> {
-        let path = path_in_rom.as_ref().to_string_lossy().to_string();
-
-        self.read_impl(&path)
-            .with_context(|| format!("Failed to read file {} from server {}", path, self.addr))
-    }
-
-    fn read_impl(&self, path: &str) -> Result<Vec<u8>> {
-        info!("Requesting file {} from remote server...", path);
-
+    fn with_connection<R>(&self, function: impl Fn(&mut TcpStream) -> Result<R>) -> Result<R> {
         let mut stream = TcpStream::connect_timeout(&self.addr, Duration::from_secs(10))?;
         stream.set_write_timeout(Some(Duration::from_secs(10)))?;
         stream.set_read_timeout(Some(Duration::from_secs(10)))?;
+        
+        let result = match function(&mut stream) {
+            Ok(r) => Ok(r),
+            Err(err) => {
+                error!("Networked request failed with error '{:?}'", err);
+                Err(err)
+            }
+        };
 
-        stream.write_all(&[1])?;
-        stream.write_all(path.as_bytes())?;
-        stream.write_all("\n".as_bytes())?;
+        stream.shutdown(std::net::Shutdown::Both)?;
 
-        let mut result_buffer = [0u8; 1];
-        stream.read_exact(&mut result_buffer)?;
-        let mut size_buffer = [0u8; 8];
-        stream.read_exact(&mut size_buffer)?;
-        let size = u64::from_be_bytes(size_buffer);
-        let mut buffer = vec![0; size as usize];
-        stream.read_exact(&mut buffer)?;
-        if result_buffer[0] == 1 {
-            bail!("{}", String::from_utf8_lossy(&buffer));
-        }
+        result
+    }
 
-        info!("Got file of size {}", size);
-        Ok(buffer)
+    pub fn read<T: AsRef<Path>>(&self, path_in_rom: T) -> Result<Vec<u8>> {
+        let path = path_in_rom.as_ref().to_string_lossy().to_string();
+
+        info!("Requesting file {} from remote server...", path);
+
+        self.with_connection(|stream| {
+            stream.write_all(&[1])?;
+            stream.write_all(path.as_bytes())?;
+            stream.write_all("\n".as_bytes())?;
+
+            let mut result_buffer = [0u8; 1];
+            stream.read_exact(&mut result_buffer)?;
+            let mut size_buffer = [0u8; 8];
+            stream.read_exact(&mut size_buffer)?;
+            let size = u64::from_be_bytes(size_buffer);
+            let mut buffer = vec![0; size as usize];
+            stream.read_exact(&mut buffer)?;
+            if result_buffer[0] == 1 {
+                bail!("{}", String::from_utf8_lossy(&buffer));
+            }
+
+            info!("Got file of size {}", size);
+            Ok(buffer)
+        })
+        .with_context(|| format!("Failed to read file {} from server {}", path, self.addr))
     }
 
     pub fn exists<T: AsRef<Path>>(&self, path_in_rom: T) -> Result<bool> {
         let path = path_in_rom.as_ref().to_string_lossy().to_string();
 
-        self.exists_impl(&path).with_context(|| {
+        info!("Checking if file {} exists on remote server...", path);
+
+        self.with_connection(|stream| {
+            stream.write_all(&[0])?;
+            stream.write_all(path.as_bytes())?;
+            stream.write_all("\n".as_bytes())?;
+
+            let mut buffer = [0u8; 1];
+            stream.read_exact(&mut buffer)?;
+
+            Ok(buffer[0] == 1)
+        })
+        .with_context(|| {
             format!(
                 "Failed to check for path '{}' on server {}",
                 path, self.addr
             )
         })
-    }
-
-    fn exists_impl(&self, path: &str) -> Result<bool> {
-        info!("Checking if file {} exists on remote server...", path);
-
-        let mut stream = TcpStream::connect_timeout(&self.addr, Duration::from_secs(10))?;
-        stream.set_write_timeout(Some(Duration::from_secs(30)))?;
-        stream.set_read_timeout(Some(Duration::from_secs(30)))?;
-
-        stream.write_all(&[0])?;
-        stream.write_all(path.as_bytes())?;
-        stream.write_all("\n".as_bytes())?;
-
-        let mut buffer = [0u8; 1];
-        stream.read_exact(&mut buffer)?;
-        Ok(buffer[0] == 1)
     }
 
     pub fn list_files<T: AsRef<Path>>(
@@ -302,48 +310,43 @@ impl NetworkFileSystemLayer {
     ) -> Result<HashSet<PathBuf>> {
         let path = path_in_rom.as_ref().to_string_lossy().to_string();
 
-        self.list_files_impl(&path, glob).with_context(|| {
+        info!("Listing files under path {} on remote server...", path);
+
+        self.with_connection(|mut stream| {
+            stream.write_all(&[2])?;
+            stream.write_all(path.as_bytes())?;
+            stream.write_all("\n".as_bytes())?;
+            stream.write_all(glob.as_bytes())?;
+            stream.write_all("\n".as_bytes())?;
+
+            let mut result_buffer = [0u8; 1];
+            stream.read_exact(&mut result_buffer)?;
+            let mut size_buffer = [0u8; 8];
+            stream.read_exact(&mut size_buffer)?;
+            let size = u64::from_be_bytes(size_buffer);
+            if result_buffer[0] == 0 {
+                info!("Server found {} files", size);
+
+                let mut paths = HashSet::new();
+                let mut reader = BufReader::new(&mut stream);
+                for _ in 0..size {
+                    let mut line = String::new();
+                    reader.read_line(&mut line)?;
+                    paths.insert(PathBuf::from(line.trim()));
+                }
+                Ok(paths)
+            } else {
+                let mut buffer = vec![0; size as usize];
+                stream.read_exact(&mut buffer)?;
+                bail!("{}", String::from_utf8_lossy(&buffer))
+            }
+        })
+        .with_context(|| {
             format!(
                 "Failed to list files for path '{}' on server {}",
                 path, self.addr
             )
         })
-    }
-
-    fn list_files_impl(&self, path: &str, glob: &str) -> Result<HashSet<PathBuf>> {
-        info!("Listing files under path {} on remote server...", path);
-
-        let mut stream = TcpStream::connect_timeout(&self.addr, Duration::from_secs(10))?;
-        stream.set_write_timeout(Some(Duration::from_secs(30)))?;
-        stream.set_read_timeout(Some(Duration::from_secs(30)))?;
-
-        stream.write_all(&[2])?;
-        stream.write_all(path.as_bytes())?;
-        stream.write_all("\n".as_bytes())?;
-        stream.write_all(glob.as_bytes())?;
-        stream.write_all("\n".as_bytes())?;
-
-        let mut result_buffer = [0u8; 1];
-        stream.read_exact(&mut result_buffer)?;
-        let mut size_buffer = [0u8; 8];
-        stream.read_exact(&mut size_buffer)?;
-        let size = u64::from_be_bytes(size_buffer);
-        if result_buffer[0] == 0 {
-            info!("Server found {} files", size);
-            
-            let mut paths = HashSet::new();
-            let mut reader = BufReader::new(&mut stream);
-            for _ in 0..size {
-                let mut line = String::new();
-                reader.read_line(&mut line)?;
-                paths.insert(PathBuf::from(line.trim()));
-            }
-            Ok(paths)
-        } else {
-            let mut buffer = vec![0; size as usize];
-            stream.read_exact(&mut buffer)?;
-            bail!("{}", String::from_utf8_lossy(&buffer))
-        }
     }
 }
 
