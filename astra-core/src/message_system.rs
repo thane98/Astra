@@ -6,6 +6,7 @@ use anyhow::{anyhow, Context, Result};
 use astra_formats::indexmap::IndexMap;
 use astra_formats::MessageBundle;
 use parking_lot::RwLock;
+use tracing::{info, warn};
 
 use crate::{CobaltFileSystemProxy, LocalizedFileSystem};
 
@@ -192,18 +193,26 @@ impl MessageSystem {
 
     fn list_scripts_in_dir(&self, out: &mut BTreeSet<String>, dir: &Path) {
         let root = Path::new(r"StreamingAssets/aa/Switch/fe_assets_message").join(dir);
-        for archive in self
-            .file_system
-            .list_files(root, "*.bytes.bundle", false)
-            .unwrap_or_default()
-        {
-            let file_name = archive
-                .file_name()
-                .map(|f| f.to_string_lossy().to_string())
-                .unwrap_or_default();
-            let file_stem = file_name.strip_suffix(".bytes.bundle").unwrap_or_default();
-            if !self.archives.contains_key(file_stem) {
-                out.insert(dir.join(file_stem).to_string_lossy().to_string());
+        info!("Listing scripts under ROM path {}", root.display());
+        match self.file_system.list_files(&root, "*.bytes.bundle", false) {
+            Ok(listing) => {
+                for archive in listing {
+                    let file_name = archive
+                        .file_name()
+                        .map(|f| f.to_string_lossy().to_string())
+                        .unwrap_or_default();
+                    let file_stem = file_name.strip_suffix(".bytes.bundle").unwrap_or_default();
+                    if !self.archives.contains_key(file_stem) {
+                        out.insert(dir.join(file_stem).to_string_lossy().to_string());
+                    }
+                }
+            }
+            Err(err) => {
+                warn!(
+                    "Encountered error while listing files in path {}: {:?}",
+                    root.display(),
+                    err
+                );
             }
         }
     }

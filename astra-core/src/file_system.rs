@@ -13,7 +13,7 @@ use indexmap::IndexMap;
 use normpath::PathExt;
 use quick_xml::events::Event;
 use quick_xml::{Reader, Writer};
-use tracing::{error, info};
+use tracing::{error, info, warn};
 
 use crate::OpenBook;
 
@@ -387,6 +387,8 @@ impl LayeredFileSystem {
         for layer in &self.layers {
             if layer.exists(path)? {
                 all_layers.extend(layer.list_files(path, glob)?);
+            } else {
+                warn!("Not listing files in layer {:?} because path {} does not exist in it", layer, path.display());
             }
         }
         Ok(all_layers)
