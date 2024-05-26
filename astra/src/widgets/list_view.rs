@@ -1,6 +1,6 @@
 use egui::{Image, Response, ScrollArea, Sense, Ui, Widget};
 
-use crate::{DecorationKind, ListModel, ViewItem};
+use crate::{DecorationKind, ListModel, ViewItem, DOWN_ENTRY_SHORTCUT, UP_ENTRY_SHORTCUT};
 
 fn item_number_ui(ui: &mut Ui, index: usize, max_indent: usize) {
     let label = (index + 1).to_string();
@@ -102,6 +102,23 @@ where
             }
         },
     );
+
+    if ui.input_mut(|input| input.consume_shortcut(&UP_ENTRY_SHORTCUT)) {
+        if let Some(index) = *selected_index {
+            if index > 0 {
+                *selected_index = Some(index - 1);
+            }
+        }
+        changed = true;
+    }
+    if ui.input_mut(|input| input.consume_shortcut(&DOWN_ENTRY_SHORTCUT)) {
+        *selected_index = match *selected_index {
+            Some(index) => (index < model.len()).then_some(index + 1).or(Some(index)),
+            None => (model.len() > 0).then_some(0),
+        };
+        changed = true;
+    }
+
     let mut response = ui.interact(
         output.inner_rect,
         output.id,

@@ -28,3 +28,25 @@ pub static PREV_TAB_SHORTCUT: KeyboardShortcut = KeyboardShortcut::new(
     },
     Key::T,
 );
+
+pub static UP_ENTRY_SHORTCUT: KeyboardShortcut = KeyboardShortcut::new(
+    Modifiers {
+        alt: false,
+        ctrl: true,
+        shift: true,
+        mac_cmd: false,
+        command: true,
+    },
+    Key::ArrowUp,
+);
+
+pub static DOWN_ENTRY_SHORTCUT: KeyboardShortcut = KeyboardShortcut::new(
+    Modifiers {
+        alt: false,
+        ctrl: true,
+        shift: true,
+        mac_cmd: false,
+        command: true,
+    },
+    Key::ArrowDown,
+);
