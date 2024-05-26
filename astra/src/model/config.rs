@@ -145,11 +145,12 @@ pub struct ProjectDef {
 }
 
 impl ProjectDef {
-    pub fn is_valid_for_new_cobalt_project(&self) -> bool {
+    pub fn is_valid_for_new_cobalt_project(&self, config: &AppConfig) -> bool {
         self.rom_source.is_valid()
             && !self.name.is_empty()
             && !self.active_country_dir_name.is_empty()
             && !self.active_language_dir_name.is_empty()
+            && Path::new(&config.cobalt_path).is_dir()
     }
 
     pub fn is_valid(&self) -> bool {

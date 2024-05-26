@@ -5,13 +5,12 @@ use egui::{Align2, Frame, Vec2};
 use crate::{folder_picker, AppConfig, AppState};
 
 fn is_valid_cobalt_dir(path: &str) -> bool {
-    let path = Path::new(path);
-    path.is_dir() && path.join("mods").is_dir() && path.join("config").is_dir()
+    Path::new(path).is_dir()
 }
 
 pub fn first_run(config: &mut AppConfig, next_state: &mut Option<AppState>, ctx: &egui::Context) {
     egui::CentralPanel::default().show(ctx, |_| {
-        egui::Window::new("project_creator")
+        egui::Window::new("first_run")
             .open(&mut true)
             .frame(Frame::none())
             .resizable(false)
@@ -29,7 +28,7 @@ pub fn first_run(config: &mut AppConfig, next_state: &mut Option<AppState>, ctx:
                     ui.hyperlink_to("Cobalt", "https://github.com/Raytwo/Cobalt");
                     ui.label(" first.");
                 });
-                ui.label("Once that's done, enter the path to Cobalt's \"engage\" folder on your SD card below.");
+                ui.label("Once that's done, enter the path to Cobalt's \"engage\" folder on your SD card (or emulator equivalent) below.");
                 ui.add(folder_picker(&mut config.cobalt_path));
                 let is_valid_cobalt_dir = is_valid_cobalt_dir(&config.cobalt_path);
                 if !is_valid_cobalt_dir && !config.cobalt_path.is_empty() {

@@ -5,9 +5,7 @@ use egui::{Align2, TextEdit, Vec2};
 use egui_modal::Modal;
 
 use crate::{
-    language_dir_config, output_mode_config, output_mode_drop_down, region_dir_config,
-    rom_source_config, rom_source_drop_down, AppConfig, AppState, ProjectDef, ProjectOutputMode,
-    RomSourceDef,
+    folder_picker, language_dir_config, output_mode_config, output_mode_drop_down, region_dir_config, rom_source_config, rom_source_drop_down, AppConfig, AppState, ProjectDef, ProjectOutputMode, RomSourceDef
 };
 
 const COBALT_PLUGIN: &[u8] = include_bytes!("../../assets/libastra_cobalt_plugin.nro");
@@ -53,25 +51,28 @@ impl CreateProjectState {
             && matches!(self.project.output_mode, ProjectOutputMode::Cobalt { .. }))
     }
 
-    fn should_show_new_cobalt_checkbox(&self, config: &AppConfig) -> bool {
+    fn should_show_new_cobalt_checkbox(&self) -> bool {
+        matches!(self.project.output_mode, ProjectOutputMode::Cobalt { .. }) && !self.is_editing
+    }
+
+    fn should_show_install_plugin_checkbox(&self) -> bool {
         matches!(self.project.output_mode, ProjectOutputMode::Cobalt { .. })
-            && !config.cobalt_path.is_empty()
+            && matches!(self.project.rom_source, RomSourceDef::Network { .. })
             && !self.is_editing
     }
 
-    fn should_show_install_plugin_checkbox(&self, config: &AppConfig) -> bool {
-        matches!(self.project.output_mode, ProjectOutputMode::Cobalt { .. })
-            && matches!(self.project.rom_source, RomSourceDef::Network { .. })
-            && !config.cobalt_path.is_empty()
-            && !self.is_editing
+    fn should_show_cobalt_path_field(&self) -> bool {
+        matches!(self.project.output_mode, ProjectOutputMode::Cobalt { .. }) && !self.is_editing
     }
 
     fn should_create_new_cobalt_project(&self, config: &AppConfig) -> bool {
-        self.should_show_new_cobalt_checkbox(config) && self.new_cobalt_project
+        self.should_show_new_cobalt_checkbox()
+            && self.new_cobalt_project
+            && Path::new(&config.cobalt_path).is_dir()
     }
 
-    fn should_install_plugin(&self, config: &AppConfig) -> bool {
-        self.should_show_install_plugin_checkbox(config) && self.install_plugin
+    fn should_install_plugin(&self) -> bool {
+        self.should_show_install_plugin_checkbox() && self.install_plugin
     }
 }
 
@@ -131,13 +132,19 @@ pub fn project_creator(
                         ui.add(output_mode_drop_down(&mut state.project));
                         ui.end_row();
 
-                        if state.should_show_new_cobalt_checkbox(config) {
+                        if state.should_show_cobalt_path_field() {
+                            ui.label("Cobalt Path");
+                            ui.add(folder_picker(&mut config.cobalt_path));
+                            ui.end_row();
+                        }
+
+                        if state.should_show_new_cobalt_checkbox() {
                             ui.label("New Cobalt Project");
                             ui.checkbox(&mut state.new_cobalt_project, "");
                             ui.end_row();
                         }
 
-                        if state.should_show_install_plugin_checkbox(config) {
+                        if state.should_show_install_plugin_checkbox() {
                             ui.label("Install Astra Plugin");
                             ui.checkbox(&mut state.install_plugin, "");
                             ui.end_row();
@@ -162,13 +169,13 @@ pub fn project_creator(
                 }
                 ui.horizontal(|ui| {
                     let can_create = if state.new_cobalt_project {
-                        state.project.is_valid_for_new_cobalt_project()
+                        state.project.is_valid_for_new_cobalt_project(config)
                     } else {
                         state.project.is_valid()
                     };
                     ui.add_enabled_ui(can_create, |ui| {
                         if ui.button("Save").clicked() {
-                            if state.should_install_plugin(config) {
+                            if state.should_install_plugin() {
                                 if let Err(err) = install_plugin(config) {
                                     state.error = Some(format!("{:?}", err));
                                     return;
@@ -207,12 +214,17 @@ fn create_cobalt_project(project: &mut ProjectDef, config: &AppConfig) -> Result
     } = &mut project.output_mode
     {
         // Sanity check: did the user set Cobalt's path directly?
-        let mods_path = Path::new(&config.cobalt_path).join("mods");
-        if !mods_path.is_dir() {
+        let cobalt_path = Path::new(&config.cobalt_path);
+        if !cobalt_path.is_dir() {
             bail!("Invalid Cobalt path '{}'", config.cobalt_path);
         }
 
         // Create the mod directories
+        let mods_path = cobalt_path.join("mods");
+        if !mods_path.is_dir() {
+            std::fs::create_dir(&mods_path)?;
+        }
+
         let mod_path = mods_path.join(&project.name);
         if !mod_path.is_dir() {
             std::fs::create_dir(&mod_path)?;
