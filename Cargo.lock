@@ -206,7 +206,7 @@ checksum = "2d6058e6202e20b7fa445692ec4b77ca8eb02508091fcd479ea753d9f60e376b"
 
 [[package]]
 name = "astra"
-version = "0.1.0"
+version = "0.3.1"
 dependencies = [
  "anyhow",
  "astra-core",
