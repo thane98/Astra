@@ -149,6 +149,15 @@ enum_combo_box!(weapon_rank_numbered_drop_down, i8,
     6 => "S",
 );
 
+enum_combo_box!(skill_weapon_rank_numbered_drop_down, i8,
+    0 => "E",
+    1 => "D",
+    2 => "C",
+    3 => "B",
+    4 => "A",
+    5 => "S",
+);
+
 enum_combo_box!(chapter_spot_state, i8,
     0 => "Reserve Hide",
     1 => "Hide",

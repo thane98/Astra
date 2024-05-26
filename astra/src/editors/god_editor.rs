@@ -139,9 +139,7 @@ impl GodEditor {
                     ui.add(model_drop_down(cache, &(), value))
                 }))
             })
-            .field("Link", |ui, god| {
-                ui.add(model_drop_down(cache, &(), &mut god.link))
-            })
+            .default_field("Link", |god| &mut god.link)
             .field("Engage Haunt", |ui, god| {
                 ui.text_edit_singleline(&mut god.engage_haunt)
             })

@@ -231,7 +231,7 @@ impl<'a> ModelDropDown<'a> {
             }
             response
         })
-        .response
+        .inner
     }
 
     pub fn show_indexed<M, I, D>(

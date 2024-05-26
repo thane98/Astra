@@ -5,12 +5,12 @@ use crate::widgets::{
     bitgrid_i32, bitgrid_u64, id_field, keyed_add_modal_content, skill_around_centers_drop_down,
     skill_around_targets_drop_down, skill_cycle_drop_down, skill_frequencies_drop_down,
     skill_give_targets_drop_down, skill_stance_drop_down, skill_targets_drop_down,
-    skill_timing_drop_down, u8_drag, weapon_rank_numbered_drop_down,
+    skill_timing_drop_down, u8_drag,
 };
 use crate::{
     editable_list, model_drop_down, msbt_key_value_multiline, msbt_key_value_singleline,
-    CachedView, DefaultWidget, EditorState, ListEditorContent, PropertyGrid, SkillSheet,
-    SkillSheetRetriever,
+    skill_weapon_rank_numbered_drop_down, CachedView, DefaultWidget, EditorState,
+    ListEditorContent, PropertyGrid, SkillSheet, SkillSheetRetriever,
 };
 
 const WEAPON_LABELS: &[&str] = &[
@@ -259,42 +259,52 @@ impl SkillEditor {
                     .default_field("Mov", |skill| &mut skill.enhance_value_move)
                     .new_section("Weapon Levels")
                     .field("None", |ui, skill| {
-                        ui.add(weapon_rank_numbered_drop_down(&mut skill.weapon_level_none))
+                        ui.add(skill_weapon_rank_numbered_drop_down(
+                            &mut skill.weapon_level_none,
+                        ))
                     })
                     .field("Sword", |ui, skill| {
-                        ui.add(weapon_rank_numbered_drop_down(
+                        ui.add(skill_weapon_rank_numbered_drop_down(
                             &mut skill.weapon_level_sword,
                         ))
                     })
                     .field("Axe", |ui, skill| {
-                        ui.add(weapon_rank_numbered_drop_down(&mut skill.weapon_level_axe))
+                        ui.add(skill_weapon_rank_numbered_drop_down(
+                            &mut skill.weapon_level_axe,
+                        ))
                     })
                     .field("Lance", |ui, skill| {
-                        ui.add(weapon_rank_numbered_drop_down(
+                        ui.add(skill_weapon_rank_numbered_drop_down(
                             &mut skill.weapon_level_lance,
                         ))
                     })
                     .field("Bow", |ui, skill| {
-                        ui.add(weapon_rank_numbered_drop_down(&mut skill.weapon_level_bow))
+                        ui.add(skill_weapon_rank_numbered_drop_down(
+                            &mut skill.weapon_level_bow,
+                        ))
                     })
                     .field("Dagger", |ui, skill| {
-                        ui.add(weapon_rank_numbered_drop_down(
+                        ui.add(skill_weapon_rank_numbered_drop_down(
                             &mut skill.weapon_level_dagger,
                         ))
                     })
                     .field("Magic", |ui, skill| {
-                        ui.add(weapon_rank_numbered_drop_down(
+                        ui.add(skill_weapon_rank_numbered_drop_down(
                             &mut skill.weapon_level_magic,
                         ))
                     })
                     .field("Staff", |ui, skill| {
-                        ui.add(weapon_rank_numbered_drop_down(&mut skill.weapon_level_rod))
+                        ui.add(skill_weapon_rank_numbered_drop_down(
+                            &mut skill.weapon_level_rod,
+                        ))
                     })
                     .field("Fist", |ui, skill| {
-                        ui.add(weapon_rank_numbered_drop_down(&mut skill.weapon_level_fist))
+                        ui.add(skill_weapon_rank_numbered_drop_down(
+                            &mut skill.weapon_level_fist,
+                        ))
                     })
                     .field("Special", |ui, skill| {
-                        ui.add(weapon_rank_numbered_drop_down(
+                        ui.add(skill_weapon_rank_numbered_drop_down(
                             &mut skill.weapon_level_special,
                         ))
                     })
