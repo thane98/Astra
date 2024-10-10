@@ -253,7 +253,7 @@ impl SkillEditor {
                     .default_field("Def", |skill| &mut skill.enhance_value_def)
                     .default_field("Skl", |skill| &mut skill.enhance_value_tech)
                     .default_field("Spd", |skill| &mut skill.enhance_value_quick)
-					.default_field("Lck", |skill| &mut skill.enhance_value_luck)
+                    .default_field("Lck", |skill| &mut skill.enhance_value_luck)
                     .default_field("Mag", |skill| &mut skill.enhance_value_magic)
                     .default_field("Res", |skill| &mut skill.enhance_value_mdef)
                     .default_field("Con", |skill| &mut skill.enhance_value_phys)
