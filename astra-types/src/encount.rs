@@ -17,7 +17,7 @@ pub struct EncountEquipment {
     #[astra(key = "@Category")]
     pub category: String,
     #[astra(key = "@Percentage")]
-    pub percentage: Option<u8>,
+    pub percentage: u8,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
@@ -27,11 +27,11 @@ pub struct EncountWeaponCategory {
     #[astra(key = "@Iid")]
     pub iid: String,
     #[astra(key = "@RankConditionMore")]
-    pub rank_condition_more: Option<u8>,
+    pub rank_condition_more: u8,
     #[astra(key = "@RankConditionLess")]
-    pub rank_condition_less: Option<u8>,
+    pub rank_condition_less: u8,
     #[astra(key = "@Percentage")]
-    pub percentage: Option<u8>,
+    pub percentage: u8,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
@@ -43,7 +43,7 @@ pub struct EncountEnemyType {
     #[astra(key = "@Jobs")]
     pub jobs: Vec<String>,
     #[astra(key = "@Flag")]
-    pub flag: Option<i32>,
+    pub flag: i32,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
@@ -51,7 +51,7 @@ pub struct EncountRarityConfig {
     #[astra(key = "@Name", public_array)]
     pub name: String,
     #[astra(key = "@NationLevel")]
-    pub nation_level: Option<u8>,
+    pub nation_level: u8,
     #[astra(key = "@Iid")]
     pub iid: String,
 }

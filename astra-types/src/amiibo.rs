@@ -18,7 +18,7 @@ pub struct AmiiboData {
     #[astra(key = "@BGM")]
     pub bgm: String,
     #[astra(key = "@TicketNum")]
-    pub ticket_num: Option<i32>,
+    pub ticket_num: i32,
     #[astra(key = "@KizunaNum")]
-    pub kizuna_num: Option<i32>,
+    pub kizuna_num: i32,
 }

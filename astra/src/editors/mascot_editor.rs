@@ -69,9 +69,9 @@ impl ViewItem for MascotColorData {
     fn text(&self, _: &Self::Dependencies) -> Cow<'_, str> {
         Cow::Owned(format!(
             "#{:X}{:X}{:X}",
-            self.r.unwrap_or_default(),
-            self.g.unwrap_or_default(),
-            self.b.unwrap_or_default()
+            self.r,
+            self.g,
+            self.b
         ))
     }
 }

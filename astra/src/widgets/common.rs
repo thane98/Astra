@@ -17,17 +17,6 @@ pub fn blank_slate(ui: &mut Ui) {
     });
 }
 
-pub fn optional_checkbox(value: &mut Option<bool>) -> impl Widget + '_ {
-    move |ui: &mut Ui| {
-        let mut temp = value.unwrap_or_default();
-        let response = ui.checkbox(&mut temp, "");
-        if response.changed() {
-            *value = Some(temp);
-        }
-        response
-    }
-}
-
 pub fn optional_image(
     content: Option<(TextureHandle, f32)>,
     placeholder_size: [f32; 2],

@@ -26,31 +26,31 @@ pub struct Skill {
     #[astra(key = "@RootCommandSid")]
     pub root_command_sid: String,
     #[astra(key = "@IconKind")]
-    pub icon_kind: Option<i8>,
+    pub icon_kind: i8,
     #[astra(key = "@IconLabel")]
     pub icon_label: String,
     #[astra(key = "@IconBmap")]
     pub icon_bmap: String,
     #[astra(key = "@Priority")]
-    pub priority: Option<u8>,
+    pub priority: u8,
     #[astra(key = "@Layer")]
-    pub layer: Option<i32>,
+    pub layer: i32,
     #[astra(key = "@Order")]
-    pub order: Option<i8>,
+    pub order: i8,
     #[astra(key = "@Cycle")]
-    pub cycle: Option<i8>,
+    pub cycle: i8,
     #[astra(key = "@Life")]
-    pub life: Option<u8>,
+    pub life: u8,
     #[astra(key = "@Timing")]
-    pub timing: Option<i8>,
+    pub timing: i8,
     #[astra(key = "@Target")]
-    pub target: Option<i8>,
+    pub target: i8,
     #[astra(key = "@Frequency")]
-    pub frequency: Option<i8>,
+    pub frequency: i8,
     #[astra(key = "@Stand")]
-    pub stand: Option<i8>,
+    pub stand: i8,
     #[astra(key = "@Action")]
-    pub action: Option<i8>,
+    pub action: i8,
     #[astra(key = "@Condition")]
     pub condition: String,
     #[astra(key = "@ActNames")]
@@ -60,9 +60,9 @@ pub struct Skill {
     #[astra(key = "@ActValues")]
     pub act_values: Vec<String>,
     #[astra(key = "@AroundCenter")]
-    pub around_center: Option<i8>,
+    pub around_center: i8,
     #[astra(key = "@AroundTarget")]
-    pub around_target: Option<i8>,
+    pub around_target: i8,
     #[astra(key = "@AroundCondition")]
     pub around_condition: String,
     #[astra(key = "@AroundName")]
@@ -72,7 +72,7 @@ pub struct Skill {
     #[astra(key = "@AroundValue")]
     pub around_value: String,
     #[astra(key = "@GiveTarget")]
-    pub give_target: Option<i8>,
+    pub give_target: i8,
     #[astra(key = "@GiveCondition")]
     pub give_condition: String,
     #[astra(key = "@GiveSids")]
@@ -114,99 +114,99 @@ pub struct Skill {
     #[astra(key = "@ZocRange")]
     pub zoc_range: String,
     #[astra(key = "@ZocType")]
-    pub zoc_type: Option<i8>,
+    pub zoc_type: i8,
     #[astra(key = "@Work")]
-    pub work: Option<i8>,
+    pub work: i8,
     #[astra(key = "@WorkOperation")]
     pub work_operation: String,
     #[astra(key = "@WorkValue")]
-    pub work_value: Option<f32>,
+    pub work_value: f32,
     #[astra(key = "@Power")]
-    pub power: Option<i8>,
+    pub power: i8,
     #[astra(key = "@Rewarp")]
-    pub rewarp: Option<u8>,
+    pub rewarp: u8,
     #[astra(key = "@Removable")]
-    pub removable: Option<u8>,
+    pub removable: u8,
     #[astra(key = "@VisionCount")]
-    pub vision_count: Option<u8>,
+    pub vision_count: u8,
     #[astra(key = "@Cost")]
-    pub cost: Option<u8>,
+    pub cost: u8,
     #[astra(key = "@MoveSelf")]
-    pub move_self: Option<i8>,
+    pub move_self: i8,
     #[astra(key = "@MoveTarget")]
-    pub move_target: Option<i8>,
+    pub move_target: i8,
     #[astra(key = "@RangeTarget")]
-    pub range_target: Option<i8>,
+    pub range_target: i8,
     #[astra(key = "@RangeI")]
-    pub range_i: Option<u8>,
+    pub range_i: u8,
     #[astra(key = "@RangeO")]
-    pub range_o: Option<u8>,
+    pub range_o: u8,
     #[astra(key = "@RangeAdd")]
-    pub range_add: Option<u8>,
+    pub range_add: u8,
     #[astra(key = "@RangeExtend")]
-    pub range_extend: Option<u8>,
+    pub range_extend: u8,
     #[astra(key = "@Flag")]
-    pub flag: Option<u64>,
+    pub flag: u64,
     #[astra(key = "@Efficacy")]
-    pub efficacy: Option<i32>,
+    pub efficacy: i32,
     #[astra(key = "@EfficacyValue")]
-    pub efficacy_value: Option<u8>,
+    pub efficacy_value: u8,
     #[astra(key = "@EfficacyIgnore")]
-    pub efficacy_ignore: Option<i32>,
+    pub efficacy_ignore: i32,
     #[astra(key = "@BadState")]
-    pub bad_state: Option<i32>,
+    pub bad_state: i32,
     #[astra(key = "@BadIgnore")]
-    pub bad_ignore: Option<i32>,
+    pub bad_ignore: i32,
     #[astra(key = "@WeaponProhibit")]
-    pub weapon_prohibit: Option<i32>,
+    pub weapon_prohibit: i32,
     #[astra(key = "@EnhanceLevel")]
-    pub enhance_level: Option<i8>,
+    pub enhance_level: i8,
     #[astra(key = "@EnhanceValue.Hp")]
-    pub enhance_value_hp: Option<i8>,
+    pub enhance_value_hp: i8,
     #[astra(key = "@EnhanceValue.Str")]
-    pub enhance_value_str: Option<i8>,
+    pub enhance_value_str: i8,
     #[astra(key = "@EnhanceValue.Tech")]
-    pub enhance_value_tech: Option<i8>,
+    pub enhance_value_tech: i8,
     #[astra(key = "@EnhanceValue.Quick")]
-    pub enhance_value_quick: Option<i8>,
+    pub enhance_value_quick: i8,
     #[astra(key = "@EnhanceValue.Luck")]
-    pub enhance_value_luck: Option<i8>,
+    pub enhance_value_luck: i8,
     #[astra(key = "@EnhanceValue.Def")]
-    pub enhance_value_def: Option<i8>,
+    pub enhance_value_def: i8,
     #[astra(key = "@EnhanceValue.Magic")]
-    pub enhance_value_magic: Option<i8>,
+    pub enhance_value_magic: i8,
     #[astra(key = "@EnhanceValue.Mdef")]
-    pub enhance_value_mdef: Option<i8>,
+    pub enhance_value_mdef: i8,
     #[astra(key = "@EnhanceValue.Phys")]
-    pub enhance_value_phys: Option<i8>,
+    pub enhance_value_phys: i8,
     #[astra(key = "@EnhanceValue.Move")]
-    pub enhance_value_move: Option<i8>,
+    pub enhance_value_move: i8,
     #[astra(key = "@WeaponLevel.None")]
-    pub weapon_level_none: Option<i8>,
+    pub weapon_level_none: i8,
     #[astra(key = "@WeaponLevel.Sword")]
-    pub weapon_level_sword: Option<i8>,
+    pub weapon_level_sword: i8,
     #[astra(key = "@WeaponLevel.Lance")]
-    pub weapon_level_lance: Option<i8>,
+    pub weapon_level_lance: i8,
     #[astra(key = "@WeaponLevel.Axe")]
-    pub weapon_level_axe: Option<i8>,
+    pub weapon_level_axe: i8,
     #[astra(key = "@WeaponLevel.Bow")]
-    pub weapon_level_bow: Option<i8>,
+    pub weapon_level_bow: i8,
     #[astra(key = "@WeaponLevel.Dagger")]
-    pub weapon_level_dagger: Option<i8>,
+    pub weapon_level_dagger: i8,
     #[astra(key = "@WeaponLevel.Magic")]
-    pub weapon_level_magic: Option<i8>,
+    pub weapon_level_magic: i8,
     #[astra(key = "@WeaponLevel.Rod")]
-    pub weapon_level_rod: Option<i8>,
+    pub weapon_level_rod: i8,
     #[astra(key = "@WeaponLevel.Fist")]
-    pub weapon_level_fist: Option<i8>,
+    pub weapon_level_fist: i8,
     #[astra(key = "@WeaponLevel.Special")]
-    pub weapon_level_special: Option<i8>,
+    pub weapon_level_special: i8,
     #[astra(key = "@EquipIids")]
     pub equip_iids: Vec<String>,
     #[astra(key = "@Effect")]
     pub effect: String,
     #[astra(key = "@InheritanceCost")]
-    pub inheritance_cost: Option<u16>,
+    pub inheritance_cost: u16,
     #[astra(key = "@InheritanceSort")]
-    pub inheritance_sort: Option<u16>,
+    pub inheritance_sort: u16,
 }

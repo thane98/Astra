@@ -23,9 +23,9 @@ impl ViewItem for AiData {
     fn text(&self, _: &Self::Dependencies) -> Cow<'_, str> {
         format!(
             "Active {} Code {} Mind {}",
-            self.active.unwrap_or_default(),
-            self.code.unwrap_or_default(),
-            self.mind.unwrap_or_default()
+            self.active,
+            self.code,
+            self.mind
         )
         .into()
     }

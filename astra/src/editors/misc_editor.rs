@@ -186,14 +186,14 @@ impl ViewItem for RangeData {
     fn text(&self, _: &Self::Dependencies) -> Cow<'_, str> {
         Cow::Owned(format!(
             "{} {} {} {} {} {} {} {}",
-            self.value_1.unwrap_or_default(),
-            self.value_2.unwrap_or_default(),
-            self.value_3.unwrap_or_default(),
-            self.value_4.unwrap_or_default(),
-            self.value_5.unwrap_or_default(),
-            self.value_6.unwrap_or_default(),
-            self.value_7.unwrap_or_default(),
-            self.value_8.unwrap_or_default(),
+            self.value_1,
+            self.value_2,
+            self.value_3,
+            self.value_4,
+            self.value_5,
+            self.value_6,
+            self.value_7,
+            self.value_8,
         ))
     }
 }

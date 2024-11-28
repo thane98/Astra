@@ -12,19 +12,19 @@ pub struct RangeData {
     #[astra(key = "@Group", public_array)]
     pub group: String,
     #[astra(key = "@Value1")]
-    pub value_1: Option<i8>,
+    pub value_1: i8,
     #[astra(key = "@Value2")]
-    pub value_2: Option<i8>,
+    pub value_2: i8,
     #[astra(key = "@Value3")]
-    pub value_3: Option<i8>,
+    pub value_3: i8,
     #[astra(key = "@Value4")]
-    pub value_4: Option<i8>,
+    pub value_4: i8,
     #[astra(key = "@Value5")]
-    pub value_5: Option<i8>,
+    pub value_5: i8,
     #[astra(key = "@Value6")]
-    pub value_6: Option<i8>,
+    pub value_6: i8,
     #[astra(key = "@Value7")]
-    pub value_7: Option<i8>,
+    pub value_7: i8,
     #[astra(key = "@Value8")]
-    pub value_8: Option<i8>,
+    pub value_8: i8,
 }

@@ -12,7 +12,7 @@ pub struct ArenaData {
     #[astra(key = "@Name", public_array)]
     pub name: String,
     #[astra(key = "@Rate")]
-    pub rate: Option<i32>,
+    pub rate: i32,
     #[astra(key = "@Pid")]
     pub pid: String,
     #[astra(key = "@Iid")]

@@ -106,7 +106,7 @@ impl ViewItem for EncountRarityConfig {
     type Dependencies = EditorState;
 
     fn text(&self, _: &Self::Dependencies) -> Cow<'_, str> {
-        Cow::Owned(format!("Level {}", self.nation_level.unwrap_or_default()))
+        Cow::Owned(format!("Level {}", self.nation_level))
     }
 }
 

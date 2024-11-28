@@ -16,11 +16,11 @@ pub struct ChartData {
     #[astra(key = "@Pid")]
     pub pid: String,
     #[astra(key = "@LevelN")]
-    pub level_n: Option<u8>,
+    pub level_n: u8,
     #[astra(key = "@LevelH")]
-    pub level_h: Option<u8>,
+    pub level_h: u8,
     #[astra(key = "@LevelL")]
-    pub level_l: Option<u8>,
+    pub level_l: u8,
     #[astra(key = "@Jid")]
     pub jid: String,
     #[astra(key = "@Item1.Iid")]
@@ -42,31 +42,31 @@ pub struct ChartGodData {
     #[astra(key = "@Chapter", id)]
     pub chapter: String,
     #[astra(key = "@MarthLevel")]
-    pub marth_level: Option<i32>,
+    pub marth_level: i32,
     #[astra(key = "@SigludLevel")]
-    pub siglud_level: Option<i32>,
+    pub siglud_level: i32,
     #[astra(key = "@CelicaLevel")]
-    pub celica_level: Option<i32>,
+    pub celica_level: i32,
     #[astra(key = "@MicaiahLevel")]
-    pub micaiah_level: Option<i32>,
+    pub micaiah_level: i32,
     #[astra(key = "@RoyLevel")]
-    pub roy_level: Option<i32>,
+    pub roy_level: i32,
     #[astra(key = "@LeafLevel")]
-    pub leaf_level: Option<i32>,
+    pub leaf_level: i32,
     #[astra(key = "@LucinaLevel")]
-    pub lucina_level: Option<i32>,
+    pub lucina_level: i32,
     #[astra(key = "@LinLevel")]
-    pub lin_level: Option<i32>,
+    pub lin_level: i32,
     #[astra(key = "@IkeLevel")]
-    pub ike_level: Option<i32>,
+    pub ike_level: i32,
     #[astra(key = "@BylethLevel")]
-    pub byleth_level: Option<i32>,
+    pub byleth_level: i32,
     #[astra(key = "@KamuiLevel")]
-    pub kamui_level: Option<i32>,
+    pub kamui_level: i32,
     #[astra(key = "@EirikLevel")]
-    pub eirik_level: Option<i32>,
+    pub eirik_level: i32,
     #[astra(key = "@Flag")]
-    pub flag: Option<i32>,
+    pub flag: i32,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
@@ -76,5 +76,5 @@ pub struct ChartParam {
     #[astra(key = "@Name")]
     pub name: String,
     #[astra(key = "@Value")]
-    pub value: Option<i32>,
+    pub value: i32,
 }

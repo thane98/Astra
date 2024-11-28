@@ -170,16 +170,16 @@ impl ViewItem for MuscleSquatMusicSheet {
     fn text(&self, _: &Self::Dependencies) -> Cow<'_, str> {
         Cow::Owned(format!(
             "{} {} {} {} {} {} {} {} {} {}",
-            self.type_a_l.unwrap_or_default(),
-            self.type_a_r.unwrap_or_default(),
-            self.type_b_l.unwrap_or_default(),
-            self.type_b_r.unwrap_or_default(),
-            self.type_c_l.unwrap_or_default(),
-            self.type_c_r.unwrap_or_default(),
-            self.type_d_l.unwrap_or_default(),
-            self.type_d_r.unwrap_or_default(),
-            self.type_e_l.unwrap_or_default(),
-            self.type_e_r.unwrap_or_default(),
+            self.type_a_l,
+            self.type_a_r,
+            self.type_b_l,
+            self.type_b_r,
+            self.type_c_l,
+            self.type_c_r,
+            self.type_d_l,
+            self.type_d_r,
+            self.type_e_l,
+            self.type_e_r,
         ))
     }
 }

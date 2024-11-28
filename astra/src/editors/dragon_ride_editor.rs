@@ -84,14 +84,14 @@ impl ViewItem for DragonRideTargetPattern {
     fn text(&self, _dependencies: &Self::Dependencies) -> Cow<'_, str> {
         Cow::Owned(format!(
             "{} {} {} {} {} {} {} {}",
-            self.target_1.unwrap_or_default(),
-            self.target_2.unwrap_or_default(),
-            self.target_3.unwrap_or_default(),
-            self.target_4.unwrap_or_default(),
-            self.target_5.unwrap_or_default(),
-            self.target_6.unwrap_or_default(),
-            self.target_7.unwrap_or_default(),
-            self.target_8.unwrap_or_default()
+            self.target_1,
+            self.target_2,
+            self.target_3,
+            self.target_4,
+            self.target_5,
+            self.target_6,
+            self.target_7,
+            self.target_8
         ))
     }
 }

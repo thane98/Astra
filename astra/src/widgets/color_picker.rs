@@ -1,24 +1,14 @@
-use egui::{Color32, Sense, Ui, Widget};
+use egui::{Color32, DragValue, Sense, Ui, Widget};
 
-use crate::u8_drag;
-
-pub fn rgb_color_picker<'a>(
-    r: &'a mut Option<u8>,
-    g: &'a mut Option<u8>,
-    b: &'a mut Option<u8>,
-) -> impl Widget + 'a {
+pub fn rgb_color_picker<'a>(r: &'a mut u8, g: &'a mut u8, b: &'a mut u8) -> impl Widget + 'a {
     move |ui: &mut Ui| {
         ui.horizontal_top(|ui| {
             let response = ui
-                .add(u8_drag(r))
-                .union(ui.add(u8_drag(g)))
-                .union(ui.add(u8_drag(b)));
+                .add(DragValue::new(r))
+                .union(ui.add(DragValue::new(g)))
+                .union(ui.add(DragValue::new(b)));
 
-            let color = Color32::from_rgb(
-                r.unwrap_or_default(),
-                g.unwrap_or_default(),
-                b.unwrap_or_default(),
-            );
+            let color = Color32::from_rgb(*r, *g, *b);
 
             // Borrowing from egui's color_button implementation
             let size = ui.spacing().interact_size;

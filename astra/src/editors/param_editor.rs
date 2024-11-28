@@ -1,6 +1,7 @@
 use astra_types::GameParam;
+use egui::DragValue;
 
-use crate::{f32_drag, EditorState, GameParamSheet, ListEditorContent, PropertyGrid};
+use crate::{EditorState, GameParamSheet, ListEditorContent, PropertyGrid};
 
 pub struct GameParamEditor {
     param: GameParamSheet,
@@ -27,10 +28,10 @@ impl GameParamEditor {
                         ui.text_edit_singleline(&mut param.english)
                     })
                     .field("En", |ui, param| ui.text_edit_singleline(&mut param.en))
-                    .field("Value", |ui, param| ui.add(f32_drag(&mut param.value)))
-                    .field("Min", |ui, param| ui.add(f32_drag(&mut param.min)))
-                    .field("Max", |ui, param| ui.add(f32_drag(&mut param.max)))
-                    .field("Step", |ui, param| ui.add(f32_drag(&mut param.step)))
+                    .field("Value", |ui, param| ui.add(DragValue::new(&mut param.value)))
+                    .field("Min", |ui, param| ui.add(DragValue::new(&mut param.min)))
+                    .field("Max", |ui, param| ui.add(DragValue::new(&mut param.max)))
+                    .field("Step", |ui, param| ui.add(DragValue::new(&mut param.step)))
                     .field("Out", |ui, param| ui.text_edit_singleline(&mut param.out))
                     .show(ui)
                     .changed()

@@ -15,13 +15,13 @@ pub struct GameParam {
     #[astra(key = "@English")]
     pub english: String,
     #[astra(key = "@Value")]
-    pub value: Option<f32>,
+    pub value: f32,
     #[astra(key = "@Min")]
-    pub min: Option<f32>,
+    pub min: f32,
     #[astra(key = "@Max")]
-    pub max: Option<f32>,
+    pub max: f32,
     #[astra(key = "@Step")]
-    pub step: Option<f32>,
+    pub step: f32,
     #[astra(key = "@Enum")]
     pub en: String,
 }

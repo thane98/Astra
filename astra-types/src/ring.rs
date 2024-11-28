@@ -22,45 +22,45 @@ pub struct RingData {
     #[astra(key = "@RingModel")]
     pub ring_model: String,
     #[astra(key = "@Rank")]
-    pub rank: Option<i8>,
+    pub rank: i8,
     #[astra(key = "@Icon")]
     pub icon: String,
     #[astra(key = "@Enhance.Hp")]
-    pub enhance_hp: Option<i8>,
+    pub enhance_hp: i8,
     #[astra(key = "@Enhance.Str")]
-    pub enhance_str: Option<i8>,
+    pub enhance_str: i8,
     #[astra(key = "@Enhance.Tech")]
-    pub enhance_tech: Option<i8>,
+    pub enhance_tech: i8,
     #[astra(key = "@Enhance.Quick")]
-    pub enhance_quick: Option<i8>,
+    pub enhance_quick: i8,
     #[astra(key = "@Enhance.Luck")]
-    pub enhance_luck: Option<i8>,
+    pub enhance_luck: i8,
     #[astra(key = "@Enhance.Def")]
-    pub enhance_def: Option<i8>,
+    pub enhance_def: i8,
     #[astra(key = "@Enhance.Magic")]
-    pub enhance_magic: Option<i8>,
+    pub enhance_magic: i8,
     #[astra(key = "@Enhance.Mdef")]
-    pub enhance_mdef: Option<i8>,
+    pub enhance_mdef: i8,
     #[astra(key = "@Enhance.Phys")]
-    pub enhance_phys: Option<i8>,
+    pub enhance_phys: i8,
     #[astra(key = "@Enhance.Move")]
-    pub enhance_move: Option<i8>,
+    pub enhance_move: i8,
     #[astra(key = "@EquipSids")]
     pub equip_sids: Vec<String>,
     #[astra(key = "@IsSingleRank")]
-    pub is_single_rank: Option<bool>,
+    pub is_single_rank: bool,
     #[astra(key = "@JewelColorR")]
-    pub jewel_color_r: Option<u8>,
+    pub jewel_color_r: u8,
     #[astra(key = "@JewelColorG")]
-    pub jewel_color_g: Option<u8>,
+    pub jewel_color_g: u8,
     #[astra(key = "@JewelColorB")]
-    pub jewel_color_b: Option<u8>,
+    pub jewel_color_b: u8,
     #[astra(key = "@RimColorR")]
-    pub rim_color_r: Option<u8>,
+    pub rim_color_r: u8,
     #[astra(key = "@RimColorG")]
-    pub rim_color_g: Option<u8>,
+    pub rim_color_g: u8,
     #[astra(key = "@RimColorB")]
-    pub rim_color_b: Option<u8>,
+    pub rim_color_b: u8,
 }
 
 #[derive(AstraBook)]
@@ -73,11 +73,11 @@ pub struct RingPolishVoiceData {
     #[astra(key = "@Gid", public_array)]
     pub gid: String,
     #[astra(key = "@Label")]
-    pub label: Option<i8>,
+    pub label: i8,
     #[astra(key = "@PlaySituation")]
-    pub play_situation: Option<i8>,
+    pub play_situation: i8,
     #[astra(key = "@IsPlayCompleted")]
-    pub is_play_completed: Option<bool>,
+    pub is_play_completed: bool,
     #[astra(key = "@UnitFaceAnim")]
     pub unit_face_anim: String,
     #[astra(key = "@GodFaceAnim")]

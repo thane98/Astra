@@ -17,9 +17,9 @@ pub struct ShopInventory {
     #[astra(key = "@Iid")]
     pub iid: String,
     #[astra(key = "@Stock")]
-    pub stock: Option<i16>,
+    pub stock: i16,
     #[astra(key = "@Attribute")]
-    pub attribute: Option<i8>,
+    pub attribute: i8,
 }
 
 #[derive(Debug, Default, Clone, Astra)]

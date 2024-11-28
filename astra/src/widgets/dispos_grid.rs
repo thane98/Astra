@@ -26,12 +26,12 @@ pub struct DisposGridResult {
 fn get_position(spawn: &Spawn, coordinate_kind: CoordinateKind) -> (usize, usize) {
     match coordinate_kind {
         CoordinateKind::Dispos => (
-            spawn.dispos_x.unwrap_or_default() as usize,
-            spawn.dispos_y.unwrap_or_default() as usize,
+            spawn.dispos_x as usize,
+            spawn.dispos_y as usize,
         ),
         CoordinateKind::Appear => (
-            spawn.appear_x.unwrap_or_default() as usize,
-            spawn.appear_y.unwrap_or_default() as usize,
+            spawn.appear_x as usize,
+            spawn.appear_y as usize,
         ),
     }
 }
@@ -39,12 +39,12 @@ fn get_position(spawn: &Spawn, coordinate_kind: CoordinateKind) -> (usize, usize
 fn set_position(spawn: &mut Spawn, coordinate_kind: CoordinateKind, row: usize, col: usize) {
     match coordinate_kind {
         CoordinateKind::Dispos => {
-            spawn.dispos_x = Some(col as i8);
-            spawn.dispos_y = Some(row as i8);
+            spawn.dispos_x = col as i8;
+            spawn.dispos_y = row as i8;
         }
         CoordinateKind::Appear => {
-            spawn.appear_x = Some(col as i8);
-            spawn.appear_y = Some(row as i8);
+            spawn.appear_x = col as i8;
+            spawn.appear_y = row as i8;
         }
     }
 }
@@ -68,9 +68,9 @@ impl<'a> SpawnDataMap<'a> {
                         .enumerate()
                         .filter(|(_, spawn)| match difficulty {
                             Difficulty::All => true,
-                            Difficulty::Normal => spawn.flag.unwrap_or_default() & 1 != 0,
-                            Difficulty::Hard => spawn.flag.unwrap_or_default() & 2 != 0,
-                            Difficulty::Lunatic => spawn.flag.unwrap_or_default() & 4 != 0,
+                            Difficulty::Normal => spawn.flag & 1 != 0,
+                            Difficulty::Hard => spawn.flag & 2 != 0,
+                            Difficulty::Lunatic => spawn.flag & 4 != 0,
                         })
                         .map(|(index, spawn)| {
                             let position = get_position(spawn, coordinate_kind);

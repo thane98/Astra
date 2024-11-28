@@ -1,9 +1,9 @@
 use astra_types::AssetDef;
+use egui::DragValue;
 
 use crate::widgets::model_drop_down;
 use crate::{
-    editable_list, f32_drag, i8_drag, rgb_color_picker, AssetTableSheet, EditorState,
-    ListEditorContent, PropertyGrid,
+    editable_list, rgb_color_picker, AssetTableSheet, EditorState, ListEditorContent, PropertyGrid,
 };
 
 pub struct AssetTableEditor {
@@ -33,7 +33,7 @@ impl AssetTableEditor {
                     .field("Preset Name", |ui, def| {
                         ui.text_edit_singleline(&mut def.preset_name)
                     })
-                    .field("Mode", |ui, def| ui.add(i8_drag(&mut def.mode)))
+                    .field("Mode", |ui, def| ui.add(DragValue::new(&mut def.mode)))
                     .field("Conditions", |ui, def| {
                         ui.add(editable_list(&mut def.conditions, |_, value, ui| {
                             ui.text_edit_singleline(value)
@@ -167,9 +167,9 @@ impl AssetTableEditor {
                     .new_section("Animation")
                     .field("Body Anim", |ui, def| {
                         ui.vertical(|ui| {
-                            let mut response = state
-                                .anim_set
-                                .read(|data| ui.add(model_drop_down(data, &(), &mut def.body_anim)));
+                            let mut response = state.anim_set.read(|data| {
+                                ui.add(model_drop_down(data, &(), &mut def.body_anim))
+                            });
                             response |= ui.text_edit_singleline(&mut def.body_anim);
                             response
                         })
@@ -177,9 +177,9 @@ impl AssetTableEditor {
                     })
                     .field("Info Anim", |ui, def| {
                         ui.vertical(|ui| {
-                            let mut response = state
-                                .anim_set
-                                .read(|data| ui.add(model_drop_down(data, &(), &mut def.info_anim)));
+                            let mut response = state.anim_set.read(|data| {
+                                ui.add(model_drop_down(data, &(), &mut def.info_anim))
+                            });
                             response |= ui.text_edit_singleline(&mut def.info_anim);
                             response
                         })
@@ -187,9 +187,9 @@ impl AssetTableEditor {
                     })
                     .field("Talk Anim", |ui, def| {
                         ui.vertical(|ui| {
-                            let mut response = state
-                                .anim_set
-                                .read(|data| ui.add(model_drop_down(data, &(), &mut def.talk_anim)));
+                            let mut response = state.anim_set.read(|data| {
+                                ui.add(model_drop_down(data, &(), &mut def.talk_anim))
+                            });
                             response |= ui.text_edit_singleline(&mut def.talk_anim);
                             response
                         })
@@ -197,9 +197,9 @@ impl AssetTableEditor {
                     })
                     .field("Demo Anim", |ui, def| {
                         ui.vertical(|ui| {
-                            let mut response = state
-                                .anim_set
-                                .read(|data| ui.add(model_drop_down(data, &(), &mut def.demo_anim)));
+                            let mut response = state.anim_set.read(|data| {
+                                ui.add(model_drop_down(data, &(), &mut def.demo_anim))
+                            });
                             response |= ui.text_edit_singleline(&mut def.demo_anim);
                             response
                         })
@@ -217,63 +217,63 @@ impl AssetTableEditor {
                     })
                     .new_section("Scale")
                     .field("Scale (All)", |ui, def| {
-                        ui.add(f32_drag(&mut def.scale_all))
+                        ui.add(DragValue::new(&mut def.scale_all))
                     })
                     .field("Scale (Head)", |ui, def| {
-                        ui.add(f32_drag(&mut def.scale_head))
+                        ui.add(DragValue::new(&mut def.scale_head))
                     })
                     .field("Scale (Neck)", |ui, def| {
-                        ui.add(f32_drag(&mut def.scale_neck))
+                        ui.add(DragValue::new(&mut def.scale_neck))
                     })
                     .field("Scale (Torso)", |ui, def| {
-                        ui.add(f32_drag(&mut def.scale_torso))
+                        ui.add(DragValue::new(&mut def.scale_torso))
                     })
                     .field("Scale (Shoulders)", |ui, def| {
-                        ui.add(f32_drag(&mut def.scale_shoulders))
+                        ui.add(DragValue::new(&mut def.scale_shoulders))
                     })
                     .field("Scale (Arms)", |ui, def| {
-                        ui.add(f32_drag(&mut def.scale_arms))
+                        ui.add(DragValue::new(&mut def.scale_arms))
                     })
                     .field("Scale (Hands)", |ui, def| {
-                        ui.add(f32_drag(&mut def.scale_hands))
+                        ui.add(DragValue::new(&mut def.scale_hands))
                     })
                     .field("Scale (Legs)", |ui, def| {
-                        ui.add(f32_drag(&mut def.scale_legs))
+                        ui.add(DragValue::new(&mut def.scale_legs))
                     })
                     .field("Scale (Feet)", |ui, def| {
-                        ui.add(f32_drag(&mut def.scale_feet))
+                        ui.add(DragValue::new(&mut def.scale_feet))
                     })
                     .new_section("Volume")
                     .field("Volume (Arms)", |ui, def| {
-                        ui.add(f32_drag(&mut def.volume_arms))
+                        ui.add(DragValue::new(&mut def.volume_arms))
                     })
                     .field("Volume (Legs)", |ui, def| {
-                        ui.add(f32_drag(&mut def.volume_legs))
+                        ui.add(DragValue::new(&mut def.volume_legs))
                     })
                     .field("Volume (Bust)", |ui, def| {
-                        ui.add(f32_drag(&mut def.volume_bust))
+                        ui.add(DragValue::new(&mut def.volume_bust))
                     })
                     .field("Volume (Abdomen)", |ui, def| {
-                        ui.add(f32_drag(&mut def.volume_abdomen))
+                        ui.add(DragValue::new(&mut def.volume_abdomen))
                     })
                     .field("Volume (Torso)", |ui, def| {
-                        ui.add(f32_drag(&mut def.volume_torso))
+                        ui.add(DragValue::new(&mut def.volume_torso))
                     })
                     .field("Volume Scale (Arms)", |ui, def| {
-                        ui.add(f32_drag(&mut def.volume_scale_arms))
+                        ui.add(DragValue::new(&mut def.volume_scale_arms))
                     })
                     .field("Volume Scale (Legs)", |ui, def| {
-                        ui.add(f32_drag(&mut def.volume_scale_legs))
+                        ui.add(DragValue::new(&mut def.volume_scale_legs))
                     })
                     .new_section("Map Scale")
                     .field("Map Scale (All)", |ui, def| {
-                        ui.add(f32_drag(&mut def.map_scale_all))
+                        ui.add(DragValue::new(&mut def.map_scale_all))
                     })
                     .field("Map Scale (Head)", |ui, def| {
-                        ui.add(f32_drag(&mut def.map_scale_head))
+                        ui.add(DragValue::new(&mut def.map_scale_head))
                     })
                     .field("Map Scale (Wings)", |ui, def| {
-                        ui.add(f32_drag(&mut def.map_scale_wing))
+                        ui.add(DragValue::new(&mut def.map_scale_wing))
                     })
                     .new_section("Uncategorized")
                     .field("Voice", |ui, def| ui.text_edit_singleline(&mut def.voice))

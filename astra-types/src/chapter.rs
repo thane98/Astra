@@ -29,7 +29,7 @@ pub struct Chapter {
     #[astra(key = "@ChapterTitle")]
     pub chapter_title: String,
     #[astra(key = "@Alpha")]
-    pub alpha: Option<f32>,
+    pub alpha: f32,
     #[astra(key = "@Terrain")]
     pub terrain: String,
     #[astra(key = "@Dispos")]
@@ -39,21 +39,21 @@ pub struct Chapter {
     #[astra(key = "@GmapSpot")]
     pub gmap_spot: String,
     #[astra(key = "@GmapSpotState")]
-    pub gmap_spot_state: Option<i8>,
+    pub gmap_spot_state: i8,
     #[astra(key = "@GmapSpotOpenCondition")]
     pub gmap_spot_open_condition: String,
     #[astra(key = "@GmapSpotEncount")]
-    pub gmap_spot_encount: Option<i8>,
+    pub gmap_spot_encount: i8,
     #[astra(key = "@EncountJobs")]
     pub encount_jobs: Vec<String>,
     #[astra(key = "@Reward")]
     pub reward: String,
     #[astra(key = "@Progress")]
-    pub progress: Option<u8>,
+    pub progress: u8,
     #[astra(key = "@HoldLevel")]
-    pub hold_level: Option<u8>,
+    pub hold_level: u8,
     #[astra(key = "@Flag")]
-    pub flag: Option<i32>,
+    pub flag: i32,
     #[astra(key = "@SoundFieldSituation")]
     pub sound_field_situation: String,
     #[astra(key = "@PlayerPhaseBgm")]
@@ -73,13 +73,13 @@ pub struct Chapter {
     #[astra(key = "@Help")]
     pub help: String,
     #[astra(key = "@RecommendedLevel")]
-    pub recommended_level: Option<u8>,
+    pub recommended_level: u8,
     #[astra(key = "@Nation")]
     pub nation: String,
     #[astra(key = "@NetKillBonusIndex")]
-    pub net_kill_bonus_index: Option<u8>,
+    pub net_kill_bonus_index: u8,
     #[astra(key = "@NetRankingIndex")]
-    pub net_ranking_index: Option<u8>,
+    pub net_ranking_index: u8,
 }
 
 #[derive(Astra, Debug)]
@@ -99,5 +99,5 @@ pub struct Challenge {
     #[astra(key = "@UnlockCid")]
     pub unlock_cid: String,
     #[astra(key = "@SortieCount")]
-    pub sortie_count: Option<i32>,
+    pub sortie_count: i32,
 }

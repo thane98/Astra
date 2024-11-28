@@ -10,8 +10,6 @@ parking_lot = { workspace = true }
 indexmap = { workspace = true }
 itertools = { workspace = true }
 serde_yaml = { workspace = true }
-egui = { workspace = true }
-catppuccin-egui = { workspace = true }
 maplit = { workspace = true }
 bimap = { workspace = true }
 
@@ -19,6 +17,8 @@ astra-core = { path = "../astra-core" }
 astra-types = { path = "../astra-types" }
 astra_formats = { path = "../astra-formats" }
 
+egui = "0.26.2"
+catppuccin-egui = { git = "https://github.com/catppuccin/egui", rev = "eeebcd3" }
 eframe = { version = "0.26.2", default-features = false, features = [
     "accesskit",
     "default_fonts",
@@ -28,7 +28,7 @@ directories = "4.0.1"
 rfd = "0.10.0"
 egui_extras = { version = "0.26.2", features = ["image"] }
 egui_grid = { git = "https://github.com/thane98/egui-grid", rev = "b3d5c49" }
-egui-modal = "0.3.4"
+egui-modal = { git = "https://github.com/n00kii/egui-modal", rev = "79eeec1" }
 paste = "1.0.12"
 egui-notify = "0.13.0"
 
@@ -36,4 +36,3 @@ egui-notify = "0.13.0"
 tracing = { workspace = true }
 tracing-subscriber = "0.3"
 tracing-appender = "0.2.3"
-

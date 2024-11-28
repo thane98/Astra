@@ -19,43 +19,43 @@ pub struct TerrainData {
     #[astra(key = "@CostName")]
     pub cost_name: String,
     #[astra(key = "@Layer")]
-    pub layer: Option<i8>,
+    pub layer: i8,
     #[astra(key = "@Prohibition")]
-    pub prohibition: Option<i8>,
+    pub prohibition: i8,
     #[astra(key = "@Sight")]
-    pub sight: Option<u8>,
+    pub sight: u8,
     #[astra(key = "@Destroyer")]
-    pub destroyer: Option<i8>,
+    pub destroyer: i8,
     #[astra(key = "@Hp_N")]
-    pub hp_n: Option<u8>,
+    pub hp_n: u8,
     #[astra(key = "@Hp_H")]
-    pub hp_h: Option<u8>,
+    pub hp_h: u8,
     #[astra(key = "@Hp_L")]
-    pub hp_l: Option<u8>,
+    pub hp_l: u8,
     #[astra(key = "@Defense")]
-    pub defense: Option<i8>,
+    pub defense: i8,
     #[astra(key = "@Avoid")]
-    pub avoid: Option<i8>,
+    pub avoid: i8,
     #[astra(key = "@PlayerDefense")]
-    pub player_defense: Option<i8>,
+    pub player_defense: i8,
     #[astra(key = "@EnemyDefense")]
-    pub enemy_defense: Option<i8>,
+    pub enemy_defense: i8,
     #[astra(key = "@PlayerAvoid")]
-    pub player_avoid: Option<i8>,
+    pub player_avoid: i8,
     #[astra(key = "@EnemyAvoid")]
-    pub enemy_avoid: Option<i8>,
+    pub enemy_avoid: i8,
     #[astra(key = "@Heal")]
-    pub heal: Option<i8>,
+    pub heal: i8,
     #[astra(key = "@Life")]
-    pub life: Option<u8>,
+    pub life: u8,
     #[astra(key = "@MoveCost")]
-    pub move_cost: Option<u8>,
+    pub move_cost: u8,
     #[astra(key = "@FlyCost")]
-    pub fly_cost: Option<u8>,
+    pub fly_cost: u8,
     #[astra(key = "@MoveFirst")]
-    pub move_first: Option<i8>,
+    pub move_first: i8,
     #[astra(key = "@Offset")]
-    pub offset: Option<f32>,
+    pub offset: f32,
     #[astra(key = "@PutEffect")]
     pub put_effect: String,
     #[astra(key = "@Minimap")]
@@ -63,29 +63,29 @@ pub struct TerrainData {
     #[astra(key = "@CannonSkill")]
     pub cannon_skill: String,
     #[astra(key = "@CannonShellsN")]
-    pub cannon_shells_n: Option<u8>,
+    pub cannon_shells_n: u8,
     #[astra(key = "@CannonShellsH")]
-    pub cannon_shells_h: Option<u8>,
+    pub cannon_shells_h: u8,
     #[astra(key = "@CannonShellsL")]
-    pub cannon_shells_l: Option<u8>,
+    pub cannon_shells_l: u8,
     #[astra(key = "@ChangeTid")]
     pub change_tid: String,
     #[astra(key = "@ChangeEncount")]
     pub change_encount: String,
     #[astra(key = "@Command")]
-    pub command: Option<i8>,
+    pub command: i8,
     #[astra(key = "@Flag")]
-    pub flag: Option<i32>,
+    pub flag: i32,
     #[astra(key = "@PutAllow")]
-    pub put_allow: Option<u8>,
+    pub put_allow: u8,
     #[astra(key = "@Height")]
-    pub height: Option<f32>,
+    pub height: f32,
     #[astra(key = "@ColorR")]
-    pub color_r: Option<u8>,
+    pub color_r: u8,
     #[astra(key = "@ColorG")]
-    pub color_g: Option<u8>,
+    pub color_g: u8,
     #[astra(key = "@ColorB")]
-    pub color_b: Option<u8>,
+    pub color_b: u8,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
@@ -95,23 +95,23 @@ pub struct TerrainCostData {
     #[astra(key = "@Name")]
     pub name: String,
     #[astra(key = "@None")]
-    pub none: Option<u8>,
+    pub none: u8,
     #[astra(key = "@Foot")]
-    pub foot: Option<u8>,
+    pub foot: u8,
     #[astra(key = "@Horse")]
-    pub horse: Option<u8>,
+    pub horse: u8,
     #[astra(key = "@Fly")]
-    pub fly: Option<u8>,
+    pub fly: u8,
     #[astra(key = "@Dragon")]
-    pub dragon: Option<u8>,
+    pub dragon: u8,
     #[astra(key = "@Pad")]
-    pub pad: Option<u8>,
+    pub pad: u8,
     #[astra(key = "@ColorR")]
-    pub color_r: Option<u8>,
+    pub color_r: u8,
     #[astra(key = "@ColorG")]
-    pub color_g: Option<u8>,
+    pub color_g: u8,
     #[astra(key = "@ColorB")]
-    pub color_b: Option<u8>,
+    pub color_b: u8,
     #[astra(key = "@ColorA")]
-    pub color_a: Option<u8>,
+    pub color_a: u8,
 }

@@ -33,83 +33,83 @@ pub struct Item {
     #[astra(key = "@Aid")]
     pub aid: String,
     #[astra(key = "@Kind")]
-    pub kind: Option<i8>,
+    pub kind: i8,
     #[astra(key = "@UseType")]
-    pub use_type: Option<i8>,
+    pub use_type: i8,
     #[astra(key = "@WeaponAttr")]
-    pub weapon_attr: Option<i8>,
+    pub weapon_attr: i8,
     #[astra(key = "@Icon")]
     pub icon: String,
     #[astra(key = "@Endurance")]
-    pub endurance: Option<u8>,
+    pub endurance: u8,
     #[astra(key = "@Power")]
-    pub power: Option<u8>,
+    pub power: u8,
     #[astra(key = "@Weight")]
-    pub weight: Option<u8>,
+    pub weight: u8,
     #[astra(key = "@RangeI")]
-    pub range_i: Option<u8>,
+    pub range_i: u8,
     #[astra(key = "@RangeO")]
-    pub range_o: Option<u8>,
+    pub range_o: u8,
     #[astra(key = "@Distance")]
-    pub distance: Option<u8>,
+    pub distance: u8,
     #[astra(key = "@Hit")]
-    pub hit: Option<i16>,
+    pub hit: i16,
     #[astra(key = "@Critical")]
-    pub critical: Option<i16>,
+    pub critical: i16,
     #[astra(key = "@Avoid")]
-    pub avoid: Option<i16>,
+    pub avoid: i16,
     #[astra(key = "@Secure")]
-    pub secure: Option<i16>,
+    pub secure: i16,
     #[astra(key = "@Enhance.Hp")]
-    pub enhance_hp: Option<i8>,
+    pub enhance_hp: i8,
     #[astra(key = "@Enhance.Str")]
-    pub enhance_str: Option<i8>,
+    pub enhance_str: i8,
     #[astra(key = "@Enhance.Tech")]
-    pub enhance_tech: Option<i8>,
+    pub enhance_tech: i8,
     #[astra(key = "@Enhance.Quick")]
-    pub enhance_quick: Option<i8>,
+    pub enhance_quick: i8,
     #[astra(key = "@Enhance.Luck")]
-    pub enhance_luck: Option<i8>,
+    pub enhance_luck: i8,
     #[astra(key = "@Enhance.Def")]
-    pub enhance_def: Option<i8>,
+    pub enhance_def: i8,
     #[astra(key = "@Enhance.Magic")]
-    pub enhance_magic: Option<i8>,
+    pub enhance_magic: i8,
     #[astra(key = "@Enhance.Mdef")]
-    pub enhance_mdef: Option<i8>,
+    pub enhance_mdef: i8,
     #[astra(key = "@Enhance.Phys")]
-    pub enhance_phys: Option<i8>,
+    pub enhance_phys: i8,
     #[astra(key = "@Enhance.Move")]
-    pub enhance_move: Option<i8>,
+    pub enhance_move: i8,
     #[astra(key = "@GrowRatio.Hp")]
-    pub grow_ratio_hp: Option<i8>,
+    pub grow_ratio_hp: i8,
     #[astra(key = "@GrowRatio.Str")]
-    pub grow_ratio_str: Option<i8>,
+    pub grow_ratio_str: i8,
     #[astra(key = "@GrowRatio.Tech")]
-    pub grow_ratio_tech: Option<i8>,
+    pub grow_ratio_tech: i8,
     #[astra(key = "@GrowRatio.Quick")]
-    pub grow_ratio_quick: Option<i8>,
+    pub grow_ratio_quick: i8,
     #[astra(key = "@GrowRatio.Luck")]
-    pub grow_ratio_luck: Option<i8>,
+    pub grow_ratio_luck: i8,
     #[astra(key = "@GrowRatio.Def")]
-    pub grow_ratio_def: Option<i8>,
+    pub grow_ratio_def: i8,
     #[astra(key = "@GrowRatio.Magic")]
-    pub grow_ratio_magic: Option<i8>,
+    pub grow_ratio_magic: i8,
     #[astra(key = "@GrowRatio.Mdef")]
-    pub grow_ratio_mdef: Option<i8>,
+    pub grow_ratio_mdef: i8,
     #[astra(key = "@GrowRatio.Phys")]
-    pub grow_ratio_phys: Option<i8>,
+    pub grow_ratio_phys: i8,
     #[astra(key = "@GrowRatio.Move")]
-    pub grow_ratio_move: Option<i8>,
+    pub grow_ratio_move: i8,
     #[astra(key = "@Price")]
-    pub price: Option<i32>,
+    pub price: i32,
     #[astra(key = "@WeaponLevel")]
     pub weapon_level: String,
     #[astra(key = "@RodType")]
-    pub rod_type: Option<i8>,
+    pub rod_type: i8,
     #[astra(key = "@RodExp")]
-    pub rod_exp: Option<u8>,
+    pub rod_exp: u8,
     #[astra(key = "@RateArena")]
-    pub rate_arena: Option<u8>,
+    pub rate_arena: u8,
     #[astra(key = "@ShootEffect")]
     pub shoot_effect: String,
     #[astra(key = "@HitEffect")]
@@ -117,13 +117,13 @@ pub struct Item {
     #[astra(key = "@CannonEffect")]
     pub cannon_effect: String,
     #[astra(key = "@AttackMotion")]
-    pub attack_motion: Option<i8>,
+    pub attack_motion: i8,
     #[astra(key = "@OverlapTerrain")]
     pub overlap_terrain: String,
     #[astra(key = "@EquipCondition")]
     pub equip_condition: String,
     #[astra(key = "@Flag")]
-    pub flag: Option<i32>,
+    pub flag: i32,
     #[astra(key = "@EquipSids")]
     pub equip_sids: Vec<String>,
     #[astra(key = "@PassiveSids")]
@@ -131,13 +131,13 @@ pub struct Item {
     #[astra(key = "@GiveSids")]
     pub give_sids: Vec<String>,
     #[astra(key = "@AddTarget")]
-    pub add_target: Option<i8>,
+    pub add_target: i8,
     #[astra(key = "@AddRange")]
-    pub add_range: Option<u8>,
+    pub add_range: u8,
     #[astra(key = "@AddType")]
-    pub add_type: Option<i8>,
+    pub add_type: i8,
     #[astra(key = "@AddPower")]
-    pub add_power: Option<u8>,
+    pub add_power: u8,
     #[astra(key = "@AddSids")]
     pub add_sids: Vec<String>,
     #[astra(key = "@AddEffect")]
@@ -165,21 +165,21 @@ pub struct ForgeImproveData {
     #[astra(key = "@Rid", public_array)]
     pub rid: String,
     #[astra(key = "@Iron")]
-    pub iron: Option<u16>,
+    pub iron: u16,
     #[astra(key = "@Steel")]
-    pub steel: Option<u16>,
+    pub steel: u16,
     #[astra(key = "@Silver")]
-    pub silver: Option<u16>,
+    pub silver: u16,
     #[astra(key = "@Price")]
-    pub price: Option<u16>,
+    pub price: u16,
     #[astra(key = "@Power")]
-    pub power: Option<i8>,
+    pub power: i8,
     #[astra(key = "@Weight")]
-    pub weight: Option<i8>,
+    pub weight: i8,
     #[astra(key = "@Hit")]
-    pub hit: Option<i8>,
+    pub hit: i8,
     #[astra(key = "@Critical")]
-    pub critical: Option<i8>,
+    pub critical: i8,
 }
 
 #[derive(Astra, Debug, Default, Clone)]
@@ -191,15 +191,15 @@ pub struct ForgeEvolveData {
     #[astra(key = "@Iid")]
     pub iid: String,
     #[astra(key = "@Iron")]
-    pub iron: Option<u16>,
+    pub iron: u16,
     #[astra(key = "@Steel")]
-    pub steel: Option<u16>,
+    pub steel: u16,
     #[astra(key = "@Silver")]
-    pub silver: Option<u16>,
+    pub silver: u16,
     #[astra(key = "@Price")]
-    pub price: Option<u16>,
+    pub price: u16,
     #[astra(key = "@RefineLevel")]
-    pub refine_level: Option<u8>,
+    pub refine_level: u8,
 }
 
 #[derive(Astra, Debug, Default, Clone)]
@@ -213,17 +213,17 @@ pub struct ForgeExchangeData {
     #[astra(key = "@Icon")]
     pub icon: String,
     #[astra(key = "@ToIron")]
-    pub to_iron: Option<u16>,
+    pub to_iron: u16,
     #[astra(key = "@ToSteel")]
-    pub to_steel: Option<u16>,
+    pub to_steel: u16,
     #[astra(key = "@ToSilver")]
-    pub to_silver: Option<u16>,
+    pub to_silver: u16,
     #[astra(key = "@ForIron")]
-    pub for_iron: Option<u16>,
+    pub for_iron: u16,
     #[astra(key = "@ForSteel")]
-    pub for_steel: Option<u16>,
+    pub for_steel: u16,
     #[astra(key = "@ForSilver")]
-    pub for_silver: Option<u16>,
+    pub for_silver: u16,
 }
 
 #[derive(Astra, Debug)]
@@ -231,17 +231,17 @@ pub struct WeaponRankData {
     #[astra(key = "@Level")]
     pub level: String,
     #[astra(key = "@Exp")]
-    pub exp: Option<u8>,
+    pub exp: u8,
     #[astra(key = "@Mastery")]
-    pub mastery: Option<u8>,
+    pub mastery: u8,
     #[astra(key = "@Attack")]
-    pub attack: Option<u8>,
+    pub attack: u8,
     #[astra(key = "@Hit")]
-    pub hit: Option<u8>,
+    pub hit: u8,
     #[astra(key = "@Critical")]
-    pub critical: Option<u8>,
+    pub critical: u8,
     #[astra(key = "@Recover")]
-    pub recover: Option<u8>,
+    pub recover: u8,
 }
 
 #[derive(Astra, Debug)]
@@ -249,7 +249,7 @@ pub struct ItemInteractData {
     #[astra(key = "@Kind")]
     pub kind: String,
     #[astra(key = "@Flag")]
-    pub flag: Option<u32>,
+    pub flag: u32,
 }
 
 #[derive(Astra, Debug, Default, Clone)]
@@ -271,9 +271,9 @@ pub struct Accessory {
     #[astra(key = "@HelpF")]
     pub help_f: String,
     #[astra(key = "@First")]
-    pub first: Option<bool>,
+    pub first: bool,
     #[astra(key = "@Amiibo")]
-    pub amiibo: Option<bool>,
+    pub amiibo: bool,
     #[astra(key = "@Asset")]
     pub asset: String,
     #[astra(key = "@CondtionCid")]
@@ -281,19 +281,19 @@ pub struct Accessory {
     #[astra(key = "@CondtionSkills")]
     pub condtion_skills: Vec<String>,
     #[astra(key = "@CondtionGender")]
-    pub condtion_gender: Option<i8>,
+    pub condtion_gender: i8,
     #[astra(key = "@Gid")]
     pub gid: String,
     #[astra(key = "@Price")]
-    pub price: Option<i32>,
+    pub price: i32,
     #[astra(key = "@Iron")]
-    pub iron: Option<i32>,
+    pub iron: i32,
     #[astra(key = "@Steel")]
-    pub steel: Option<i32>,
+    pub steel: i32,
     #[astra(key = "@Silver")]
-    pub silver: Option<i32>,
+    pub silver: i32,
     #[astra(key = "@Mask")]
-    pub mask: Option<i32>,
+    pub mask: i32,
 }
 
 #[derive(Astra, Debug)]
@@ -301,105 +301,105 @@ pub struct GiftData {
     #[astra(key = "@Name")]
     pub name: String,
     #[astra(key = "@V00")]
-    pub v_00: Option<i8>,
+    pub v_00: i8,
     #[astra(key = "@V01")]
-    pub v_01: Option<i8>,
+    pub v_01: i8,
     #[astra(key = "@V02")]
-    pub v_02: Option<i8>,
+    pub v_02: i8,
     #[astra(key = "@V03")]
-    pub v_03: Option<i8>,
+    pub v_03: i8,
     #[astra(key = "@V04")]
-    pub v_04: Option<i8>,
+    pub v_04: i8,
     #[astra(key = "@V05")]
-    pub v_05: Option<i8>,
+    pub v_05: i8,
     #[astra(key = "@V06")]
-    pub v_06: Option<i8>,
+    pub v_06: i8,
     #[astra(key = "@V07")]
-    pub v_07: Option<i8>,
+    pub v_07: i8,
     #[astra(key = "@V08")]
-    pub v_08: Option<i8>,
+    pub v_08: i8,
     #[astra(key = "@V09")]
-    pub v_09: Option<i8>,
+    pub v_09: i8,
     #[astra(key = "@V10")]
-    pub v_10: Option<i8>,
+    pub v_10: i8,
     #[astra(key = "@V11")]
-    pub v_11: Option<i8>,
+    pub v_11: i8,
     #[astra(key = "@V12")]
-    pub v_12: Option<i8>,
+    pub v_12: i8,
     #[astra(key = "@V13")]
-    pub v_13: Option<i8>,
+    pub v_13: i8,
     #[astra(key = "@V14")]
-    pub v_14: Option<i8>,
+    pub v_14: i8,
     #[astra(key = "@V15")]
-    pub v_15: Option<i8>,
+    pub v_15: i8,
     #[astra(key = "@V16")]
-    pub v_16: Option<i8>,
+    pub v_16: i8,
     #[astra(key = "@V17")]
-    pub v_17: Option<i8>,
+    pub v_17: i8,
     #[astra(key = "@V18")]
-    pub v_18: Option<i8>,
+    pub v_18: i8,
     #[astra(key = "@V19")]
-    pub v_19: Option<i8>,
+    pub v_19: i8,
     #[astra(key = "@V20")]
-    pub v_20: Option<i8>,
+    pub v_20: i8,
     #[astra(key = "@V21")]
-    pub v_21: Option<i8>,
+    pub v_21: i8,
     #[astra(key = "@V22")]
-    pub v_22: Option<i8>,
+    pub v_22: i8,
     #[astra(key = "@V23")]
-    pub v_23: Option<i8>,
+    pub v_23: i8,
     #[astra(key = "@V24")]
-    pub v_24: Option<i8>,
+    pub v_24: i8,
     #[astra(key = "@V25")]
-    pub v_25: Option<i8>,
+    pub v_25: i8,
     #[astra(key = "@V26")]
-    pub v_26: Option<i8>,
+    pub v_26: i8,
     #[astra(key = "@V27")]
-    pub v_27: Option<i8>,
+    pub v_27: i8,
     #[astra(key = "@V28")]
-    pub v_28: Option<i8>,
+    pub v_28: i8,
     #[astra(key = "@V29")]
-    pub v_29: Option<i8>,
+    pub v_29: i8,
     #[astra(key = "@V30")]
-    pub v_30: Option<i8>,
+    pub v_30: i8,
     #[astra(key = "@V31")]
-    pub v_31: Option<i8>,
+    pub v_31: i8,
     #[astra(key = "@V32")]
-    pub v_32: Option<i8>,
+    pub v_32: i8,
     #[astra(key = "@V33")]
-    pub v_33: Option<i8>,
+    pub v_33: i8,
     #[astra(key = "@V34")]
-    pub v_34: Option<i8>,
+    pub v_34: i8,
     #[astra(key = "@V35")]
-    pub v_35: Option<i8>,
+    pub v_35: i8,
     #[astra(key = "@V36")]
-    pub v_36: Option<i8>,
+    pub v_36: i8,
     #[astra(key = "@V37")]
-    pub v_37: Option<i8>,
+    pub v_37: i8,
     #[astra(key = "@V38")]
-    pub v_38: Option<i8>,
+    pub v_38: i8,
     #[astra(key = "@V39")]
-    pub v_39: Option<i8>,
+    pub v_39: i8,
     #[astra(key = "@V40")]
-    pub v_40: Option<i8>,
+    pub v_40: i8,
     #[astra(key = "@V41")]
-    pub v_41: Option<i8>,
+    pub v_41: i8,
     #[astra(key = "@V42")]
-    pub v_42: Option<i8>,
+    pub v_42: i8,
     #[astra(key = "@V43")]
-    pub v_43: Option<i8>,
+    pub v_43: i8,
     #[astra(key = "@V44")]
-    pub v_44: Option<i8>,
+    pub v_44: i8,
     #[astra(key = "@V45")]
-    pub v_45: Option<i8>,
+    pub v_45: i8,
     #[astra(key = "@V46")]
-    pub v_46: Option<i8>,
+    pub v_46: i8,
     #[astra(key = "@V47")]
-    pub v_47: Option<i8>,
+    pub v_47: i8,
     #[astra(key = "@V48")]
-    pub v_48: Option<i8>,
+    pub v_48: i8,
     #[astra(key = "@V49")]
-    pub v_49: Option<i8>,
+    pub v_49: i8,
 }
 
 #[derive(Astra, Debug)]
@@ -409,15 +409,15 @@ pub struct RewardData {
     #[astra(key = "@Iid")]
     pub iid: String,
     #[astra(key = "@Ratio")]
-    pub ratio: Option<f32>,
+    pub ratio: f32,
     #[astra(key = "@Factor")]
-    pub factor: Option<f32>,
+    pub factor: f32,
     #[astra(key = "@Min")]
-    pub min: Option<f32>,
+    pub min: f32,
     #[astra(key = "@Max")]
-    pub max: Option<f32>,
+    pub max: f32,
     #[astra(key = "@IsShow")]
-    pub is_show: Option<bool>,
+    pub is_show: bool,
     #[astra(key = "@Condition")]
     pub condition: String,
 }
@@ -429,79 +429,79 @@ pub struct EngageWeaponEnhancementData {
     #[astra(key = "@Iid", public_array)]
     pub iid: String,
     #[astra(key = "@PowerMat")]
-    pub power_mat: Option<u16>,
+    pub power_mat: u16,
     #[astra(key = "@HitMat")]
-    pub hit_mat: Option<u16>,
+    pub hit_mat: u16,
     #[astra(key = "@CriticalMat")]
-    pub critical_mat: Option<u16>,
+    pub critical_mat: u16,
     #[astra(key = "@AvoidMat")]
-    pub avoid_mat: Option<u16>,
+    pub avoid_mat: u16,
     #[astra(key = "@SecureMat")]
-    pub secure_mat: Option<u16>,
+    pub secure_mat: u16,
     #[astra(key = "@TechMat")]
-    pub tech_mat: Option<u16>,
+    pub tech_mat: u16,
     #[astra(key = "@QuickMat")]
-    pub quick_mat: Option<u16>,
+    pub quick_mat: u16,
     #[astra(key = "@DefMat")]
-    pub def_mat: Option<u16>,
+    pub def_mat: u16,
     #[astra(key = "@MdefMat")]
-    pub mdef_mat: Option<u16>,
+    pub mdef_mat: u16,
     #[astra(key = "@EfficacyHorseMat")]
-    pub efficacy_horse_mat: Option<u16>,
+    pub efficacy_horse_mat: u16,
     #[astra(key = "@EfficacyArmorMat")]
-    pub efficacy_armor_mat: Option<u16>,
+    pub efficacy_armor_mat: u16,
     #[astra(key = "@EfficacyFlyMat")]
-    pub efficacy_fly_mat: Option<u16>,
+    pub efficacy_fly_mat: u16,
     #[astra(key = "@EfficacyDragonMat")]
-    pub efficacy_dragon_mat: Option<u16>,
+    pub efficacy_dragon_mat: u16,
     #[astra(key = "@EfficacyMorphMat")]
-    pub efficacy_morph_mat: Option<u16>,
+    pub efficacy_morph_mat: u16,
     #[astra(key = "@PowerCapa")]
-    pub power_capa: Option<u16>,
+    pub power_capa: u16,
     #[astra(key = "@HitCapa")]
-    pub hit_capa: Option<u16>,
+    pub hit_capa: u16,
     #[astra(key = "@CriticalCapa")]
-    pub critical_capa: Option<u16>,
+    pub critical_capa: u16,
     #[astra(key = "@AvoidCapa")]
-    pub avoid_capa: Option<u16>,
+    pub avoid_capa: u16,
     #[astra(key = "@SecureCapa")]
-    pub secure_capa: Option<u16>,
+    pub secure_capa: u16,
     #[astra(key = "@TechCapa")]
-    pub tech_capa: Option<u16>,
+    pub tech_capa: u16,
     #[astra(key = "@QuickCapa")]
-    pub quick_capa: Option<u16>,
+    pub quick_capa: u16,
     #[astra(key = "@DefCapa")]
-    pub def_capa: Option<u16>,
+    pub def_capa: u16,
     #[astra(key = "@MdefCapa")]
-    pub mdef_capa: Option<u16>,
+    pub mdef_capa: u16,
     #[astra(key = "@EfficacyHorseCapa")]
-    pub efficacy_horse_capa: Option<u16>,
+    pub efficacy_horse_capa: u16,
     #[astra(key = "@EfficacyArmorCapa")]
-    pub efficacy_armor_capa: Option<u16>,
+    pub efficacy_armor_capa: u16,
     #[astra(key = "@EfficacyFlyCapa")]
-    pub efficacy_fly_capa: Option<u16>,
+    pub efficacy_fly_capa: u16,
     #[astra(key = "@EfficacyDragonCapa")]
-    pub efficacy_dragon_capa: Option<u16>,
+    pub efficacy_dragon_capa: u16,
     #[astra(key = "@EfficacyMorphCapa")]
-    pub efficacy_morph_capa: Option<u16>,
+    pub efficacy_morph_capa: u16,
     #[astra(key = "@Power")]
-    pub power: Option<i8>,
+    pub power: i8,
     #[astra(key = "@Hit")]
-    pub hit: Option<i8>,
+    pub hit: i8,
     #[astra(key = "@Critical")]
-    pub critical: Option<i8>,
+    pub critical: i8,
     #[astra(key = "@Avoid")]
-    pub avoid: Option<i8>,
+    pub avoid: i8,
     #[astra(key = "@Secure")]
-    pub secure: Option<i8>,
+    pub secure: i8,
     #[astra(key = "@Tech")]
-    pub tech: Option<i8>,
+    pub tech: i8,
     #[astra(key = "@Quick")]
-    pub quick: Option<i8>,
+    pub quick: i8,
     #[astra(key = "@Def")]
-    pub def: Option<i8>,
+    pub def: i8,
     #[astra(key = "@Mdef")]
-    pub mdef: Option<i8>,
+    pub mdef: i8,
 }
 
 #[derive(Astra, Debug)]

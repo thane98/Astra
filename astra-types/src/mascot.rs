@@ -17,7 +17,7 @@ pub struct MascotAccessoryData {
     #[astra(key = "@Aid", id)]
     pub aid: String,
     #[astra(key = "@Type")]
-    pub ty: Option<i8>,
+    pub ty: i8,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
@@ -25,11 +25,11 @@ pub struct MascotColorData {
     #[astra(key = "@Out")]
     pub out: String,
     #[astra(key = "@R")]
-    pub r: Option<u8>,
+    pub r: u8,
     #[astra(key = "@G")]
-    pub g: Option<u8>,
+    pub g: u8,
     #[astra(key = "@B")]
-    pub b: Option<u8>,
+    pub b: u8,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
@@ -39,7 +39,7 @@ pub struct MascotParamData {
     #[astra(key = "@ParamName", id)]
     pub param_name: String,
     #[astra(key = "@Value")]
-    pub value: Option<i8>,
+    pub value: i8,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
@@ -49,5 +49,5 @@ pub struct MascotFoodData {
     #[astra(key = "@Iid", id)]
     pub iid: String,
     #[astra(key = "@Value")]
-    pub value: Option<i8>,
+    pub value: i8,
 }

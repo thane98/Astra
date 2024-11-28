@@ -64,7 +64,7 @@ impl ViewItem for KillBonus2 {
     type Dependencies = EditorState;
 
     fn text(&self, _: &Self::Dependencies) -> Cow<'_, str> {
-        Cow::Owned(format!("Kind {}", self.kind.unwrap_or_default()))
+        Cow::Owned(format!("Kind {}", self.kind))
     }
 }
 

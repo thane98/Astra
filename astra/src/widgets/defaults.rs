@@ -1,9 +1,6 @@
-use egui::{Response, Ui};
+use egui::{DragValue, Response, Ui};
 
-use crate::{
-    editable_list, f32_drag, i16_drag, i32_drag, i8_drag, optional_checkbox, u16_drag, u32_drag,
-    u8_drag,
-};
+use crate::editable_list;
 
 /// Trait for types which support a "default" widget.
 /// Used to conveniently display fields without thinking about which widget to use.
@@ -18,51 +15,51 @@ impl DefaultWidget for String {
     }
 }
 
-impl DefaultWidget for Option<bool> {
+impl DefaultWidget for bool {
     fn default_widget(&mut self, ui: &mut Ui) -> Response {
-        ui.add(optional_checkbox(self))
+        ui.checkbox(self, "")
     }
 }
 
-impl DefaultWidget for Option<u8> {
+impl DefaultWidget for u8 {
     fn default_widget(&mut self, ui: &mut Ui) -> Response {
-        ui.add(u8_drag(self))
+        ui.add(DragValue::new(self))
     }
 }
 
-impl DefaultWidget for Option<u16> {
+impl DefaultWidget for u16 {
     fn default_widget(&mut self, ui: &mut Ui) -> Response {
-        ui.add(u16_drag(self))
+        ui.add(DragValue::new(self))
     }
 }
 
-impl DefaultWidget for Option<u32> {
+impl DefaultWidget for u32 {
     fn default_widget(&mut self, ui: &mut Ui) -> Response {
-        ui.add(u32_drag(self))
+        ui.add(DragValue::new(self))
     }
 }
 
-impl DefaultWidget for Option<i8> {
+impl DefaultWidget for i8 {
     fn default_widget(&mut self, ui: &mut Ui) -> Response {
-        ui.add(i8_drag(self))
+        ui.add(DragValue::new(self))
     }
 }
 
-impl DefaultWidget for Option<i16> {
+impl DefaultWidget for i16 {
     fn default_widget(&mut self, ui: &mut Ui) -> Response {
-        ui.add(i16_drag(self))
+        ui.add(DragValue::new(self))
     }
 }
 
-impl DefaultWidget for Option<i32> {
+impl DefaultWidget for i32 {
     fn default_widget(&mut self, ui: &mut Ui) -> Response {
-        ui.add(i32_drag(self))
+        ui.add(DragValue::new(self))
     }
 }
 
-impl DefaultWidget for Option<f32> {
+impl DefaultWidget for f32 {
     fn default_widget(&mut self, ui: &mut Ui) -> Response {
-        ui.add(f32_drag(self))
+        ui.add(DragValue::new(self))
     }
 }
 

@@ -27,7 +27,7 @@ pub struct MapEditorCategory {
     #[astra(key = "@Cid", id)]
     pub cid: String,
     #[astra(key = "@CountMax")]
-    pub count_max: Option<i32>,
+    pub count_max: i32,
     #[astra(key = "@IconName")]
     pub icon_name: String,
 }

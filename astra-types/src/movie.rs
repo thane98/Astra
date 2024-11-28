@@ -20,7 +20,7 @@ pub struct Movie {
     #[astra(key = "@Condition")]
     pub condition: String,
     #[astra(key = "@No")]
-    pub no: Option<i8>,
+    pub no: i8,
     #[astra(key = "@BeforeSoundEventName1")]
     pub before_sound_event_name_1: String,
     #[astra(key = "@BeforeSoundEventName2")]

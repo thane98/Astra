@@ -16,5 +16,5 @@ pub struct VibrationDefineData {
     #[astra(key = "@VibrationFileName")]
     pub vibration_file_name: String,
     #[astra(key = "@AmplitudeMagnitude")]
-    pub amplitude_magnitude: Option<f32>,
+    pub amplitude_magnitude: f32,
 }

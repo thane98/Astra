@@ -55,7 +55,7 @@ impl GroupCommand {
                     false
                 }
             }
-            GroupCommandKind::Remove => data.remove(&self.group).is_some(),
+            GroupCommandKind::Remove => data.shift_remove(&self.group).is_some(),
             GroupCommandKind::MoveUp => {
                 if self.index > 0 && self.index < data.len() {
                     data.swap_indices(self.index, self.index - 1);

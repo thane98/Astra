@@ -1,10 +1,10 @@
 use astra_types::{RelianceBonusData, RelianceExpData};
-use egui::Ui;
+use egui::{DragValue, Ui};
 use indexmap::IndexMap;
 
 use crate::widgets::{id_field, keyed_add_modal_content};
 use crate::{
-    editor_tab_strip, i8_drag, u8_drag, EditorState, GroupEditorContent, ListEditorContent,
+    editor_tab_strip, EditorState, GroupEditorContent, ListEditorContent,
     PropertyGrid, RelianceBonusDataSheet, RelianceExpDataSheet,
 };
 
@@ -63,9 +63,9 @@ impl RelianceEditor {
         PropertyGrid::new("reliance_exp_data", data)
             .new_section("Data")
             .field("REXID", |ui, data| ui.add(id_field(&mut data.rexid)))
-            .field("C", |ui, data| ui.add(u8_drag(&mut data.exp_c)))
-            .field("B", |ui, data| ui.add(u8_drag(&mut data.exp_b)))
-            .field("A", |ui, data| ui.add(u8_drag(&mut data.exp_a)))
+            .field("C", |ui, data| ui.add(DragValue::new(&mut data.exp_c)))
+            .field("B", |ui, data| ui.add(DragValue::new(&mut data.exp_b)))
+            .field("A", |ui, data| ui.add(DragValue::new(&mut data.exp_a)))
             .show(ui)
             .changed()
     }
@@ -73,11 +73,11 @@ impl RelianceEditor {
     fn bonuses_property_grid(ui: &mut Ui, data: &mut RelianceBonusData) -> bool {
         PropertyGrid::new("reliance_bonuses_data", data)
             .new_section("Data")
-            .field("Level", |ui, data| ui.add(i8_drag(&mut data.level)))
-            .field("Hit", |ui, data| ui.add(i8_drag(&mut data.hit)))
-            .field("Crit", |ui, data| ui.add(i8_drag(&mut data.critical)))
-            .field("Avoid", |ui, data| ui.add(i8_drag(&mut data.avoid)))
-            .field("Dodge", |ui, data| ui.add(i8_drag(&mut data.secure)))
+            .field("Level", |ui, data| ui.add(DragValue::new(&mut data.level)))
+            .field("Hit", |ui, data| ui.add(DragValue::new(&mut data.hit)))
+            .field("Crit", |ui, data| ui.add(DragValue::new(&mut data.critical)))
+            .field("Avoid", |ui, data| ui.add(DragValue::new(&mut data.avoid)))
+            .field("Dodge", |ui, data| ui.add(DragValue::new(&mut data.secure)))
             .show(ui)
             .changed()
     }

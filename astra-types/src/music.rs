@@ -24,7 +24,7 @@ pub struct MusicData {
     #[astra(key = "@ChangeEventName")]
     pub change_event_name: String,
     #[astra(key = "@IsChange")]
-    pub is_change: Option<bool>,
+    pub is_change: bool,
     #[astra(key = "@Gid")]
     pub gid: String,
 }

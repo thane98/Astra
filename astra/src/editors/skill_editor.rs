@@ -1,11 +1,12 @@
 use astra_types::{Skill, SkillBook};
+use egui::DragValue;
 use indexmap::IndexMap;
 
 use crate::widgets::{
     bitgrid_i32, bitgrid_u64, id_field, keyed_add_modal_content, skill_around_centers_drop_down,
     skill_around_targets_drop_down, skill_cycle_drop_down, skill_frequencies_drop_down,
     skill_give_targets_drop_down, skill_stance_drop_down, skill_targets_drop_down,
-    skill_timing_drop_down, u8_drag,
+    skill_timing_drop_down,
 };
 use crate::{
     editable_list, model_drop_down, msbt_key_value_multiline, msbt_key_value_singleline,
@@ -152,7 +153,7 @@ impl SkillEditor {
                         ui.horizontal(|ui| {
                             let mut response = ui.add(skill_cycle_drop_down(&mut skill.cycle));
                             ui.label("x");
-                            response = response.union(ui.add(u8_drag(&mut skill.life)));
+                            response = response.union(ui.add(DragValue::new(&mut skill.life)));
                             response
                         })
                         .inner

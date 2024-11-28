@@ -1,12 +1,12 @@
 use astra_types::{Person, PersonBook};
-use egui::{Grid, Ui};
+use egui::{DragValue, Grid, Ui};
 use indexmap::IndexMap;
 
 use crate::widgets::{exist_die_timing_drop_down, id_field, keyed_add_modal_content};
 use crate::{
-    bitgrid_i32, bitgrid_u8, editable_list, gender_drop_down, i8_drag, model_drop_down,
+    bitgrid_i32, bitgrid_u8, editable_list, gender_drop_down, model_drop_down,
     msbt_key_value_multiline, msbt_key_value_singleline, nation_drop_down, optional_image,
-    standard_stat_column_headers, standard_stats_row, u8_drag, CachedView, DecorationKind,
+    standard_stat_column_headers, standard_stats_row, CachedView, DecorationKind,
     EditorState, ListEditorContent, PersonSheet, PersonSheetRetriever, PropertyGrid, ViewItem,
 };
 
@@ -132,8 +132,8 @@ impl PersonEditor {
                     .default_field("Age", |p| &mut p.age)
                     .field("Birthday", |ui, p| {
                         ui.horizontal(|ui| {
-                            ui.add(u8_drag(&mut p.birth_month))
-                                .union(ui.add(u8_drag(&mut p.birth_day)))
+                            ui.add(DragValue::new(&mut p.birth_month))
+                                .union(ui.add(DragValue::new(&mut p.birth_day)))
                         })
                         .inner
                     })
@@ -152,9 +152,9 @@ impl PersonEditor {
                     })
                     .field("Auto Grow Offsets", |ui, p| {
                         ui.horizontal_top(|ui| {
-                            ui.add(i8_drag(&mut p.auto_grow_offset_n))
-                                .union(ui.add(i8_drag(&mut p.auto_grow_offset_h)))
-                                .union(ui.add(i8_drag(&mut p.auto_grow_offset_l)))
+                            ui.add(DragValue::new(&mut p.auto_grow_offset_n))
+                                .union(ui.add(DragValue::new(&mut p.auto_grow_offset_h)))
+                                .union(ui.add(DragValue::new(&mut p.auto_grow_offset_l)))
                         })
                         .inner
                     })

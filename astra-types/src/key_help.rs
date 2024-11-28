@@ -12,7 +12,7 @@ pub struct KeyHelpData {
     #[astra(key = "@KHID", public_array)]
     pub khid: String,
     #[astra(key = "@ButtonIndex")]
-    pub button_index: Option<i8>,
+    pub button_index: i8,
     #[astra(key = "@MID")]
     pub mid: String,
 }

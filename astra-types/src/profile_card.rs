@@ -27,7 +27,7 @@ pub struct ProfileCardImageComponent {
     #[astra(key = "@Image")]
     pub image: String,
     #[astra(key = "@Condition")]
-    pub condition: Option<i8>,
+    pub condition: i8,
     #[astra(key = "@Arg")]
     pub arg: String,
 }
@@ -41,7 +41,7 @@ pub struct ProfileCardColorComponent {
     #[astra(key = "@Color")]
     pub color: String,
     #[astra(key = "@Condition")]
-    pub condition: Option<i8>,
+    pub condition: i8,
     #[astra(key = "@Arg")]
     pub arg: String,
 }
@@ -55,7 +55,7 @@ pub struct ProfileCardNameComponent {
     #[astra(key = "@Name")]
     pub name: String,
     #[astra(key = "@Condition")]
-    pub condition: Option<i8>,
+    pub condition: i8,
     #[astra(key = "@Arg")]
     pub arg: String,
 }
@@ -69,9 +69,9 @@ pub struct ProfileCardCategorizedComponent {
     #[astra(key = "@Name")]
     pub name: String,
     #[astra(key = "@Category")]
-    pub category: Option<i8>,
+    pub category: i8,
     #[astra(key = "@Condition")]
-    pub condition: Option<i8>,
+    pub condition: i8,
     #[astra(key = "@Arg")]
     pub arg: String,
 }
@@ -85,9 +85,9 @@ pub struct ProfileCardCategorizedImageComponent {
     #[astra(key = "@Image")]
     pub image: String,
     #[astra(key = "@Category")]
-    pub category: Option<i8>,
+    pub category: i8,
     #[astra(key = "@Condition")]
-    pub condition: Option<i8>,
+    pub condition: i8,
     #[astra(key = "@Arg")]
     pub arg: String,
 }
@@ -101,7 +101,7 @@ pub struct ProfileCardFavoriteMapData {
     #[astra(key = "@Cid")]
     pub cid: String,
     #[astra(key = "@Condition")]
-    pub condition: Option<i8>,
+    pub condition: i8,
     #[astra(key = "@Arg")]
     pub arg: String,
 }

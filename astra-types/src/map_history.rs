@@ -16,5 +16,5 @@ pub struct MapHistory {
     #[astra(key = "@Action")]
     pub action: String,
     #[astra(key = "@Priority")]
-    pub priority: Option<u8>,
+    pub priority: u8,
 }

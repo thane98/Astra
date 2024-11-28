@@ -15,7 +15,7 @@ pub struct KillBonus1 {
     #[astra(key = "@Iid")]
     pub iid: String,
     #[astra(key = "@Rate")]
-    pub rate: Option<u8>,
+    pub rate: u8,
     #[astra(key = "@Cid")]
     pub cid: String,
 }
@@ -25,13 +25,13 @@ pub struct KillBonus2 {
     #[astra(key = "@Name", public_array)]
     pub name: String,
     #[astra(key = "@Kind")]
-    pub kind: Option<i8>,
+    pub kind: i8,
     #[astra(key = "@Value")]
-    pub value: Option<i32>,
+    pub value: i32,
     #[astra(key = "@Rate")]
-    pub rate: Option<u8>,
+    pub rate: u8,
     #[astra(key = "@Flag")]
-    pub flag: Option<i32>,
+    pub flag: i32,
     #[astra(key = "@Cid")]
     pub cid: String,
 }

@@ -23,7 +23,7 @@ pub struct HubAreaData {
     #[astra(key = "@LocatorName")]
     pub locator_name: String,
     #[astra(key = "@MapPointNo")]
-    pub map_point_no: Option<u8>,
+    pub map_point_no: u8,
     #[astra(key = "@FacilityAidList")]
     pub facility_aid_list: Vec<String>,
 }
@@ -58,20 +58,20 @@ pub struct HubDemoData {
     #[astra(key = "@Condition")]
     pub condition: String,
     #[astra(key = "@Timezone")]
-    pub timezone: Option<i8>,
+    pub timezone: i8,
     #[astra(key = "@FlagName")]
     pub flag_name: String,
     #[astra(key = "@ManualCullingName")]
     pub manual_culling_name: String,
     #[astra(key = "@LodBias")]
-    pub lod_bias: Option<f32>,
+    pub lod_bias: f32,
     #[astra(key = "@IsDisabledLodCrossfadeAnime")]
-    pub is_disabled_lod_crossfade_anime: Option<bool>,
+    pub is_disabled_lod_crossfade_anime: bool,
 }
 
 #[derive(AstraBook)]
 pub struct HubDisposBook {
-    pub spawns: Sheet<Vec<HubSpawn>>,
+    pub spawns: Sheet<IndexMap<String, Vec<HubSpawn>>>,
     pub random_sets: Sheet<IndexMap<String, Vec<HubSpawnRandomSet>>>,
     pub unity_behavior: Sheet<IndexMap<String, Vec<HubUnityBehavior>>>,
 }
@@ -85,23 +85,23 @@ pub struct HubSpawn {
     #[astra(key = "@ParentLocator")]
     pub parent_locator: String,
     #[astra(key = "@IsMustChild")]
-    pub is_must_child: Option<bool>,
+    pub is_must_child: bool,
     #[astra(key = "@FadeDistance")]
-    pub fade_distance: Option<f32>,
+    pub fade_distance: f32,
     #[astra(key = "@Priority")]
-    pub priority: Option<i8>,
+    pub priority: i8,
     #[astra(key = "@Chapter")]
     pub chapter: String,
     #[astra(key = "@Phase")]
-    pub phase: Option<i8>,
+    pub phase: i8,
     #[astra(key = "@TimezoneFlag")]
-    pub timezone_flag: Option<i32>,
+    pub timezone_flag: i32,
     #[astra(key = "@FlagName")]
     pub flag_name: String,
     #[astra(key = "@AnyCondition")]
     pub any_condition: String,
     #[astra(key = "@ContentType")]
-    pub content_type: Option<i8>,
+    pub content_type: i8,
     #[astra(key = "@AID")]
     pub aid: String,
     #[astra(key = "@TalkPattern")]
@@ -113,37 +113,37 @@ pub struct HubSpawn {
     #[astra(key = "@ScriptName")]
     pub script_name: String,
     #[astra(key = "@AccessType")]
-    pub access_type: Option<i8>,
+    pub access_type: i8,
     #[astra(key = "@IdleBodyName")]
     pub idle_body_name: String,
     #[astra(key = "@IdleFaceName")]
     pub idle_face_name: String,
     #[astra(key = "@IdleType")]
-    pub idle_type: Option<i8>,
+    pub idle_type: i8,
     #[astra(key = "@DisabledAnim")]
-    pub disabled_anim: Option<bool>,
+    pub disabled_anim: bool,
     #[astra(key = "@DisabledTalk")]
-    pub disabled_talk: Option<bool>,
+    pub disabled_talk: bool,
     #[astra(key = "@IgnoreStory")]
-    pub ignore_story: Option<bool>,
+    pub ignore_story: bool,
     #[astra(key = "@Bind")]
     pub bind: String,
     #[astra(key = "@DisposType")]
-    pub dispos_type: Option<i8>,
+    pub dispos_type: i8,
     #[astra(key = "@AccessAngle")]
-    pub access_angle: Option<f32>,
+    pub access_angle: f32,
     #[astra(key = "@MoveName")]
     pub move_name: String,
     #[astra(key = "@Area")]
     pub area: String,
     #[astra(key = "@Layer")]
-    pub layer: Option<i8>,
+    pub layer: i8,
     #[astra(key = "@DisabledMiniMap")]
-    pub disabled_mini_map: Option<bool>,
+    pub disabled_mini_map: bool,
     #[astra(key = "@Weight")]
-    pub weight: Option<f32>,
+    pub weight: f32,
     #[astra(key = "@OptimizeType")]
-    pub optimize_type: Option<i8>,
+    pub optimize_type: i8,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
@@ -153,9 +153,9 @@ pub struct HubSpawnRandomSet {
     #[astra(key = "@ID")]
     pub id: String,
     #[astra(key = "@Rate")]
-    pub rate: Option<i32>,
+    pub rate: i32,
     #[astra(key = "@Count")]
-    pub count: Option<i32>,
+    pub count: i32,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
@@ -171,11 +171,11 @@ pub struct HubUnityBehavior {
     #[astra(key = "@FaceName")]
     pub face_name: String,
     #[astra(key = "@IsTurn")]
-    pub is_turn: Option<bool>,
+    pub is_turn: bool,
     #[astra(key = "@MoveSec")]
     pub move_sec: String,
     #[astra(key = "@MoveSpeed")]
-    pub move_speed: Option<f32>,
+    pub move_speed: f32,
 }
 
 #[derive(AstraBook)]
@@ -221,7 +221,7 @@ pub struct HubNationData {
     #[astra(key = "@Chapter")]
     pub chapter: String,
     #[astra(key = "@IsNotLevel")]
-    pub is_not_level: Option<bool>,
+    pub is_not_level: bool,
     #[astra(key = "@SymbolTexture")]
     pub symbol_texture: String,
     #[astra(key = "@LevelInfo")]
@@ -237,7 +237,7 @@ pub struct HubMaterialBonus {
     #[astra(key = "@Group", public_array)]
     pub group: String,
     #[astra(key = "@Cost")]
-    pub cost: Option<i32>,
+    pub cost: i32,
     #[astra(key = "@BonusName")]
     pub bonus_name: String,
     #[astra(key = "@BonusItem")]
@@ -249,25 +249,25 @@ pub struct HubMaterialBonus {
     #[astra(key = "@BonusAccessoryAid")]
     pub bonus_accessory_aid: String,
     #[astra(key = "@BonusIron")]
-    pub bonus_iron: Option<i32>,
+    pub bonus_iron: i32,
     #[astra(key = "@BonusSteel")]
-    pub bonus_steel: Option<i32>,
+    pub bonus_steel: i32,
     #[astra(key = "@BonusSilver")]
-    pub bonus_silver: Option<i32>,
+    pub bonus_silver: i32,
     #[astra(key = "@BonusPieceOfBond")]
-    pub bonus_piece_of_bond: Option<i32>,
+    pub bonus_piece_of_bond: i32,
     #[astra(key = "@GoldEnemyRate")]
-    pub gold_enemy_rate: Option<i8>,
+    pub gold_enemy_rate: i8,
     #[astra(key = "@ExpEnemyRate")]
-    pub exp_enemy_rate: Option<i8>,
+    pub exp_enemy_rate: i8,
     #[astra(key = "@Iron")]
-    pub iron: Option<u8>,
+    pub iron: u8,
     #[astra(key = "@Steel")]
-    pub steel: Option<u8>,
+    pub steel: u8,
     #[astra(key = "@Silver")]
-    pub silver: Option<u8>,
+    pub silver: u8,
     #[astra(key = "@PieceOfBond")]
-    pub piece_of_bond: Option<u8>,
+    pub piece_of_bond: u8,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
@@ -277,15 +277,15 @@ pub struct HubIngredientBonus {
     #[astra(key = "@Foodstuff")]
     pub foodstuff: String,
     #[astra(key = "@Lv1")]
-    pub lv_1: Option<u8>,
+    pub lv_1: u8,
     #[astra(key = "@Lv2")]
-    pub lv_2: Option<u8>,
+    pub lv_2: u8,
     #[astra(key = "@Lv3")]
-    pub lv_3: Option<u8>,
+    pub lv_3: u8,
     #[astra(key = "@Lv4")]
-    pub lv_4: Option<u8>,
+    pub lv_4: u8,
     #[astra(key = "@Lv5")]
-    pub lv_5: Option<u8>,
+    pub lv_5: u8,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
@@ -295,17 +295,17 @@ pub struct HubAnimalBonus {
     #[astra(key = "@ANID")]
     pub anid: String,
     #[astra(key = "@AppearRateLv1")]
-    pub appear_rate_lv_1: Option<u8>,
+    pub appear_rate_lv_1: u8,
     #[astra(key = "@AppearRateLv2")]
-    pub appear_rate_lv_2: Option<u8>,
+    pub appear_rate_lv_2: u8,
     #[astra(key = "@AppearRateLv3")]
-    pub appear_rate_lv_3: Option<u8>,
+    pub appear_rate_lv_3: u8,
     #[astra(key = "@AppearRateLv4")]
-    pub appear_rate_lv_4: Option<u8>,
+    pub appear_rate_lv_4: u8,
     #[astra(key = "@AppearRateLv5")]
-    pub appear_rate_lv_5: Option<u8>,
+    pub appear_rate_lv_5: u8,
     #[astra(key = "@CaptureLevel")]
-    pub capture_level: Option<u8>,
+    pub capture_level: u8,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
@@ -315,7 +315,7 @@ pub struct HubItemBonus {
     #[astra(key = "@ItemId")]
     pub item_id: String,
     #[astra(key = "@Num")]
-    pub num: Option<u8>,
+    pub num: u8,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
@@ -325,7 +325,7 @@ pub struct HubIngredientBonusGroup {
     #[astra(key = "@Foodstuff")]
     pub foodstuff: String,
     #[astra(key = "@Num")]
-    pub num: Option<u8>,
+    pub num: u8,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
@@ -335,7 +335,7 @@ pub struct HubAnimalBonusGroup {
     #[astra(key = "@AnimalId")]
     pub animal_id: String,
     #[astra(key = "@Num")]
-    pub num: Option<u8>,
+    pub num: u8,
 }
 
 #[derive(AstraBook)]
@@ -350,9 +350,9 @@ pub struct HubMapIconData {
     #[astra(key = "@IconName")]
     pub icon_name: String,
     #[astra(key = "@LargeScale")]
-    pub large_scale: Option<f32>,
+    pub large_scale: f32,
     #[astra(key = "@SmallScale")]
-    pub small_scale: Option<f32>,
+    pub small_scale: f32,
 }
 
 #[derive(AstraBook)]
@@ -365,21 +365,21 @@ pub struct HubMyRoomData {
     #[astra(key = "@PID", id)]
     pub pid: String,
     #[astra(key = "@C1")]
-    pub c_1: Option<i8>,
+    pub c_1: i8,
     #[astra(key = "@C2")]
-    pub c_2: Option<i8>,
+    pub c_2: i8,
     #[astra(key = "@B1")]
-    pub b_1: Option<i8>,
+    pub b_1: i8,
     #[astra(key = "@B2")]
-    pub b_2: Option<i8>,
+    pub b_2: i8,
     #[astra(key = "@A1")]
-    pub a_1: Option<i8>,
+    pub a_1: i8,
     #[astra(key = "@A2")]
-    pub a_2: Option<i8>,
+    pub a_2: i8,
     #[astra(key = "@S1")]
-    pub s_1: Option<i8>,
+    pub s_1: i8,
     #[astra(key = "@S2")]
-    pub s_2: Option<i8>,
+    pub s_2: i8,
 }
 
 #[derive(AstraBook)]
@@ -406,11 +406,11 @@ pub struct HubTalkData {
     #[astra(key = "@KRID", id)]
     pub krid: String,
     #[astra(key = "@Count")]
-    pub count: Option<u8>,
+    pub count: u8,
     #[astra(key = "@Args0")]
-    pub args_0: Option<u8>,
+    pub args_0: u8,
     #[astra(key = "@Args1")]
-    pub args_1: Option<u8>,
+    pub args_1: u8,
     #[astra(key = "@Item")]
     pub item: String,
 }
@@ -442,5 +442,5 @@ pub struct HubCrystalData {
     #[astra(key = "@CID", id)]
     pub cid: String,
     #[astra(key = "@Count")]
-    pub count: Option<u8>,
+    pub count: u8,
 }

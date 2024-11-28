@@ -1,11 +1,12 @@
 use astra_types::{TerrainBook, TerrainData};
+use egui::DragValue;
 use indexmap::IndexMap;
 
 use crate::widgets::{
     id_field, keyed_add_modal_content, terrain_destroyer_drop_down, terrain_prohibition_drop_down,
 };
 use crate::{
-    f32_drag, i8_drag, model_drop_down, msbt_key_value_singleline, rgb_color_picker, u8_drag,
+    model_drop_down, msbt_key_value_singleline, rgb_color_picker,
     CachedView, EditorState, ListEditorContent, PropertyGrid, TerrainDataSheet,
     TerrainDataSheetRetriever,
 };
@@ -46,36 +47,36 @@ impl TerrainDataEditor {
                     .field("Cost Name", |ui, tile| {
                         ui.text_edit_singleline(&mut tile.cost_name)
                     })
-                    .field("Layer", |ui, tile| ui.add(i8_drag(&mut tile.layer)))
+                    .field("Layer", |ui, tile| ui.add(DragValue::new(&mut tile.layer)))
                     .field("Prohibition", |ui, tile| {
                         ui.add(terrain_prohibition_drop_down(&mut tile.prohibition))
                     })
-                    .field("Sight", |ui, tile| ui.add(u8_drag(&mut tile.sight)))
+                    .field("Sight", |ui, tile| ui.add(DragValue::new(&mut tile.sight)))
                     .field("Destroyer", |ui, tile| {
                         ui.add(terrain_destroyer_drop_down(&mut tile.destroyer))
                     })
-                    .field("HP (N)", |ui, tile| ui.add(u8_drag(&mut tile.hp_n)))
-                    .field("HP (H)", |ui, tile| ui.add(u8_drag(&mut tile.hp_h)))
-                    .field("HP (L)", |ui, tile| ui.add(u8_drag(&mut tile.hp_l)))
-                    .field("Defense", |ui, tile| ui.add(i8_drag(&mut tile.defense)))
-                    .field("Avoid", |ui, tile| ui.add(i8_drag(&mut tile.avoid)))
+                    .field("HP (N)", |ui, tile| ui.add(DragValue::new(&mut tile.hp_n)))
+                    .field("HP (H)", |ui, tile| ui.add(DragValue::new(&mut tile.hp_h)))
+                    .field("HP (L)", |ui, tile| ui.add(DragValue::new(&mut tile.hp_l)))
+                    .field("Defense", |ui, tile| ui.add(DragValue::new(&mut tile.defense)))
+                    .field("Avoid", |ui, tile| ui.add(DragValue::new(&mut tile.avoid)))
                     .field("Player Defense", |ui, tile| {
-                        ui.add(i8_drag(&mut tile.player_defense))
+                        ui.add(DragValue::new(&mut tile.player_defense))
                     })
                     .field("Player Avoid", |ui, tile| {
-                        ui.add(i8_drag(&mut tile.player_avoid))
+                        ui.add(DragValue::new(&mut tile.player_avoid))
                     })
                     .field("Enemy Avoid", |ui, tile| {
-                        ui.add(i8_drag(&mut tile.enemy_avoid))
+                        ui.add(DragValue::new(&mut tile.enemy_avoid))
                     })
-                    .field("Heal", |ui, tile| ui.add(i8_drag(&mut tile.heal)))
-                    .field("Life", |ui, tile| ui.add(u8_drag(&mut tile.life)))
-                    .field("Move Cost", |ui, tile| ui.add(u8_drag(&mut tile.move_cost)))
-                    .field("Fly Cost", |ui, tile| ui.add(u8_drag(&mut tile.fly_cost)))
+                    .field("Heal", |ui, tile| ui.add(DragValue::new(&mut tile.heal)))
+                    .field("Life", |ui, tile| ui.add(DragValue::new(&mut tile.life)))
+                    .field("Move Cost", |ui, tile| ui.add(DragValue::new(&mut tile.move_cost)))
+                    .field("Fly Cost", |ui, tile| ui.add(DragValue::new(&mut tile.fly_cost)))
                     .field("Move First", |ui, tile| {
-                        ui.add(i8_drag(&mut tile.move_first))
+                        ui.add(DragValue::new(&mut tile.move_first))
                     })
-                    .field("Offset", |ui, tile| ui.add(f32_drag(&mut tile.offset)))
+                    .field("Offset", |ui, tile| ui.add(DragValue::new(&mut tile.offset)))
                     .field("Put Effect", |ui, tile| {
                         ui.text_edit_singleline(&mut tile.put_effect)
                     })
@@ -88,13 +89,13 @@ impl TerrainDataEditor {
                         })
                     })
                     .field("Cannon Shells (N)", |ui, tile| {
-                        ui.add(u8_drag(&mut tile.cannon_shells_n))
+                        ui.add(DragValue::new(&mut tile.cannon_shells_n))
                     })
                     .field("Cannon Shells (H)", |ui, tile| {
-                        ui.add(u8_drag(&mut tile.cannon_shells_h))
+                        ui.add(DragValue::new(&mut tile.cannon_shells_h))
                     })
                     .field("Cannon Shells (L)", |ui, tile| {
-                        ui.add(u8_drag(&mut tile.cannon_shells_l))
+                        ui.add(DragValue::new(&mut tile.cannon_shells_l))
                     })
                     .field("Change TID", |ui, tile| {
                         ui.add(model_drop_down(self.cache.get(), &(), &mut tile.change_tid))
@@ -106,8 +107,8 @@ impl TerrainDataEditor {
                             &mut tile.change_encount,
                         ))
                     })
-                    .field("Command", |ui, tile| ui.add(i8_drag(&mut tile.command)))
-                    .field("Height", |ui, tile| ui.add(f32_drag(&mut tile.height)))
+                    .field("Command", |ui, tile| ui.add(DragValue::new(&mut tile.command)))
+                    .field("Height", |ui, tile| ui.add(DragValue::new(&mut tile.height)))
                     .field("Color (RGB)", |ui, tile| {
                         ui.add(rgb_color_picker(
                             &mut tile.color_r,

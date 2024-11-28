@@ -16,7 +16,7 @@ pub struct FriendListData {
     #[astra(key = "@PID")]
     pub pid: String,
     #[astra(key = "@Level")]
-    pub level: Option<i8>,
+    pub level: i8,
     #[astra(key = "@ContentText")]
     pub content_text: String,
     #[astra(key = "@StampName")]
@@ -26,5 +26,5 @@ pub struct FriendListData {
     #[astra(key = "@ImageNameS")]
     pub image_name_s: String,
     #[astra(key = "@Country")]
-    pub country: Option<i8>,
+    pub country: i8,
 }

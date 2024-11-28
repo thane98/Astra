@@ -17,7 +17,7 @@ pub struct PhotographSpot {
     #[astra(key = "@ConditionCid")]
     pub condition_cid: String,
     #[astra(key = "@LocatorCount")]
-    pub locator_count: Option<i32>,
+    pub locator_count: i32,
     #[astra(key = "@PauseGroupNameList1")]
     pub pause_group_name_list_1: Vec<String>,
     #[astra(key = "@PauseGroupNameList2")]
@@ -37,9 +37,9 @@ pub struct PhotographPose {
     #[astra(key = "@Mid")]
     pub mid: String,
     #[astra(key = "@No")]
-    pub no: Option<i32>,
+    pub no: i32,
     #[astra(key = "@AnimeFrame")]
-    pub anime_frame: Option<i32>,
+    pub anime_frame: i32,
     #[astra(key = "@FaceAnime")]
     pub face_anime: String,
     #[astra(key = "@CharaIdList")]

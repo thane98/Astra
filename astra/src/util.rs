@@ -10,9 +10,9 @@ pub fn get_tile_color(tile: &TerrainData, config: &AppConfig) -> Color32 {
         .copied()
         .unwrap_or_else(|| {
             Color32::from_rgb(
-                (tile.color_r.unwrap_or_default() as f32 * config.terrain_brightness) as u8,
-                (tile.color_g.unwrap_or_default() as f32 * config.terrain_brightness) as u8,
-                (tile.color_b.unwrap_or_default() as f32 * config.terrain_brightness) as u8,
+                (tile.color_r as f32 * config.terrain_brightness) as u8,
+                (tile.color_g as f32 * config.terrain_brightness) as u8,
+                (tile.color_b as f32 * config.terrain_brightness) as u8,
             )
         })
 }

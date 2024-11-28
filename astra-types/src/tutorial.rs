@@ -19,15 +19,15 @@ pub struct TutorialData {
     #[astra(key = "@SpriteAtlas")]
     pub sprite_atlas: String,
     #[astra(key = "@Type")]
-    pub ty: Option<i8>,
+    pub ty: i8,
     #[astra(key = "@Notice")]
-    pub notice: Option<i8>,
+    pub notice: i8,
     #[astra(key = "@Cid")]
     pub cid: String,
     #[astra(key = "@No")]
-    pub no: Option<i8>,
+    pub no: i8,
     #[astra(key = "@SSType")]
-    pub ss_type: Option<i8>,
+    pub ss_type: i8,
 }
 
 #[derive(Debug, Default, Clone, Astra)]
@@ -47,5 +47,5 @@ pub struct TipData {
     #[astra(key = "@Variable")]
     pub variable: String,
     #[astra(key = "@Allow")]
-    pub allow: Option<i32>,
+    pub allow: i32,
 }

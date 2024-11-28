@@ -1,12 +1,12 @@
 use astra_types::{GodBondLevelData, GodBook, GodData, GodLevelData};
-use egui::Ui;
+use egui::{DragValue, Ui};
 use indexmap::IndexMap;
 
 use crate::model::{CacheItem, CachedView, GodDataSheetRetriever};
 use crate::widgets::{bitgrid_i32, id_field, keyed_add_modal_content};
 use crate::{
-    editable_list, editor_tab_strip, i16_drag, i32_drag, i8_drag, model_drop_down,
-    msbt_key_value_multiline, msbt_key_value_singleline, u16_drag, u8_drag, EditorState,
+    editable_list, editor_tab_strip, model_drop_down,
+    msbt_key_value_multiline, msbt_key_value_singleline, EditorState,
     GodBondLevelDataSheet, GodDataSheet, GodLevelDataSheet, GroupEditorContent, ListEditorContent,
     PropertyGrid,
 };
@@ -143,15 +143,15 @@ impl GodEditor {
             .field("Engage Haunt", |ui, god| {
                 ui.text_edit_singleline(&mut god.engage_haunt)
             })
-            .field("Level", |ui, god| ui.add(u8_drag(&mut god.level)))
-            .field("Force Type", |ui, god| ui.add(i8_drag(&mut god.force_type)))
-            .field("Female", |ui, god| ui.add(i8_drag(&mut god.female)))
+            .field("Level", |ui, god| ui.add(DragValue::new(&mut god.level)))
+            .field("Force Type", |ui, god| ui.add(DragValue::new(&mut god.force_type)))
+            .field("Female", |ui, god| ui.add(DragValue::new(&mut god.female)))
             .field("Good Weapon", |ui, god| {
-                ui.add(i8_drag(&mut god.good_weapon))
+                ui.add(DragValue::new(&mut god.good_weapon))
             })
-            .field("Sort", |ui, god| ui.add(i16_drag(&mut god.sort)))
+            .field("Sort", |ui, god| ui.add(DragValue::new(&mut god.sort)))
             .field("Engage Count", |ui, god| {
-                ui.add(u8_drag(&mut god.engage_count))
+                ui.add(DragValue::new(&mut god.engage_count))
             })
             .field("Engage Attack", |ui, god| {
                 state
@@ -175,7 +175,7 @@ impl GodEditor {
             .field("Grow Table", |ui, god| {
                 ui.text_edit_singleline(&mut god.grow_table)
             })
-            .field("Level Cap", |ui, god| ui.add(u8_drag(&mut god.level_cap)))
+            .field("Level Cap", |ui, god| ui.add(DragValue::new(&mut god.level_cap)))
             .field("Unlock Level Cap Var Name", |ui, god| {
                 ui.text_edit_singleline(&mut god.unlock_level_cap_var_name)
             })
@@ -183,61 +183,61 @@ impl GodEditor {
                 ui.text_edit_singleline(&mut god.engrave_word)
             })
             .field("Engrave Power", |ui, god| {
-                ui.add(i8_drag(&mut god.engrave_power))
+                ui.add(DragValue::new(&mut god.engrave_power))
             })
             .field("Engrave Weight", |ui, god| {
-                ui.add(i8_drag(&mut god.engrave_weight))
+                ui.add(DragValue::new(&mut god.engrave_weight))
             })
             .field("Engrave Hit", |ui, god| {
-                ui.add(i8_drag(&mut god.engrave_hit))
+                ui.add(DragValue::new(&mut god.engrave_hit))
             })
             .field("Engrave Crit", |ui, god| {
-                ui.add(i8_drag(&mut god.engrave_critical))
+                ui.add(DragValue::new(&mut god.engrave_critical))
             })
             .field("Engrave Avoid", |ui, god| {
-                ui.add(i8_drag(&mut god.engrave_avoid))
+                ui.add(DragValue::new(&mut god.engrave_avoid))
             })
             .field("Engrave Dodge", |ui, god| {
-                ui.add(i8_drag(&mut god.engrave_secure))
+                ui.add(DragValue::new(&mut god.engrave_secure))
             })
             .field("Synchro HP Bonus", |ui, god| {
-                ui.add(i8_drag(&mut god.synchro_enhance_hp))
+                ui.add(DragValue::new(&mut god.synchro_enhance_hp))
             })
             .field("Synchro STR Bonus", |ui, god| {
-                ui.add(i8_drag(&mut god.synchro_enhance_str))
+                ui.add(DragValue::new(&mut god.synchro_enhance_str))
             })
             .field("Synchro DEF Bonus", |ui, god| {
-                ui.add(i8_drag(&mut god.synchro_enhance_def))
+                ui.add(DragValue::new(&mut god.synchro_enhance_def))
             })
             .field("Synchro SKL Bonus", |ui, god| {
-                ui.add(i8_drag(&mut god.synchro_enhance_tech))
+                ui.add(DragValue::new(&mut god.synchro_enhance_tech))
             })
             .field("Synchro SPD Bonus", |ui, god| {
-                ui.add(i8_drag(&mut god.synchro_enhance_quick))
+                ui.add(DragValue::new(&mut god.synchro_enhance_quick))
             })
             .field("Synchro LCK Bonus", |ui, god| {
-                ui.add(i8_drag(&mut god.synchro_enhance_luck))
+                ui.add(DragValue::new(&mut god.synchro_enhance_luck))
             })
             .field("Synchro MAG Bonus", |ui, god| {
-                ui.add(i8_drag(&mut god.synchro_enhance_magic))
+                ui.add(DragValue::new(&mut god.synchro_enhance_magic))
             })
             .field("Synchro RES Bonus", |ui, god| {
-                ui.add(i8_drag(&mut god.synchro_enhance_mdef))
+                ui.add(DragValue::new(&mut god.synchro_enhance_mdef))
             })
             .field("Synchro CON Bonus", |ui, god| {
-                ui.add(i8_drag(&mut god.synchro_enhance_phys))
+                ui.add(DragValue::new(&mut god.synchro_enhance_phys))
             })
             .field("Synchro MOV Bonus", |ui, god| {
-                ui.add(i8_drag(&mut god.synchro_enhance_move))
+                ui.add(DragValue::new(&mut god.synchro_enhance_move))
             })
             .field("Flag", |ui, god| {
                 ui.add(bitgrid_i32(FLAG_LABELS, 3, &mut god.flag))
             })
             .field("Net Ranking Index", |ui, god| {
-                ui.add(u8_drag(&mut god.net_ranking_index))
+                ui.add(DragValue::new(&mut god.net_ranking_index))
             })
             .field("AI Engage Attack Type", |ui, god| {
-                ui.add(i8_drag(&mut god.ai_engage_attack_type))
+                ui.add(DragValue::new(&mut god.ai_engage_attack_type))
             })
             .show(ui)
             .changed()
@@ -246,7 +246,7 @@ impl GodEditor {
     fn level_data_property_grid(ui: &mut Ui, data: &mut GodLevelData, state: &EditorState) -> bool {
         PropertyGrid::new("god_level_data", data)
             .new_section("Data")
-            .field("Level", |ui, data| ui.add(u8_drag(&mut data.level)))
+            .field("Level", |ui, data| ui.add(DragValue::new(&mut data.level)))
             .field("Inheritance Skills", |ui, d| {
                 state.skill.read(|data| {
                     ui.add(editable_list(&mut d.inheritance_skills, |_, value, ui| {
@@ -331,38 +331,38 @@ impl GodEditor {
                     }))
                 })
             })
-            .field("Aptitude", |ui, data| ui.add(i32_drag(&mut data.aptitude)))
+            .field("Aptitude", |ui, data| ui.add(DragValue::new(&mut data.aptitude)))
             .field("Aptitude Cost (None)", |ui, data| {
-                ui.add(u16_drag(&mut data.aptitude_cost_none))
+                ui.add(DragValue::new(&mut data.aptitude_cost_none))
             })
             .field("Aptitude Cost (Sword)", |ui, data| {
-                ui.add(u16_drag(&mut data.aptitude_cost_sword))
+                ui.add(DragValue::new(&mut data.aptitude_cost_sword))
             })
             .field("Aptitude Cost (Lance)", |ui, data| {
-                ui.add(u16_drag(&mut data.aptitude_cost_lance))
+                ui.add(DragValue::new(&mut data.aptitude_cost_lance))
             })
             .field("Aptitude Cost (Axe)", |ui, data| {
-                ui.add(u16_drag(&mut data.aptitude_cost_axe))
+                ui.add(DragValue::new(&mut data.aptitude_cost_axe))
             })
             .field("Aptitude Cost (Bow)", |ui, data| {
-                ui.add(u16_drag(&mut data.aptitude_cost_bow))
+                ui.add(DragValue::new(&mut data.aptitude_cost_bow))
             })
             .field("Aptitude Cost (Dagger)", |ui, data| {
-                ui.add(u16_drag(&mut data.aptitude_cost_dagger))
+                ui.add(DragValue::new(&mut data.aptitude_cost_dagger))
             })
             .field("Aptitude Cost (Magic)", |ui, data| {
-                ui.add(u16_drag(&mut data.aptitude_cost_magic))
+                ui.add(DragValue::new(&mut data.aptitude_cost_magic))
             })
             .field("Aptitude Cost (Rod)", |ui, data| {
-                ui.add(u16_drag(&mut data.aptitude_cost_rod))
+                ui.add(DragValue::new(&mut data.aptitude_cost_rod))
             })
             .field("Aptitude Cost (Fist)", |ui, data| {
-                ui.add(u16_drag(&mut data.aptitude_cost_fist))
+                ui.add(DragValue::new(&mut data.aptitude_cost_fist))
             })
             .field("Aptitude Cost (Special)", |ui, data| {
-                ui.add(u16_drag(&mut data.aptitude_cost_special))
+                ui.add(DragValue::new(&mut data.aptitude_cost_special))
             })
-            .field("Flags", |ui, data| ui.add(i32_drag(&mut data.flag)))
+            .field("Flags", |ui, data| ui.add(DragValue::new(&mut data.flag)))
             .show(ui)
             .changed()
     }

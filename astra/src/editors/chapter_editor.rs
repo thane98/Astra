@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use astra_core::{Astra, OpenTerrain};
 use astra_types::{Chapter, ChapterBook, Spawn, TerrainData};
-use egui::{Button, CentralPanel, ComboBox, Slider, TopBottomPanel, Ui};
+use egui::{Button, CentralPanel, ComboBox, DragValue, Slider, TopBottomPanel, Ui};
 use egui_modal::{Icon, Modal};
 use indexmap::IndexMap;
 use parking_lot::RwLock;
@@ -15,8 +15,8 @@ use crate::widgets::{
     keyed_add_modal_content,
 };
 use crate::{
-    blank_slate, dispos_grid, editor_tab_strip, f32_drag, i8_drag, indexed_model_drop_down,
-    model_drop_down, msbt_key_value_singleline, terrain_grid, u32_drag, u8_drag, AppConfig,
+    blank_slate, dispos_grid, editor_tab_strip, indexed_model_drop_down,
+    model_drop_down, msbt_key_value_singleline, terrain_grid, AppConfig,
     CacheItem, CachedView, ChapterSheet, ChapterSheetRetriever, EditorState, GroupEditorContent,
     ListEditorContent, PropertyGrid, SheetHandle, SpawnSheet, SpawnSheetRetriever,
 };
@@ -489,7 +489,7 @@ impl ChapterEditor {
                 ui.text_edit_singleline(&mut chapter.help)
             })
             .field("Recommended Level", |ui, chapter| {
-                ui.add(u8_drag(&mut chapter.recommended_level))
+                ui.add(DragValue::new(&mut chapter.recommended_level))
             })
             .field("Nation", |ui, chapter| {
                 ui.text_edit_singleline(&mut chapter.nation)
@@ -570,17 +570,17 @@ impl ChapterEditor {
             })
             .new_section("Misc.")
             .field("Progress", |ui, chapter| {
-                ui.add(u8_drag(&mut chapter.progress))
+                ui.add(DragValue::new(&mut chapter.progress))
             })
             .field("Hold Level", |ui, chapter| {
-                ui.add(u8_drag(&mut chapter.hold_level))
+                ui.add(DragValue::new(&mut chapter.hold_level))
             })
-            .field("Alpha", |ui, chapter| ui.add(f32_drag(&mut chapter.alpha)))
+            .field("Alpha", |ui, chapter| ui.add(DragValue::new(&mut chapter.alpha)))
             .field("Net Kill Bonus Index", |ui, chapter| {
-                ui.add(u8_drag(&mut chapter.net_kill_bonus_index))
+                ui.add(DragValue::new(&mut chapter.net_kill_bonus_index))
             })
             .field("Net Kill Ranking Index", |ui, chapter| {
-                ui.add(u8_drag(&mut chapter.net_ranking_index))
+                ui.add(DragValue::new(&mut chapter.net_ranking_index))
             })
             .show(ui)
             .changed()
@@ -685,18 +685,18 @@ impl ChapterEditor {
             .field("Flag", |ui, spawn| {
                 ui.add(bitgrid_u16(SPAWN_FLAG_LABELS, 1, &mut spawn.flag))
             })
-            .field("Appear X", |ui, spawn| ui.add(i8_drag(&mut spawn.appear_x)))
-            .field("Appear Y", |ui, spawn| ui.add(i8_drag(&mut spawn.appear_y)))
-            .field("Dispos X", |ui, spawn| ui.add(i8_drag(&mut spawn.dispos_x)))
-            .field("Dispos Y", |ui, spawn| ui.add(i8_drag(&mut spawn.dispos_y)))
+            .field("Appear X", |ui, spawn| ui.add(DragValue::new(&mut spawn.appear_x)))
+            .field("Appear Y", |ui, spawn| ui.add(DragValue::new(&mut spawn.appear_y)))
+            .field("Dispos X", |ui, spawn| ui.add(DragValue::new(&mut spawn.dispos_x)))
+            .field("Dispos Y", |ui, spawn| ui.add(DragValue::new(&mut spawn.dispos_y)))
             .field("Direction", |ui, spawn| {
-                ui.add(i8_drag(&mut spawn.direction))
+                ui.add(DragValue::new(&mut spawn.direction))
             })
-            .field("Level (N)", |ui, spawn| ui.add(u8_drag(&mut spawn.level_n)))
-            .field("Level (H)", |ui, spawn| ui.add(u8_drag(&mut spawn.level_h)))
-            .field("Level (L)", |ui, spawn| ui.add(u8_drag(&mut spawn.level_l)))
+            .field("Level (N)", |ui, spawn| ui.add(DragValue::new(&mut spawn.level_n)))
+            .field("Level (H)", |ui, spawn| ui.add(DragValue::new(&mut spawn.level_h)))
+            .field("Level (L)", |ui, spawn| ui.add(DragValue::new(&mut spawn.level_l)))
             .field("HP Stock Count", |ui, spawn| {
-                ui.add(u8_drag(&mut spawn.hp_stock_count))
+                ui.add(DragValue::new(&mut spawn.hp_stock_count))
             })
             .new_section("Items")
             .field("Item 1", |ui, spawn| {
@@ -705,7 +705,7 @@ impl ChapterEditor {
                     .read(|data| ui.add(model_drop_down(data, state, &mut spawn.item_1_iid)))
             })
             .field("Item 1 (Drop)", |ui, spawn| {
-                ui.add(i8_drag(&mut spawn.item_1_drop))
+                ui.add(DragValue::new(&mut spawn.item_1_drop))
             })
             .field("Item 2", |ui, spawn| {
                 state
@@ -713,7 +713,7 @@ impl ChapterEditor {
                     .read(|data| ui.add(model_drop_down(data, state, &mut spawn.item_2_iid)))
             })
             .field("Item 2 (Drop)", |ui, spawn| {
-                ui.add(i8_drag(&mut spawn.item_2_drop))
+                ui.add(DragValue::new(&mut spawn.item_2_drop))
             })
             .field("Item 3", |ui, spawn| {
                 state
@@ -721,7 +721,7 @@ impl ChapterEditor {
                     .read(|data| ui.add(model_drop_down(data, state, &mut spawn.item_3_iid)))
             })
             .field("Item 3 (Drop)", |ui, spawn| {
-                ui.add(i8_drag(&mut spawn.item_3_drop))
+                ui.add(DragValue::new(&mut spawn.item_3_drop))
             })
             .field("Item 4", |ui, spawn| {
                 state
@@ -729,7 +729,7 @@ impl ChapterEditor {
                     .read(|data| ui.add(model_drop_down(data, state, &mut spawn.item_4_iid)))
             })
             .field("Item 4 (Drop)", |ui, spawn| {
-                ui.add(i8_drag(&mut spawn.item_4_drop))
+                ui.add(DragValue::new(&mut spawn.item_4_drop))
             })
             .field("Item 5", |ui, spawn| {
                 state
@@ -737,7 +737,7 @@ impl ChapterEditor {
                     .read(|data| ui.add(model_drop_down(data, state, &mut spawn.item_5_iid)))
             })
             .field("Item 5 (Drop)", |ui, spawn| {
-                ui.add(i8_drag(&mut spawn.item_5_drop))
+                ui.add(DragValue::new(&mut spawn.item_5_drop))
             })
             .field("Item 6", |ui, spawn| {
                 state
@@ -745,15 +745,15 @@ impl ChapterEditor {
                     .read(|data| ui.add(model_drop_down(data, state, &mut spawn.item_6_iid)))
             })
             .field("Item 6 (Drop)", |ui, spawn| {
-                ui.add(i8_drag(&mut spawn.item_6_drop))
+                ui.add(DragValue::new(&mut spawn.item_6_drop))
             })
             .new_section("States")
-            .field("State 0", |ui, spawn| ui.add(i8_drag(&mut spawn.state_0)))
-            .field("State 1", |ui, spawn| ui.add(i8_drag(&mut spawn.state_1)))
-            .field("State 2", |ui, spawn| ui.add(i8_drag(&mut spawn.state_2)))
-            .field("State 3", |ui, spawn| ui.add(i8_drag(&mut spawn.state_3)))
-            .field("State 4", |ui, spawn| ui.add(i8_drag(&mut spawn.state_4)))
-            .field("State 5", |ui, spawn| ui.add(i8_drag(&mut spawn.state_5)))
+            .field("State 0", |ui, spawn| ui.add(DragValue::new(&mut spawn.state_0)))
+            .field("State 1", |ui, spawn| ui.add(DragValue::new(&mut spawn.state_1)))
+            .field("State 2", |ui, spawn| ui.add(DragValue::new(&mut spawn.state_2)))
+            .field("State 3", |ui, spawn| ui.add(DragValue::new(&mut spawn.state_3)))
+            .field("State 4", |ui, spawn| ui.add(DragValue::new(&mut spawn.state_4)))
+            .field("State 5", |ui, spawn| ui.add(DragValue::new(&mut spawn.state_5)))
             .new_section("AI")
             .field("AI Action Name", |ui, spawn| {
                 ui.text_edit_singleline(&mut spawn.ai_action_name)
@@ -783,21 +783,21 @@ impl ChapterEditor {
                 ui.text_edit_singleline(&mut spawn.ai_battle_rate)
             })
             .field("AI Priority", |ui, spawn| {
-                ui.add(u8_drag(&mut spawn.ai_priority))
+                ui.add(DragValue::new(&mut spawn.ai_priority))
             })
             .field("AI Heal Rate A", |ui, spawn| {
-                ui.add(i8_drag(&mut spawn.ai_heal_rate_a))
+                ui.add(DragValue::new(&mut spawn.ai_heal_rate_a))
             })
             .field("AI Heal Rate B", |ui, spawn| {
-                ui.add(i8_drag(&mut spawn.ai_heal_rate_b))
+                ui.add(DragValue::new(&mut spawn.ai_heal_rate_b))
             })
             .field("AI Band #", |ui, spawn| {
-                ui.add(u32_drag(&mut spawn.ai_band_no))
+                ui.add(DragValue::new(&mut spawn.ai_band_no))
             })
             .field("AI Move Limit", |ui, spawn| {
                 ui.text_edit_singleline(&mut spawn.ai_move_limit)
             })
-            .field("AI Flag", |ui, spawn| ui.add(u32_drag(&mut spawn.ai_flag)))
+            .field("AI Flag", |ui, spawn| ui.add(DragValue::new(&mut spawn.ai_flag)))
             .show(ui)
             .changed()
     }

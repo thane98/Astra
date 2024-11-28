@@ -317,7 +317,7 @@ impl ViewItem for Accessory {
         dependencies: &Self::Dependencies,
         _: DecorationKind<'_>,
     ) -> Option<(TextureHandle, f32)> {
-        let decoration_id = if self.mask.unwrap_or_default() & 1 == 0 {
+        let decoration_id = if self.mask & 1 == 0 {
             "Face"
         } else {
             "Clothes"
@@ -451,10 +451,10 @@ impl ViewItem for ForgeImproveData {
     fn text(&self, _: &Self::Dependencies) -> Cow<'_, str> {
         Cow::Owned(format!(
             "Mt {}, Wt {}, Hit {}, Crit {}",
-            self.power.unwrap_or_default(),
-            self.weight.unwrap_or_default(),
-            self.hit.unwrap_or_default(),
-            self.critical.unwrap_or_default()
+            self.power,
+            self.weight,
+            self.hit,
+            self.critical
         ))
     }
 }
@@ -554,7 +554,7 @@ impl ViewItem for GodData {
         dependencies: &Self::Dependencies,
         _: DecorationKind<'_>,
     ) -> Option<(TextureHandle, f32)> {
-        let darkness = self.flag.unwrap_or_default() & 0b100 != 0;
+        let darkness = self.flag & 0b100 != 0;
         let decoration_id = if self.face_icon_name == "Face_Lueur" {
             "Face_Lueur_Female"
         } else if darkness {
@@ -602,7 +602,7 @@ impl ViewItem for GodLevelData {
     type Dependencies = EditorState;
 
     fn text(&self, _: &Self::Dependencies) -> Cow<'_, str> {
-        Cow::Owned(format!("Level {}", self.level.unwrap_or_default()))
+        Cow::Owned(format!("Level {}", self.level))
     }
 }
 
@@ -755,7 +755,7 @@ impl ViewItem for Person {
                         .and_then(|job| {
                             texture_cache.get_unit(
                                 &self.unit_icon_id,
-                                if self.gender.unwrap_or_default() == 2 {
+                                if self.gender == 2 {
                                     &job.unit_icon_id_f
                                 } else {
                                     &job.unit_icon_id_m
@@ -851,7 +851,7 @@ impl ViewItem for RelianceBonusData {
     type Dependencies = ();
 
     fn text(&self, _: &Self::Dependencies) -> Cow<'_, str> {
-        Cow::Owned(format!("Level {}", self.level.unwrap_or_default()))
+        Cow::Owned(format!("Level {}", self.level))
     }
 }
 

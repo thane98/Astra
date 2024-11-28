@@ -15,17 +15,17 @@ pub struct AchieveData {
     #[astra(key = "@Name")]
     pub name: String,
     #[astra(key = "@Category")]
-    pub category: Option<i8>,
+    pub category: i8,
     #[astra(key = "@Kind")]
-    pub kind: Option<i16>,
+    pub kind: i16,
     #[astra(key = "@Count")]
-    pub count: Option<i32>,
+    pub count: i32,
     #[astra(key = "@Arg")]
     pub arg: String,
     #[astra(key = "@CountUnit")]
     pub count_unit: String,
     #[astra(key = "@KizunaReward")]
-    pub kizuna_reward: Option<i32>,
+    pub kizuna_reward: i32,
     #[astra(key = "@Chapter")]
     pub chapter: String,
 }
@@ -37,5 +37,5 @@ pub struct BelongData {
     #[astra(key = "@Name")]
     pub name: String,
     #[astra(key = "@DefeatAchieve")]
-    pub defeat_achieve: Option<i8>,
+    pub defeat_achieve: i8,
 }

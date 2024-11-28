@@ -11,7 +11,7 @@ pub struct EndRollData {
     #[astra(key = "@Out")]
     pub out: String,
     #[astra(key = "@Type")]
-    pub ty: Option<i8>,
+    pub ty: i8,
     #[astra(key = "@Text1")]
     pub text_1: String,
     #[astra(key = "@Text2")]

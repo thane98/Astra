@@ -17,17 +17,17 @@ pub struct Effect {
     #[astra(key = "@SoundLabel")]
     pub sound_label: String,
     #[astra(key = "@Type")]
-    pub ty: Option<i8>,
+    pub ty: i8,
     #[astra(key = "@Resident")]
-    pub resident: Option<i8>,
+    pub resident: i8,
     #[astra(key = "@DelayTime")]
-    pub delay_time: Option<f32>,
+    pub delay_time: f32,
     #[astra(key = "@WaitTime")]
-    pub wait_time: Option<f32>,
+    pub wait_time: f32,
     #[astra(key = "@ShakeTime")]
-    pub shake_time: Option<f32>,
+    pub shake_time: f32,
     #[astra(key = "@ShakeMagnitude")]
-    pub shake_magnitude: Option<f32>,
+    pub shake_magnitude: f32,
 }
 
 #[derive(Debug, Default, Clone, Astra)]

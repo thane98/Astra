@@ -20,9 +20,6 @@ parking_lot = "0.12.1"
 serde_yaml = "0.8.26"
 tracing = "0.1.40"
 
-egui = "0.26.2"
-catppuccin-egui = { git = "https://github.com/catppuccin/egui", rev = "eeebcd3" }
-
 syn = "2.0.13"
 darling = "0.20.1"
 quote = "^1.0.23"

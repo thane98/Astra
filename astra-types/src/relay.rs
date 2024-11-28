@@ -17,17 +17,17 @@ pub struct RelayData {
     #[astra(key = "@Cid", id)]
     pub cid: String,
     #[astra(key = "@Difficulty")]
-    pub difficulty: Option<i8>,
+    pub difficulty: i8,
     #[astra(key = "@MaxTurn")]
-    pub max_turn: Option<i32>,
+    pub max_turn: i32,
     #[astra(key = "@MaxUnit")]
-    pub max_unit: Option<i32>,
+    pub max_unit: i32,
     #[astra(key = "@NewTurn")]
-    pub new_turn: Option<i32>,
+    pub new_turn: i32,
     #[astra(key = "@TakeOverTurn")]
-    pub take_over_turn: Option<i32>,
+    pub take_over_turn: i32,
     #[astra(key = "@TakeOverUnit")]
-    pub take_over_unit: Option<i32>,
+    pub take_over_unit: i32,
     #[astra(key = "@CompletionAwardMain")]
     pub completion_award_main: String,
     #[astra(key = "@CompletionAwardSub")]
@@ -45,15 +45,15 @@ pub struct RelayStampData {
     #[astra(key = "@Name", id)]
     pub name: String,
     #[astra(key = "@SerialNo")]
-    pub serial_no: Option<u8>,
+    pub serial_no: u8,
     #[astra(key = "@Pid")]
     pub pid: String,
     #[astra(key = "@Gid")]
     pub gid: String,
     #[astra(key = "@Sort")]
-    pub sort: Option<i32>,
+    pub sort: i32,
     #[astra(key = "@Flag")]
-    pub flag: Option<i32>,
+    pub flag: i32,
     #[astra(key = "@Voice")]
     pub voice: String,
 }
@@ -65,13 +65,13 @@ pub struct RelayClearAwardData {
     #[astra(key = "@Iid")]
     pub iid: String,
     #[astra(key = "@Rate")]
-    pub rate: Option<f32>,
+    pub rate: f32,
     #[astra(key = "@MinCount")]
-    pub min_count: Option<i32>,
+    pub min_count: i32,
     #[astra(key = "@MaxCount")]
-    pub max_count: Option<i32>,
+    pub max_count: i32,
     #[astra(key = "@Flag")]
-    pub flag: Option<i32>,
+    pub flag: i32,
     #[astra(key = "@Condition")]
     pub condition: String,
 }
@@ -89,5 +89,5 @@ pub struct RelayAwardData {
     #[astra(key = "@Awards")]
     pub awards: Vec<String>,
     #[astra(key = "@Flag")]
-    pub flag: Option<i32>,
+    pub flag: i32,
 }

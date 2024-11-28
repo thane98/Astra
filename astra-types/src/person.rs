@@ -30,155 +30,155 @@ pub struct Person {
     #[astra(key = "@UnitIconID")]
     pub unit_icon_id: String,
     #[astra(key = "@Age")]
-    pub age: Option<i16>,
+    pub age: i16,
     #[astra(key = "@Gender")]
-    pub gender: Option<i8>,
+    pub gender: i8,
     #[astra(key = "@BirthMonth")]
-    pub birth_month: Option<u8>,
+    pub birth_month: u8,
     #[astra(key = "@BirthDay")]
-    pub birth_day: Option<u8>,
+    pub birth_day: u8,
     #[astra(key = "@Level")]
-    pub level: Option<u8>,
+    pub level: u8,
     #[astra(key = "@InternalLevel")]
-    pub internal_level: Option<i8>,
+    pub internal_level: i8,
     #[astra(key = "@AutoGrowOffsetN")]
-    pub auto_grow_offset_n: Option<i8>,
+    pub auto_grow_offset_n: i8,
     #[astra(key = "@AutoGrowOffsetH")]
-    pub auto_grow_offset_h: Option<i8>,
+    pub auto_grow_offset_h: i8,
     #[astra(key = "@AutoGrowOffsetL")]
-    pub auto_grow_offset_l: Option<i8>,
+    pub auto_grow_offset_l: i8,
     #[astra(key = "@AssetForce")]
-    pub asset_force: Option<i8>,
+    pub asset_force: i8,
     #[astra(key = "@SupportCategory")]
     pub support_category: String,
     #[astra(key = "@SkillPoint")]
-    pub skill_point: Option<i32>,
+    pub skill_point: i32,
     #[astra(key = "@BmapSize")]
-    pub bmap_size: Option<u8>,
+    pub bmap_size: u8,
     #[astra(key = "@Flag")]
-    pub flag: Option<u8>,
+    pub flag: u8,
     #[astra(key = "@Aptitude")]
-    pub aptitude: Option<i32>,
+    pub aptitude: i32,
     #[astra(key = "@SubAptitude")]
-    pub sub_aptitude: Option<i32>,
+    pub sub_aptitude: i32,
     #[astra(key = "@OffsetN.Hp")]
-    pub offset_n_hp: Option<i8>,
+    pub offset_n_hp: i8,
     #[astra(key = "@OffsetN.Str")]
-    pub offset_n_str: Option<i8>,
+    pub offset_n_str: i8,
     #[astra(key = "@OffsetN.Tech")]
-    pub offset_n_tech: Option<i8>,
+    pub offset_n_tech: i8,
     #[astra(key = "@OffsetN.Quick")]
-    pub offset_n_quick: Option<i8>,
+    pub offset_n_quick: i8,
     #[astra(key = "@OffsetN.Luck")]
-    pub offset_n_luck: Option<i8>,
+    pub offset_n_luck: i8,
     #[astra(key = "@OffsetN.Def")]
-    pub offset_n_def: Option<i8>,
+    pub offset_n_def: i8,
     #[astra(key = "@OffsetN.Magic")]
-    pub offset_n_magic: Option<i8>,
+    pub offset_n_magic: i8,
     #[astra(key = "@OffsetN.Mdef")]
-    pub offset_n_mdef: Option<i8>,
+    pub offset_n_mdef: i8,
     #[astra(key = "@OffsetN.Phys")]
-    pub offset_n_phys: Option<i8>,
+    pub offset_n_phys: i8,
     #[astra(key = "@OffsetN.Sight")]
-    pub offset_n_sight: Option<i8>,
+    pub offset_n_sight: i8,
     #[astra(key = "@OffsetN.Move")]
-    pub offset_n_move: Option<i8>,
+    pub offset_n_move: i8,
     #[astra(key = "@OffsetH.Hp")]
-    pub offset_h_hp: Option<i8>,
+    pub offset_h_hp: i8,
     #[astra(key = "@OffsetH.Str")]
-    pub offset_h_str: Option<i8>,
+    pub offset_h_str: i8,
     #[astra(key = "@OffsetH.Tech")]
-    pub offset_h_tech: Option<i8>,
+    pub offset_h_tech: i8,
     #[astra(key = "@OffsetH.Quick")]
-    pub offset_h_quick: Option<i8>,
+    pub offset_h_quick: i8,
     #[astra(key = "@OffsetH.Luck")]
-    pub offset_h_luck: Option<i8>,
+    pub offset_h_luck: i8,
     #[astra(key = "@OffsetH.Def")]
-    pub offset_h_def: Option<i8>,
+    pub offset_h_def: i8,
     #[astra(key = "@OffsetH.Magic")]
-    pub offset_h_magic: Option<i8>,
+    pub offset_h_magic: i8,
     #[astra(key = "@OffsetH.Mdef")]
-    pub offset_h_mdef: Option<i8>,
+    pub offset_h_mdef: i8,
     #[astra(key = "@OffsetH.Phys")]
-    pub offset_h_phys: Option<i8>,
+    pub offset_h_phys: i8,
     #[astra(key = "@OffsetH.Sight")]
-    pub offset_h_sight: Option<i8>,
+    pub offset_h_sight: i8,
     #[astra(key = "@OffsetH.Move")]
-    pub offset_h_move: Option<i8>,
+    pub offset_h_move: i8,
     #[astra(key = "@OffsetL.Hp")]
-    pub offset_l_hp: Option<i8>,
+    pub offset_l_hp: i8,
     #[astra(key = "@OffsetL.Str")]
-    pub offset_l_str: Option<i8>,
+    pub offset_l_str: i8,
     #[astra(key = "@OffsetL.Tech")]
-    pub offset_l_tech: Option<i8>,
+    pub offset_l_tech: i8,
     #[astra(key = "@OffsetL.Quick")]
-    pub offset_l_quick: Option<i8>,
+    pub offset_l_quick: i8,
     #[astra(key = "@OffsetL.Luck")]
-    pub offset_l_luck: Option<i8>,
+    pub offset_l_luck: i8,
     #[astra(key = "@OffsetL.Def")]
-    pub offset_l_def: Option<i8>,
+    pub offset_l_def: i8,
     #[astra(key = "@OffsetL.Magic")]
-    pub offset_l_magic: Option<i8>,
+    pub offset_l_magic: i8,
     #[astra(key = "@OffsetL.Mdef")]
-    pub offset_l_mdef: Option<i8>,
+    pub offset_l_mdef: i8,
     #[astra(key = "@OffsetL.Phys")]
-    pub offset_l_phys: Option<i8>,
+    pub offset_l_phys: i8,
     #[astra(key = "@OffsetL.Sight")]
-    pub offset_l_sight: Option<i8>,
+    pub offset_l_sight: i8,
     #[astra(key = "@OffsetL.Move")]
-    pub offset_l_move: Option<i8>,
+    pub offset_l_move: i8,
     #[astra(key = "@Limit.Hp")]
-    pub limit_hp: Option<i8>,
+    pub limit_hp: i8,
     #[astra(key = "@Limit.Str")]
-    pub limit_str: Option<i8>,
+    pub limit_str: i8,
     #[astra(key = "@Limit.Tech")]
-    pub limit_tech: Option<i8>,
+    pub limit_tech: i8,
     #[astra(key = "@Limit.Quick")]
-    pub limit_quick: Option<i8>,
+    pub limit_quick: i8,
     #[astra(key = "@Limit.Luck")]
-    pub limit_luck: Option<i8>,
+    pub limit_luck: i8,
     #[astra(key = "@Limit.Def")]
-    pub limit_def: Option<i8>,
+    pub limit_def: i8,
     #[astra(key = "@Limit.Magic")]
-    pub limit_magic: Option<i8>,
+    pub limit_magic: i8,
     #[astra(key = "@Limit.Mdef")]
-    pub limit_mdef: Option<i8>,
+    pub limit_mdef: i8,
     #[astra(key = "@Limit.Phys")]
-    pub limit_phys: Option<i8>,
+    pub limit_phys: i8,
     #[astra(key = "@Limit.Sight")]
-    pub limit_sight: Option<i8>,
+    pub limit_sight: i8,
     #[astra(key = "@Limit.Move")]
-    pub limit_move: Option<i8>,
+    pub limit_move: i8,
     #[astra(key = "@Grow.Hp")]
-    pub grow_hp: Option<u8>,
+    pub grow_hp: u8,
     #[astra(key = "@Grow.Str")]
-    pub grow_str: Option<u8>,
+    pub grow_str: u8,
     #[astra(key = "@Grow.Tech")]
-    pub grow_tech: Option<u8>,
+    pub grow_tech: u8,
     #[astra(key = "@Grow.Quick")]
-    pub grow_quick: Option<u8>,
+    pub grow_quick: u8,
     #[astra(key = "@Grow.Luck")]
-    pub grow_luck: Option<u8>,
+    pub grow_luck: u8,
     #[astra(key = "@Grow.Def")]
-    pub grow_def: Option<u8>,
+    pub grow_def: u8,
     #[astra(key = "@Grow.Magic")]
-    pub grow_magic: Option<u8>,
+    pub grow_magic: u8,
     #[astra(key = "@Grow.Mdef")]
-    pub grow_mdef: Option<u8>,
+    pub grow_mdef: u8,
     #[astra(key = "@Grow.Phys")]
-    pub grow_phys: Option<u8>,
+    pub grow_phys: u8,
     #[astra(key = "@Grow.Sight")]
-    pub grow_sight: Option<u8>,
+    pub grow_sight: u8,
     #[astra(key = "@Grow.Move")]
-    pub grow_move: Option<u8>,
+    pub grow_move: u8,
     #[astra(key = "@Items")]
     pub items: Vec<String>,
     #[astra(key = "@DropItem")]
     pub drop_item: String,
     #[astra(key = "@DropRatio")]
-    pub drop_ratio: Option<f32>,
+    pub drop_ratio: f32,
     #[astra(key = "@Attrs")]
-    pub attrs: Option<i32>,
+    pub attrs: i32,
     #[astra(key = "@CommonSids")]
     pub common_sids: Vec<String>,
     #[astra(key = "@NormalSids")]
@@ -190,29 +190,29 @@ pub struct Person {
     #[astra(key = "@EngageSid")]
     pub engage_sid: String,
     #[astra(key = "@TalkPauseDelayMin")]
-    pub talk_pause_delay_min: Option<f32>,
+    pub talk_pause_delay_min: f32,
     #[astra(key = "@TalkPauseDelayMax")]
-    pub talk_pause_delay_max: Option<f32>,
+    pub talk_pause_delay_max: f32,
     #[astra(key = "@TalkPauseSpeed")]
-    pub talk_pause_speed: Option<f32>,
+    pub talk_pause_speed: f32,
     #[astra(key = "@CombatBgm")]
     pub combat_bgm: String,
     #[astra(key = "@ExistDieCid")]
     pub exist_die_cid: String,
     #[astra(key = "@ExistDieTiming")]
-    pub exist_die_timing: Option<i8>,
+    pub exist_die_timing: i8,
     #[astra(key = "@Hometown")]
-    pub hometown: Option<i8>,
+    pub hometown: i8,
     #[astra(key = "@NetRankingIndex")]
-    pub net_ranking_index: Option<u8>,
+    pub net_ranking_index: u8,
     #[astra(key = "@NotLvUpTalkPids")]
     pub not_lv_up_talk_pids: Vec<String>,
     #[astra(key = "@SummonColor")]
-    pub summon_color: Option<i8>,
+    pub summon_color: i8,
     #[astra(key = "@SummonRank")]
-    pub summon_rank: Option<i8>,
+    pub summon_rank: i8,
     #[astra(key = "@SummonRate")]
-    pub summon_rate: Option<i32>,
+    pub summon_rate: i32,
     #[astra(key = "@SummonGod")]
     pub summon_god: String,
 }

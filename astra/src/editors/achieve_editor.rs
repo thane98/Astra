@@ -29,11 +29,11 @@ impl ViewItem for AchieveData {
         _: crate::DecorationKind<'_>,
     ) -> Option<(egui::TextureHandle, f32)> {
         let icon = match self.category {
-            Some(0) => "Companion",
-            Some(1) => "Battle",
-            Some(2) => "Solanel",
-            Some(3) => "Shop",
-            Some(4) => "Reward",
+            0 => "Companion",
+            1 => "Battle",
+            2 => "Solanel",
+            3 => "Shop",
+            4 => "Reward",
             _ => "System",
         };
         dependencies

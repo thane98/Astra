@@ -97,7 +97,15 @@ impl KeyedViewItem for HubDemoData {
     }
 }
 
-sheet_retriever!(HubSpawn, HubDisposBook, spawns, Vec<HubSpawn>);
+sheet_retriever!(HubSpawn, HubDisposBook, spawns, IndexMap<String, Vec<HubSpawn>>);
+
+impl GroupViewItem for IndexMap<String, Vec<HubSpawn>> {
+    type Dependencies = EditorState;
+
+    fn text<'a>(key: &'a str, _: &'a Self::Dependencies) -> Cow<'a, str> {
+        key.into()
+    }
+}
 
 impl ViewItem for HubSpawn {
     type Dependencies = EditorState;
@@ -246,7 +254,7 @@ impl ViewItem for HubMaterialBonus {
     type Dependencies = EditorState;
 
     fn text(&self, _: &Self::Dependencies) -> Cow<'_, str> {
-        Cow::Owned(format!("{} Gold Invested", self.cost.unwrap_or_default()))
+        Cow::Owned(format!("{} Gold Invested", self.cost))
     }
 }
 
@@ -742,7 +750,7 @@ pub struct HubAreaEditor {
         ListEditorContent<IndexMap<String, HubFacilityData>, HubFacilityData, EditorState>,
     hub_demo_data_content:
         ListEditorContent<IndexMap<String, HubDemoData>, HubDemoData, EditorState>,
-    spawns_content: ListEditorContent<Vec<HubSpawn>, HubSpawn, EditorState>,
+    spawns_content: GroupEditorContent,
     random_sets_content: GroupEditorContent,
     unity_behavior_content: GroupEditorContent,
     fortune_telling_data_content: ListEditorContent<
@@ -802,7 +810,7 @@ impl HubAreaEditor {
                 .with_add_modal_content(keyed_add_modal_content),
             hub_demo_data_content: ListEditorContent::new("hub_demo_data_editor")
                 .with_add_modal_content(keyed_add_modal_content),
-            spawns_content: ListEditorContent::new("spawns_editor"),
+            spawns_content: GroupEditorContent::new("spawns_editor"),
             random_sets_content: GroupEditorContent::new("random_sets_editor"),
             unity_behavior_content: GroupEditorContent::new("unity_behavior_editor"),
             fortune_telling_data_content: ListEditorContent::new("fortune_telling_data_editor")

@@ -18,7 +18,7 @@ pub struct PostBattleConversation {
     #[astra(key = "@Field")]
     pub field: String,
     #[astra(key = "@BackDegree")]
-    pub back_degree: Option<i32>,
+    pub back_degree: i32,
     #[astra(key = "@LightDegree")]
-    pub light_degree: Option<i32>,
+    pub light_degree: i32,
 }

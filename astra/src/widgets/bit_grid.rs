@@ -5,13 +5,13 @@ macro_rules! bitgrid {
         pub fn $name<'a>(
             bits: &'a [&str],
             num_columns: usize,
-            value: &'a mut Option<$target>,
+            value: &'a mut $target,
         ) -> impl egui::Widget + 'a {
             move |ui: &mut Ui| {
                 let mut changed = false;
                 let mut response = Grid::new(ui.auto_id_with("bitgrid"))
                     .show(ui, |ui| {
-                        let original_value = value.unwrap_or_default();
+                        let original_value = *value;
                         let mut new_value = original_value;
                         for i in (0..bits.len()).step_by(num_columns) {
                             for j in i..(i + num_columns) {
@@ -28,7 +28,7 @@ macro_rules! bitgrid {
                             ui.end_row();
                         }
                         if new_value != original_value {
-                            *value = Some(new_value);
+                            *value = new_value;
                             changed = true;
                         }
                     })

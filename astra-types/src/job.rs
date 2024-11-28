@@ -27,43 +27,43 @@ pub struct Job {
     #[astra(key = "@UnitIconWeaponID")]
     pub unit_icon_weapon_id: String,
     #[astra(key = "@Rank")]
-    pub rank: Option<i8>,
+    pub rank: i8,
     #[astra(key = "@StyleName")]
     pub style_name: String,
     #[astra(key = "@MoveType")]
-    pub move_type: Option<i8>,
+    pub move_type: i8,
     #[astra(key = "@StepFrame")]
-    pub step_frame: Option<u8>,
+    pub step_frame: u8,
     #[astra(key = "@MaxLevel")]
-    pub max_level: Option<u8>,
+    pub max_level: u8,
     #[astra(key = "@InternalLevel")]
-    pub internal_level: Option<i8>,
+    pub internal_level: i8,
     #[astra(key = "@Sort")]
-    pub sort: Option<u16>,
+    pub sort: u16,
     #[astra(key = "@Flag")]
-    pub flag: Option<u8>,
+    pub flag: u8,
     #[astra(key = "@WeaponNone")]
-    pub weapon_none: Option<i8>,
+    pub weapon_none: i8,
     #[astra(key = "@WeaponSword")]
-    pub weapon_sword: Option<i8>,
+    pub weapon_sword: i8,
     #[astra(key = "@WeaponLance")]
-    pub weapon_lance: Option<i8>,
+    pub weapon_lance: i8,
     #[astra(key = "@WeaponAxe")]
-    pub weapon_axe: Option<i8>,
+    pub weapon_axe: i8,
     #[astra(key = "@WeaponBow")]
-    pub weapon_bow: Option<i8>,
+    pub weapon_bow: i8,
     #[astra(key = "@WeaponDagger")]
-    pub weapon_dagger: Option<i8>,
+    pub weapon_dagger: i8,
     #[astra(key = "@WeaponMagic")]
-    pub weapon_magic: Option<i8>,
+    pub weapon_magic: i8,
     #[astra(key = "@WeaponRod")]
-    pub weapon_rod: Option<i8>,
+    pub weapon_rod: i8,
     #[astra(key = "@WeaponFist")]
-    pub weapon_fist: Option<i8>,
+    pub weapon_fist: i8,
     #[astra(key = "@WeaponSpecial")]
-    pub weapon_special: Option<i8>,
+    pub weapon_special: i8,
     #[astra(key = "@WeaponTool")]
-    pub weapon_tool: Option<i8>,
+    pub weapon_tool: i8,
     #[astra(key = "@MaxWeaponLevelNone")]
     pub max_weapon_level_none: String,
     #[astra(key = "@MaxWeaponLevelSword")]
@@ -85,159 +85,159 @@ pub struct Job {
     #[astra(key = "@MaxWeaponLevelSpecial")]
     pub max_weapon_level_special: String,
     #[astra(key = "@Base.Hp")]
-    pub base_hp: Option<u8>,
+    pub base_hp: u8,
     #[astra(key = "@Base.Str")]
-    pub base_str: Option<u8>,
+    pub base_str: u8,
     #[astra(key = "@Base.Tech")]
-    pub base_tech: Option<u8>,
+    pub base_tech: u8,
     #[astra(key = "@Base.Quick")]
-    pub base_quick: Option<u8>,
+    pub base_quick: u8,
     #[astra(key = "@Base.Luck")]
-    pub base_luck: Option<u8>,
+    pub base_luck: u8,
     #[astra(key = "@Base.Def")]
-    pub base_def: Option<u8>,
+    pub base_def: u8,
     #[astra(key = "@Base.Magic")]
-    pub base_magic: Option<u8>,
+    pub base_magic: u8,
     #[astra(key = "@Base.Mdef")]
-    pub base_mdef: Option<u8>,
+    pub base_mdef: u8,
     #[astra(key = "@Base.Phys")]
-    pub base_phys: Option<u8>,
+    pub base_phys: u8,
     #[astra(key = "@Base.Sight")]
-    pub base_sight: Option<u8>,
+    pub base_sight: u8,
     #[astra(key = "@Base.Move")]
-    pub base_move: Option<u8>,
+    pub base_move: u8,
     #[astra(key = "@Limit.Hp")]
-    pub limit_hp: Option<u8>,
+    pub limit_hp: u8,
     #[astra(key = "@Limit.Str")]
-    pub limit_str: Option<u8>,
+    pub limit_str: u8,
     #[astra(key = "@Limit.Tech")]
-    pub limit_tech: Option<u8>,
+    pub limit_tech: u8,
     #[astra(key = "@Limit.Quick")]
-    pub limit_quick: Option<u8>,
+    pub limit_quick: u8,
     #[astra(key = "@Limit.Luck")]
-    pub limit_luck: Option<u8>,
+    pub limit_luck: u8,
     #[astra(key = "@Limit.Def")]
-    pub limit_def: Option<u8>,
+    pub limit_def: u8,
     #[astra(key = "@Limit.Magic")]
-    pub limit_magic: Option<u8>,
+    pub limit_magic: u8,
     #[astra(key = "@Limit.Mdef")]
-    pub limit_mdef: Option<u8>,
+    pub limit_mdef: u8,
     #[astra(key = "@Limit.Phys")]
-    pub limit_phys: Option<u8>,
+    pub limit_phys: u8,
     #[astra(key = "@Limit.Sight")]
-    pub limit_sight: Option<u8>,
+    pub limit_sight: u8,
     #[astra(key = "@Limit.Move")]
-    pub limit_move: Option<u8>,
+    pub limit_move: u8,
     #[astra(key = "@BaseGrow.Hp")]
-    pub base_grow_hp: Option<u8>,
+    pub base_grow_hp: u8,
     #[astra(key = "@BaseGrow.Str")]
-    pub base_grow_str: Option<u8>,
+    pub base_grow_str: u8,
     #[astra(key = "@BaseGrow.Tech")]
-    pub base_grow_tech: Option<u8>,
+    pub base_grow_tech: u8,
     #[astra(key = "@BaseGrow.Quick")]
-    pub base_grow_quick: Option<u8>,
+    pub base_grow_quick: u8,
     #[astra(key = "@BaseGrow.Luck")]
-    pub base_grow_luck: Option<u8>,
+    pub base_grow_luck: u8,
     #[astra(key = "@BaseGrow.Def")]
-    pub base_grow_def: Option<u8>,
+    pub base_grow_def: u8,
     #[astra(key = "@BaseGrow.Magic")]
-    pub base_grow_magic: Option<u8>,
+    pub base_grow_magic: u8,
     #[astra(key = "@BaseGrow.Mdef")]
-    pub base_grow_mdef: Option<u8>,
+    pub base_grow_mdef: u8,
     #[astra(key = "@BaseGrow.Phys")]
-    pub base_grow_phys: Option<u8>,
+    pub base_grow_phys: u8,
     #[astra(key = "@BaseGrow.Sight")]
-    pub base_grow_sight: Option<u8>,
+    pub base_grow_sight: u8,
     #[astra(key = "@BaseGrow.Move")]
-    pub base_grow_move: Option<u8>,
+    pub base_grow_move: u8,
     #[astra(key = "@DiffGrow.Hp")]
-    pub diff_grow_hp: Option<i8>,
+    pub diff_grow_hp: i8,
     #[astra(key = "@DiffGrow.Str")]
-    pub diff_grow_str: Option<i8>,
+    pub diff_grow_str: i8,
     #[astra(key = "@DiffGrow.Tech")]
-    pub diff_grow_tech: Option<i8>,
+    pub diff_grow_tech: i8,
     #[astra(key = "@DiffGrow.Quick")]
-    pub diff_grow_quick: Option<i8>,
+    pub diff_grow_quick: i8,
     #[astra(key = "@DiffGrow.Luck")]
-    pub diff_grow_luck: Option<i8>,
+    pub diff_grow_luck: i8,
     #[astra(key = "@DiffGrow.Def")]
-    pub diff_grow_def: Option<i8>,
+    pub diff_grow_def: i8,
     #[astra(key = "@DiffGrow.Magic")]
-    pub diff_grow_magic: Option<i8>,
+    pub diff_grow_magic: i8,
     #[astra(key = "@DiffGrow.Mdef")]
-    pub diff_grow_mdef: Option<i8>,
+    pub diff_grow_mdef: i8,
     #[astra(key = "@DiffGrow.Phys")]
-    pub diff_grow_phys: Option<i8>,
+    pub diff_grow_phys: i8,
     #[astra(key = "@DiffGrow.Sight")]
-    pub diff_grow_sight: Option<i8>,
+    pub diff_grow_sight: i8,
     #[astra(key = "@DiffGrow.Move")]
-    pub diff_grow_move: Option<i8>,
+    pub diff_grow_move: i8,
     #[astra(key = "@DiffGrowNormal.Hp")]
-    pub diff_grow_normal_hp: Option<i8>,
+    pub diff_grow_normal_hp: i8,
     #[astra(key = "@DiffGrowNormal.Str")]
-    pub diff_grow_normal_str: Option<i8>,
+    pub diff_grow_normal_str: i8,
     #[astra(key = "@DiffGrowNormal.Tech")]
-    pub diff_grow_normal_tech: Option<i8>,
+    pub diff_grow_normal_tech: i8,
     #[astra(key = "@DiffGrowNormal.Quick")]
-    pub diff_grow_normal_quick: Option<i8>,
+    pub diff_grow_normal_quick: i8,
     #[astra(key = "@DiffGrowNormal.Luck")]
-    pub diff_grow_normal_luck: Option<i8>,
+    pub diff_grow_normal_luck: i8,
     #[astra(key = "@DiffGrowNormal.Def")]
-    pub diff_grow_normal_def: Option<i8>,
+    pub diff_grow_normal_def: i8,
     #[astra(key = "@DiffGrowNormal.Magic")]
-    pub diff_grow_normal_magic: Option<i8>,
+    pub diff_grow_normal_magic: i8,
     #[astra(key = "@DiffGrowNormal.Mdef")]
-    pub diff_grow_normal_mdef: Option<i8>,
+    pub diff_grow_normal_mdef: i8,
     #[astra(key = "@DiffGrowNormal.Phys")]
-    pub diff_grow_normal_phys: Option<i8>,
+    pub diff_grow_normal_phys: i8,
     #[astra(key = "@DiffGrowNormal.Sight")]
-    pub diff_grow_normal_sight: Option<i8>,
+    pub diff_grow_normal_sight: i8,
     #[astra(key = "@DiffGrowNormal.Move")]
-    pub diff_grow_normal_move: Option<i8>,
+    pub diff_grow_normal_move: i8,
     #[astra(key = "@DiffGrowHard.Hp")]
-    pub diff_grow_hard_hp: Option<i8>,
+    pub diff_grow_hard_hp: i8,
     #[astra(key = "@DiffGrowHard.Str")]
-    pub diff_grow_hard_str: Option<i8>,
+    pub diff_grow_hard_str: i8,
     #[astra(key = "@DiffGrowHard.Tech")]
-    pub diff_grow_hard_tech: Option<i8>,
+    pub diff_grow_hard_tech: i8,
     #[astra(key = "@DiffGrowHard.Quick")]
-    pub diff_grow_hard_quick: Option<i8>,
+    pub diff_grow_hard_quick: i8,
     #[astra(key = "@DiffGrowHard.Luck")]
-    pub diff_grow_hard_luck: Option<i8>,
+    pub diff_grow_hard_luck: i8,
     #[astra(key = "@DiffGrowHard.Def")]
-    pub diff_grow_hard_def: Option<i8>,
+    pub diff_grow_hard_def: i8,
     #[astra(key = "@DiffGrowHard.Magic")]
-    pub diff_grow_hard_magic: Option<i8>,
+    pub diff_grow_hard_magic: i8,
     #[astra(key = "@DiffGrowHard.Mdef")]
-    pub diff_grow_hard_mdef: Option<i8>,
+    pub diff_grow_hard_mdef: i8,
     #[astra(key = "@DiffGrowHard.Phys")]
-    pub diff_grow_hard_phys: Option<i8>,
+    pub diff_grow_hard_phys: i8,
     #[astra(key = "@DiffGrowHard.Sight")]
-    pub diff_grow_hard_sight: Option<i8>,
+    pub diff_grow_hard_sight: i8,
     #[astra(key = "@DiffGrowHard.Move")]
-    pub diff_grow_hard_move: Option<i8>,
+    pub diff_grow_hard_move: i8,
     #[astra(key = "@DiffGrowLunatic.Hp")]
-    pub diff_grow_lunatic_hp: Option<i8>,
+    pub diff_grow_lunatic_hp: i8,
     #[astra(key = "@DiffGrowLunatic.Str")]
-    pub diff_grow_lunatic_str: Option<i8>,
+    pub diff_grow_lunatic_str: i8,
     #[astra(key = "@DiffGrowLunatic.Tech")]
-    pub diff_grow_lunatic_tech: Option<i8>,
+    pub diff_grow_lunatic_tech: i8,
     #[astra(key = "@DiffGrowLunatic.Quick")]
-    pub diff_grow_lunatic_quick: Option<i8>,
+    pub diff_grow_lunatic_quick: i8,
     #[astra(key = "@DiffGrowLunatic.Luck")]
-    pub diff_grow_lunatic_luck: Option<i8>,
+    pub diff_grow_lunatic_luck: i8,
     #[astra(key = "@DiffGrowLunatic.Def")]
-    pub diff_grow_lunatic_def: Option<i8>,
+    pub diff_grow_lunatic_def: i8,
     #[astra(key = "@DiffGrowLunatic.Magic")]
-    pub diff_grow_lunatic_magic: Option<i8>,
+    pub diff_grow_lunatic_magic: i8,
     #[astra(key = "@DiffGrowLunatic.Mdef")]
-    pub diff_grow_lunatic_mdef: Option<i8>,
+    pub diff_grow_lunatic_mdef: i8,
     #[astra(key = "@DiffGrowLunatic.Phys")]
-    pub diff_grow_lunatic_phys: Option<i8>,
+    pub diff_grow_lunatic_phys: i8,
     #[astra(key = "@DiffGrowLunatic.Sight")]
-    pub diff_grow_lunatic_sight: Option<i8>,
+    pub diff_grow_lunatic_sight: i8,
     #[astra(key = "@DiffGrowLunatic.Move")]
-    pub diff_grow_lunatic_move: Option<i8>,
+    pub diff_grow_lunatic_move: i8,
     #[astra(key = "@HighJob1")]
     pub high_job_1: String,
     #[astra(key = "@HighJob2")]
@@ -257,7 +257,7 @@ pub struct Job {
     #[astra(key = "@LunaticSkill")]
     pub lunatic_skill: String,
     #[astra(key = "@Attrs")]
-    pub attrs: Option<i32>,
+    pub attrs: i32,
 }
 
 #[derive(Astra, Debug)]

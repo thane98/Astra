@@ -38,7 +38,7 @@ impl ViewItem for RingData {
         match kind {
             DecorationKind::DropDown | DecorationKind::List => {
                 let mut cache = dependencies.texture_cache.borrow_mut();
-                let texture = cache.get_godring(match self.rank.unwrap_or_default() {
+                let texture = cache.get_godring(match self.rank {
                     1 => "CommonSilver",
                     2 => "CommonGold",
                     3 => "CommonPlatinum",
@@ -80,7 +80,7 @@ impl ViewItem for RingPolishVoiceData {
     type Dependencies = EditorState;
 
     fn text(&self, _: &Self::Dependencies) -> Cow<'_, str> {
-        Cow::Owned(format!("Label {}", self.label.unwrap_or_default()))
+        Cow::Owned(format!("Label {}", self.label))
     }
 }
 
