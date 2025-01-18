@@ -451,10 +451,7 @@ impl ViewItem for ForgeImproveData {
     fn text(&self, _: &Self::Dependencies) -> Cow<'_, str> {
         Cow::Owned(format!(
             "Mt {}, Wt {}, Hit {}, Crit {}",
-            self.power,
-            self.weight,
-            self.hit,
-            self.critical
+            self.power, self.weight, self.hit, self.critical
         ))
     }
 }

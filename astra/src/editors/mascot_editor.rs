@@ -67,12 +67,7 @@ impl ViewItem for MascotColorData {
     type Dependencies = EditorState;
 
     fn text(&self, _: &Self::Dependencies) -> Cow<'_, str> {
-        Cow::Owned(format!(
-            "#{:X}{:X}{:X}",
-            self.r,
-            self.g,
-            self.b
-        ))
+        Cow::Owned(format!("#{:X}{:X}{:X}", self.r, self.g, self.b))
     }
 }
 

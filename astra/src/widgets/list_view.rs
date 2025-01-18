@@ -113,7 +113,9 @@ where
     }
     if ui.input_mut(|input| input.consume_shortcut(&DOWN_ENTRY_SHORTCUT)) {
         *selected_index = match *selected_index {
-            Some(index) => (index < model.len() - 1).then_some(index + 1).or(Some(index)),
+            Some(index) => (index < model.len() - 1)
+                .then_some(index + 1)
+                .or(Some(index)),
             None => (model.len() > 0).then_some(0),
         };
         changed = true;

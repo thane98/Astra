@@ -5,10 +5,9 @@ use indexmap::IndexMap;
 use crate::model::{CacheItem, CachedView, GodDataSheetRetriever};
 use crate::widgets::{bitgrid_i32, id_field, keyed_add_modal_content};
 use crate::{
-    editable_list, editor_tab_strip, model_drop_down,
-    msbt_key_value_multiline, msbt_key_value_singleline, EditorState,
-    GodBondLevelDataSheet, GodDataSheet, GodLevelDataSheet, GroupEditorContent, ListEditorContent,
-    PropertyGrid,
+    editable_list, editor_tab_strip, model_drop_down, msbt_key_value_multiline,
+    msbt_key_value_singleline, EditorState, GodBondLevelDataSheet, GodDataSheet, GodLevelDataSheet,
+    GroupEditorContent, ListEditorContent, PropertyGrid,
 };
 
 const FLAG_LABELS: &[&str] = &[
@@ -144,7 +143,9 @@ impl GodEditor {
                 ui.text_edit_singleline(&mut god.engage_haunt)
             })
             .field("Level", |ui, god| ui.add(DragValue::new(&mut god.level)))
-            .field("Force Type", |ui, god| ui.add(DragValue::new(&mut god.force_type)))
+            .field("Force Type", |ui, god| {
+                ui.add(DragValue::new(&mut god.force_type))
+            })
             .field("Female", |ui, god| ui.add(DragValue::new(&mut god.female)))
             .field("Good Weapon", |ui, god| {
                 ui.add(DragValue::new(&mut god.good_weapon))
@@ -175,7 +176,9 @@ impl GodEditor {
             .field("Grow Table", |ui, god| {
                 ui.text_edit_singleline(&mut god.grow_table)
             })
-            .field("Level Cap", |ui, god| ui.add(DragValue::new(&mut god.level_cap)))
+            .field("Level Cap", |ui, god| {
+                ui.add(DragValue::new(&mut god.level_cap))
+            })
             .field("Unlock Level Cap Var Name", |ui, god| {
                 ui.text_edit_singleline(&mut god.unlock_level_cap_var_name)
             })
@@ -331,7 +334,9 @@ impl GodEditor {
                     }))
                 })
             })
-            .field("Aptitude", |ui, data| ui.add(DragValue::new(&mut data.aptitude)))
+            .field("Aptitude", |ui, data| {
+                ui.add(DragValue::new(&mut data.aptitude))
+            })
             .field("Aptitude Cost (None)", |ui, data| {
                 ui.add(DragValue::new(&mut data.aptitude_cost_none))
             })

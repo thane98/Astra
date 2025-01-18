@@ -31,6 +31,7 @@ egui_grid = { git = "https://github.com/thane98/egui-grid", rev = "b3d5c49" }
 egui-modal = { git = "https://github.com/n00kii/egui-modal", rev = "79eeec1" }
 paste = "1.0.12"
 egui-notify = "0.13.0"
+open = "5.3.2"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 tracing = { workspace = true }

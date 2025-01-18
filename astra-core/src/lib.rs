@@ -5,7 +5,7 @@ mod message_system;
 mod script_system;
 mod terrain_system;
 
-use std::collections::{BTreeSet, HashMap};
+use std::collections::{BTreeSet, HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
@@ -56,6 +56,7 @@ pub struct AstraProject {
 }
 
 pub struct Astra {
+    project: AstraProject,
     backup_root: PathBuf,
     cobalt_msbt: Option<String>,
     atlas_system: AtlasSystem,
@@ -69,21 +70,21 @@ impl Astra {
     pub fn load(project: AstraProject) -> Result<Self> {
         let file_system = Arc::new(LocalizedFileSystem::new(
             LayeredFileSystem::new(vec![
-                FileSystemLayer::directory(project.output_dir)?,
+                FileSystemLayer::directory(project.output_dir.clone())?,
                 match &project.rom_source {
                     RomSource::Directory(directory) => FileSystemLayer::directory(directory)?,
                     RomSource::Network(ip) => FileSystemLayer::network(ip)?,
                 },
             ])?,
-            project.localization,
+            project.localization.clone(),
         ));
         let cobalt_proxy = Arc::new(CobaltFileSystemProxy::new(
             file_system.clone(),
-            project.cobalt_dir,
+            project.cobalt_dir.clone(),
         )?);
         Ok(Self {
-            backup_root: project.backup_dir,
-            cobalt_msbt: project.cobalt_msbt,
+            backup_root: project.backup_dir.clone(),
+            cobalt_msbt: project.cobalt_msbt.clone(),
             atlas_system: AtlasSystem::load(&file_system)
                 .context("Failed to load sprite atlases")?,
             book_system: BookSystem::load(cobalt_proxy.clone())
@@ -93,7 +94,12 @@ impl Astra {
                 .context("Failed to load text data (MSBT)")?,
             terrain_system: TerrainSystem::load(file_system)
                 .context("Failed to initialize terrain system")?,
+            project,
         })
+    }
+
+    pub fn project(&self) -> &AstraProject {
+        &self.project
     }
 
     pub fn save(&self) -> Result<()> {
@@ -127,8 +133,12 @@ impl Astra {
         self.script_system.forget(script_name)
     }
 
-    pub fn list_scripts(&self) -> impl Iterator<Item = &String> {
-        self.script_system.list()
+    pub fn list_open_scripts(&self) -> HashSet<String> {
+        self.script_system.list_open()
+    }
+
+    pub fn list_all_scripts(&self) -> BTreeSet<String> {
+        self.script_system.list_all()
     }
 
     pub fn list_archives(&self) -> impl Iterator<Item = &String> {

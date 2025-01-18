@@ -108,6 +108,10 @@ impl AppConfig {
             bail!("unable to determine a home directory")
         }
     }
+
+    pub fn has_configured_script_editor(&self) -> bool {
+        !self.script_editor_process.is_empty() && !self.script_editor_command_args.is_empty()
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]

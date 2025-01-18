@@ -28,7 +28,9 @@ impl GameParamEditor {
                         ui.text_edit_singleline(&mut param.english)
                     })
                     .field("En", |ui, param| ui.text_edit_singleline(&mut param.en))
-                    .field("Value", |ui, param| ui.add(DragValue::new(&mut param.value)))
+                    .field("Value", |ui, param| {
+                        ui.add(DragValue::new(&mut param.value))
+                    })
                     .field("Min", |ui, param| ui.add(DragValue::new(&mut param.min)))
                     .field("Max", |ui, param| ui.add(DragValue::new(&mut param.max)))
                     .field("Step", |ui, param| ui.add(DragValue::new(&mut param.step)))

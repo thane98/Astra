@@ -25,14 +25,8 @@ pub struct DisposGridResult {
 
 fn get_position(spawn: &Spawn, coordinate_kind: CoordinateKind) -> (usize, usize) {
     match coordinate_kind {
-        CoordinateKind::Dispos => (
-            spawn.dispos_x as usize,
-            spawn.dispos_y as usize,
-        ),
-        CoordinateKind::Appear => (
-            spawn.appear_x as usize,
-            spawn.appear_y as usize,
-        ),
+        CoordinateKind::Dispos => (spawn.dispos_x as usize, spawn.dispos_y as usize),
+        CoordinateKind::Appear => (spawn.appear_x as usize, spawn.appear_y as usize),
     }
 }
 

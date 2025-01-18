@@ -4,8 +4,8 @@ use indexmap::IndexMap;
 
 use crate::widgets::{id_field, keyed_add_modal_content};
 use crate::{
-    editor_tab_strip, EditorState, GroupEditorContent, ListEditorContent,
-    PropertyGrid, RelianceBonusDataSheet, RelianceExpDataSheet,
+    editor_tab_strip, EditorState, GroupEditorContent, ListEditorContent, PropertyGrid,
+    RelianceBonusDataSheet, RelianceExpDataSheet,
 };
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -75,7 +75,9 @@ impl RelianceEditor {
             .new_section("Data")
             .field("Level", |ui, data| ui.add(DragValue::new(&mut data.level)))
             .field("Hit", |ui, data| ui.add(DragValue::new(&mut data.hit)))
-            .field("Crit", |ui, data| ui.add(DragValue::new(&mut data.critical)))
+            .field("Crit", |ui, data| {
+                ui.add(DragValue::new(&mut data.critical))
+            })
             .field("Avoid", |ui, data| ui.add(DragValue::new(&mut data.avoid)))
             .field("Dodge", |ui, data| ui.add(DragValue::new(&mut data.secure)))
             .show(ui)

@@ -5,7 +5,7 @@ use std::sync::{Arc, OnceLock};
 use egui_notify::Toasts;
 use parking_lot::{Mutex, RwLock};
 
-use astra_core::Astra;
+use astra_core::{Astra, RomSource};
 
 use crate::widgets::{about_modal, config_editor_modal};
 use crate::{
@@ -690,6 +690,38 @@ pub fn main_window(
                     ui.close_menu();
                 }
                 ui.separator();
+                ui.menu_button("Open", |ui| {
+                    let astra = state.editor_state.astra.read();
+                    if let RomSource::Directory(path) = &astra.project().rom_source {
+                        ui.add_enabled_ui(path.exists(), |ui| {
+                            if ui.button("ROM Directory").clicked() {
+                                let _ = open::that_detached(path);
+                                ui.close_menu();
+                            }
+                        });
+                    }
+                    ui.add_enabled_ui(astra.project().output_dir.exists(), |ui| {
+                        if ui.button("LayeredFS Directory").clicked() {
+                            let _ = open::that_detached(&astra.project().output_dir);
+                            ui.close_menu();
+                        }
+                    });
+                    if let Some(path) = &astra.project().cobalt_dir {
+                        ui.add_enabled_ui(path.exists(), |ui| {
+                            if ui.button("Cobalt Directory").clicked() {
+                                let _ = open::that_detached(path);
+                                ui.close_menu();
+                            }
+                        });
+                    }
+                    ui.add_enabled_ui(astra.project().backup_dir.exists(), |ui| {
+                        if ui.button("Backup Directory").clicked() {
+                            let _ = open::that_detached(&astra.project().backup_dir);
+                            ui.close_menu();
+                        }
+                    });
+                });
+                ui.separator();
                 if ui.button("Preferences").clicked() {
                     config_editor_modal.open();
                     ui.close_menu();
@@ -878,7 +910,7 @@ pub fn main_window(
         Screens::Save => state
             .save_screen
             .ui(&mut state.active_screen, ctx, &mut state.toasts),
-        Screens::Scripts => state.script_manager.ui(ctx),
+        Screens::Scripts => state.script_manager.ui(ctx, &config, &mut state.toasts),
         Screens::Shop => state.shop_editor.show(ctx, &mut state.editor_state),
         Screens::Skill => state.skill_editor.show(ctx, &mut state.editor_state),
         Screens::Terrain => state.terrain_editor.show(ctx, &mut state.editor_state),

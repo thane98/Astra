@@ -239,7 +239,7 @@ impl NetworkFileSystemLayer {
         let mut stream = TcpStream::connect_timeout(&self.addr, Duration::from_secs(10))?;
         stream.set_write_timeout(Some(Duration::from_secs(10)))?;
         stream.set_read_timeout(Some(Duration::from_secs(10)))?;
-        
+
         let result = match function(&mut stream) {
             Ok(r) => Ok(r),
             Err(err) => {
@@ -388,7 +388,11 @@ impl LayeredFileSystem {
             if layer.exists(path)? {
                 all_layers.extend(layer.list_files(path, glob)?);
             } else {
-                warn!("Not listing files in layer {:?} because path {} does not exist in it", layer, path.display());
+                warn!(
+                    "Not listing files in layer {:?} because path {} does not exist in it",
+                    layer,
+                    path.display()
+                );
             }
         }
         Ok(all_layers)
@@ -571,8 +575,35 @@ impl CobaltFileSystemProxy {
         })
     }
 
+    pub fn list_scripts(&self) -> Result<BTreeSet<String>> {
+        let mut scripts = self.main_file_system.list_files(
+            r"StreamingAssets\aa\Switch\fe_assets_scripts",
+            "*.txt.bundle",
+            false,
+        )?;
+        if let Some(cobalt) = &self.cobalt_file_system {
+            scripts.extend(
+                cobalt
+                    .list_files("scripts", "*.txt")
+                    .ok()
+                    .unwrap_or_default(),
+            );
+        }
+        Ok(scripts
+            .into_iter()
+            .map(|script| {
+                script
+                    .file_stem()
+                    .unwrap_or_default()
+                    .to_string_lossy()
+                    .trim_end_matches(".txt")
+                    .to_string()
+            })
+            .collect())
+    }
+
     pub fn read_script(&self, script_file_name: &str) -> Result<(PathBuf, BundlePersistFormat)> {
-        let path_in_cobalt = Path::new(r"scripts")
+        let path_in_cobalt = Path::new("scripts")
             .join(script_file_name)
             .with_extension("txt");
         let base_path =
@@ -592,6 +623,7 @@ impl CobaltFileSystemProxy {
                 );
                 let raw = self.main_file_system.read(&script_path, false)?;
                 cobalt.write(&path_in_cobalt, &raw)?;
+                info!("Successfully copied script to '{}'", path_in_cobalt.display());
             }
             if cobalt.exists(&path_in_cobalt)? {
                 info!(
@@ -609,6 +641,8 @@ impl CobaltFileSystemProxy {
 
         // Load the bundle.
         let bundle_path = base_path.with_extension("txt.bundle");
+        info!("Loading script from bundle '{}'", bundle_path.display());
+
         let raw_bundle = self.main_file_system.read(&bundle_path, false)?;
         let mut bundle = TextBundle::from_slice(&raw_bundle)?;
         let script_contents = bundle.take_raw()?;
@@ -616,10 +650,11 @@ impl CobaltFileSystemProxy {
         // If this is a Cobalt project, save the script in the Cobalt FS.
         if let Some(cobalt) = &self.cobalt_file_system {
             info!(
-                "Loaded the script from its bundle. Saving to the Cobalt folder at {}",
+                "Loaded the script from its bundle. Saving to the Cobalt folder at '{}'",
                 path_in_cobalt.display()
             );
             cobalt.write(&path_in_cobalt, &script_contents)?;
+            info!("Successfully wrote script to path '{}' in Cobalt", path_in_cobalt.display());
             return Ok((
                 cobalt.root.join(&path_in_cobalt),
                 BundlePersistFormat::Cobalt {

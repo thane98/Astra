@@ -15,10 +15,10 @@ use crate::widgets::{
     keyed_add_modal_content,
 };
 use crate::{
-    blank_slate, dispos_grid, editor_tab_strip, indexed_model_drop_down,
-    model_drop_down, msbt_key_value_singleline, terrain_grid, AppConfig,
-    CacheItem, CachedView, ChapterSheet, ChapterSheetRetriever, EditorState, GroupEditorContent,
-    ListEditorContent, PropertyGrid, SheetHandle, SpawnSheet, SpawnSheetRetriever,
+    blank_slate, dispos_grid, editor_tab_strip, indexed_model_drop_down, model_drop_down,
+    msbt_key_value_singleline, terrain_grid, AppConfig, CacheItem, CachedView, ChapterSheet,
+    ChapterSheetRetriever, EditorState, GroupEditorContent, ListEditorContent, PropertyGrid,
+    SheetHandle, SpawnSheet, SpawnSheetRetriever,
 };
 
 const CHAPTER_FLAG_LABELS: &[&str] = &[
@@ -53,12 +53,6 @@ const SPAWN_FLAG_LABELS: &[&str] = &[
     "Fixed",
     "Guest",
 ];
-
-fn can_open_script(script_name: &str, config: &AppConfig) -> bool {
-    !(script_name.is_empty()
-        || config.script_editor_process.is_empty()
-        || config.script_editor_command_args.is_empty())
-}
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 enum Tab {
@@ -457,19 +451,21 @@ impl ChapterEditor {
             return;
         }
         let script_name = script_name.unwrap();
-        if ui
-            .add_enabled(can_open_script(script_name, config), Button::new(label))
-            .clicked()
-        {
-            let result = astra.open_script(
-                script_name,
-                &config.script_editor_process,
-                &config.script_editor_command_args,
-            );
-            if let Err(error) = result {
-                *error_message = Some(format!("{:?}", error));
+        ui.add_enabled_ui(config.has_configured_script_editor(), |ui| {
+            let response = ui.button(label);
+            let clicked = response.clicked();
+            response.on_disabled_hover_text("Please configure a script editor under File -> Preferences");
+            if clicked {
+                let result = astra.open_script(
+                    script_name,
+                    &config.script_editor_process,
+                    &config.script_editor_command_args,
+                );
+                if let Err(error) = result {
+                    *error_message = Some(format!("{:?}", error));
+                }
             }
-        }
+        });
     }
 
     fn chapter_property_grid(
@@ -575,7 +571,9 @@ impl ChapterEditor {
             .field("Hold Level", |ui, chapter| {
                 ui.add(DragValue::new(&mut chapter.hold_level))
             })
-            .field("Alpha", |ui, chapter| ui.add(DragValue::new(&mut chapter.alpha)))
+            .field("Alpha", |ui, chapter| {
+                ui.add(DragValue::new(&mut chapter.alpha))
+            })
             .field("Net Kill Bonus Index", |ui, chapter| {
                 ui.add(DragValue::new(&mut chapter.net_kill_bonus_index))
             })
@@ -685,16 +683,30 @@ impl ChapterEditor {
             .field("Flag", |ui, spawn| {
                 ui.add(bitgrid_u16(SPAWN_FLAG_LABELS, 1, &mut spawn.flag))
             })
-            .field("Appear X", |ui, spawn| ui.add(DragValue::new(&mut spawn.appear_x)))
-            .field("Appear Y", |ui, spawn| ui.add(DragValue::new(&mut spawn.appear_y)))
-            .field("Dispos X", |ui, spawn| ui.add(DragValue::new(&mut spawn.dispos_x)))
-            .field("Dispos Y", |ui, spawn| ui.add(DragValue::new(&mut spawn.dispos_y)))
+            .field("Appear X", |ui, spawn| {
+                ui.add(DragValue::new(&mut spawn.appear_x))
+            })
+            .field("Appear Y", |ui, spawn| {
+                ui.add(DragValue::new(&mut spawn.appear_y))
+            })
+            .field("Dispos X", |ui, spawn| {
+                ui.add(DragValue::new(&mut spawn.dispos_x))
+            })
+            .field("Dispos Y", |ui, spawn| {
+                ui.add(DragValue::new(&mut spawn.dispos_y))
+            })
             .field("Direction", |ui, spawn| {
                 ui.add(DragValue::new(&mut spawn.direction))
             })
-            .field("Level (N)", |ui, spawn| ui.add(DragValue::new(&mut spawn.level_n)))
-            .field("Level (H)", |ui, spawn| ui.add(DragValue::new(&mut spawn.level_h)))
-            .field("Level (L)", |ui, spawn| ui.add(DragValue::new(&mut spawn.level_l)))
+            .field("Level (N)", |ui, spawn| {
+                ui.add(DragValue::new(&mut spawn.level_n))
+            })
+            .field("Level (H)", |ui, spawn| {
+                ui.add(DragValue::new(&mut spawn.level_h))
+            })
+            .field("Level (L)", |ui, spawn| {
+                ui.add(DragValue::new(&mut spawn.level_l))
+            })
             .field("HP Stock Count", |ui, spawn| {
                 ui.add(DragValue::new(&mut spawn.hp_stock_count))
             })
@@ -748,12 +760,24 @@ impl ChapterEditor {
                 ui.add(DragValue::new(&mut spawn.item_6_drop))
             })
             .new_section("States")
-            .field("State 0", |ui, spawn| ui.add(DragValue::new(&mut spawn.state_0)))
-            .field("State 1", |ui, spawn| ui.add(DragValue::new(&mut spawn.state_1)))
-            .field("State 2", |ui, spawn| ui.add(DragValue::new(&mut spawn.state_2)))
-            .field("State 3", |ui, spawn| ui.add(DragValue::new(&mut spawn.state_3)))
-            .field("State 4", |ui, spawn| ui.add(DragValue::new(&mut spawn.state_4)))
-            .field("State 5", |ui, spawn| ui.add(DragValue::new(&mut spawn.state_5)))
+            .field("State 0", |ui, spawn| {
+                ui.add(DragValue::new(&mut spawn.state_0))
+            })
+            .field("State 1", |ui, spawn| {
+                ui.add(DragValue::new(&mut spawn.state_1))
+            })
+            .field("State 2", |ui, spawn| {
+                ui.add(DragValue::new(&mut spawn.state_2))
+            })
+            .field("State 3", |ui, spawn| {
+                ui.add(DragValue::new(&mut spawn.state_3))
+            })
+            .field("State 4", |ui, spawn| {
+                ui.add(DragValue::new(&mut spawn.state_4))
+            })
+            .field("State 5", |ui, spawn| {
+                ui.add(DragValue::new(&mut spawn.state_5))
+            })
             .new_section("AI")
             .field("AI Action Name", |ui, spawn| {
                 ui.text_edit_singleline(&mut spawn.ai_action_name)
@@ -797,7 +821,9 @@ impl ChapterEditor {
             .field("AI Move Limit", |ui, spawn| {
                 ui.text_edit_singleline(&mut spawn.ai_move_limit)
             })
-            .field("AI Flag", |ui, spawn| ui.add(DragValue::new(&mut spawn.ai_flag)))
+            .field("AI Flag", |ui, spawn| {
+                ui.add(DragValue::new(&mut spawn.ai_flag))
+            })
             .show(ui)
             .changed()
     }

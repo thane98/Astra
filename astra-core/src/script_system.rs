@@ -1,11 +1,11 @@
-use std::collections::HashMap;
+use std::collections::{BTreeSet, HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::Arc;
 
 use anyhow::Result;
 use parking_lot::Mutex;
-use tracing::info;
+use tracing::{error, info};
 
 use crate::{BundlePersistFormat, CobaltFileSystemProxy};
 
@@ -41,7 +41,10 @@ impl ScriptSystem {
             editor_args.replace("$FILE", script_path.to_string_lossy().as_ref());
         let full_args: Vec<&str> = args_with_file_path.split_ascii_whitespace().collect();
 
+        info!("Opening script with command '{} {}'", editor_program, args_with_file_path);
         Command::new(editor_program).args(&full_args).spawn()?;
+        info!("Successfully ran command to open script '{}'", script_name);
+
         Ok(())
     }
 
@@ -56,8 +59,18 @@ impl ScriptSystem {
         self.opened_scripts.remove(script_name);
     }
 
-    pub fn list(&self) -> impl Iterator<Item = &String> {
-        self.opened_scripts.keys()
+    pub fn list_open(&self) -> HashSet<String> {
+        self.opened_scripts.keys().map(|k| k.to_string()).collect()
+    }
+
+    pub fn list_all(&self) -> BTreeSet<String> {
+        match self.file_system.list_scripts() {
+            Ok(scripts) => scripts,
+            Err(err) => {
+                error!("Failed to list scripts: {:?}", err);
+                BTreeSet::new()
+            }
+        }
     }
 }
 

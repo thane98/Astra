@@ -6,8 +6,8 @@ use crate::widgets::{exist_die_timing_drop_down, id_field, keyed_add_modal_conte
 use crate::{
     bitgrid_i32, bitgrid_u8, editable_list, gender_drop_down, model_drop_down,
     msbt_key_value_multiline, msbt_key_value_singleline, nation_drop_down, optional_image,
-    standard_stat_column_headers, standard_stats_row, CachedView, DecorationKind,
-    EditorState, ListEditorContent, PersonSheet, PersonSheetRetriever, PropertyGrid, ViewItem,
+    standard_stat_column_headers, standard_stats_row, CachedView, DecorationKind, EditorState,
+    ListEditorContent, PersonSheet, PersonSheetRetriever, PropertyGrid, ViewItem,
 };
 
 const WEAPON_AFFINITY_LABELS: &[&str] = &[

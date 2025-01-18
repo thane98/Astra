@@ -6,9 +6,8 @@ use crate::widgets::{
     id_field, keyed_add_modal_content, terrain_destroyer_drop_down, terrain_prohibition_drop_down,
 };
 use crate::{
-    model_drop_down, msbt_key_value_singleline, rgb_color_picker,
-    CachedView, EditorState, ListEditorContent, PropertyGrid, TerrainDataSheet,
-    TerrainDataSheetRetriever,
+    model_drop_down, msbt_key_value_singleline, rgb_color_picker, CachedView, EditorState,
+    ListEditorContent, PropertyGrid, TerrainDataSheet, TerrainDataSheetRetriever,
 };
 
 pub struct TerrainDataEditor {
@@ -58,7 +57,9 @@ impl TerrainDataEditor {
                     .field("HP (N)", |ui, tile| ui.add(DragValue::new(&mut tile.hp_n)))
                     .field("HP (H)", |ui, tile| ui.add(DragValue::new(&mut tile.hp_h)))
                     .field("HP (L)", |ui, tile| ui.add(DragValue::new(&mut tile.hp_l)))
-                    .field("Defense", |ui, tile| ui.add(DragValue::new(&mut tile.defense)))
+                    .field("Defense", |ui, tile| {
+                        ui.add(DragValue::new(&mut tile.defense))
+                    })
                     .field("Avoid", |ui, tile| ui.add(DragValue::new(&mut tile.avoid)))
                     .field("Player Defense", |ui, tile| {
                         ui.add(DragValue::new(&mut tile.player_defense))
@@ -71,12 +72,18 @@ impl TerrainDataEditor {
                     })
                     .field("Heal", |ui, tile| ui.add(DragValue::new(&mut tile.heal)))
                     .field("Life", |ui, tile| ui.add(DragValue::new(&mut tile.life)))
-                    .field("Move Cost", |ui, tile| ui.add(DragValue::new(&mut tile.move_cost)))
-                    .field("Fly Cost", |ui, tile| ui.add(DragValue::new(&mut tile.fly_cost)))
+                    .field("Move Cost", |ui, tile| {
+                        ui.add(DragValue::new(&mut tile.move_cost))
+                    })
+                    .field("Fly Cost", |ui, tile| {
+                        ui.add(DragValue::new(&mut tile.fly_cost))
+                    })
                     .field("Move First", |ui, tile| {
                         ui.add(DragValue::new(&mut tile.move_first))
                     })
-                    .field("Offset", |ui, tile| ui.add(DragValue::new(&mut tile.offset)))
+                    .field("Offset", |ui, tile| {
+                        ui.add(DragValue::new(&mut tile.offset))
+                    })
                     .field("Put Effect", |ui, tile| {
                         ui.text_edit_singleline(&mut tile.put_effect)
                     })
@@ -107,8 +114,12 @@ impl TerrainDataEditor {
                             &mut tile.change_encount,
                         ))
                     })
-                    .field("Command", |ui, tile| ui.add(DragValue::new(&mut tile.command)))
-                    .field("Height", |ui, tile| ui.add(DragValue::new(&mut tile.height)))
+                    .field("Command", |ui, tile| {
+                        ui.add(DragValue::new(&mut tile.command))
+                    })
+                    .field("Height", |ui, tile| {
+                        ui.add(DragValue::new(&mut tile.height))
+                    })
                     .field("Color (RGB)", |ui, tile| {
                         ui.add(rgb_color_picker(
                             &mut tile.color_r,

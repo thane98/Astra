@@ -5,7 +5,9 @@ use egui::{Align2, TextEdit, Vec2};
 use egui_modal::Modal;
 
 use crate::{
-    folder_picker, language_dir_config, output_mode_config, output_mode_drop_down, region_dir_config, rom_source_config, rom_source_drop_down, AppConfig, AppState, ProjectDef, ProjectOutputMode, RomSourceDef
+    folder_picker, language_dir_config, output_mode_config, output_mode_drop_down,
+    region_dir_config, rom_source_config, rom_source_drop_down, AppConfig, AppState, ProjectDef,
+    ProjectOutputMode, RomSourceDef,
 };
 
 const COBALT_PLUGIN: &[u8] = include_bytes!("../../assets/libastra_cobalt_plugin.nro");
