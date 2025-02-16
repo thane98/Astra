@@ -80,7 +80,7 @@ where
         let mut changed = false;
 
         self.handle.read(|data| {
-            let valid = !self.id.is_empty() && !data.contains(&self.id);
+            let valid = !self.id.is_empty() && !model.contains(&self.id);
             ui.horizontal_top(|ui| {
                 ui.label("ID");
                 ui.add(model_drop_down(data, dependencies, &mut self.id));
