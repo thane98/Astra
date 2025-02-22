@@ -5,14 +5,14 @@ use std::sync::Arc;
 
 use astra_core::{Astra, OpenTerrain};
 use astra_types::{Chapter, ChapterBook, Spawn, TerrainData};
-use egui::{Button, CentralPanel, ComboBox, DragValue, Slider, TopBottomPanel, Ui};
+use egui::{Button, CentralPanel, ComboBox, DragValue, SidePanel, Slider, TopBottomPanel, Ui};
 use egui_modal::{Icon, Modal};
 use indexmap::IndexMap;
 use parking_lot::RwLock;
 
 use crate::widgets::{
     bitgrid_i32, bitgrid_u16, chapter_encount_type, chapter_spot_state, force_drop_down, id_field,
-    keyed_add_modal_content,
+    keyed_add_modal_content, TerrainBrush,
 };
 use crate::{
     blank_slate, dispos_grid, editor_tab_strip, indexed_model_drop_down, model_drop_down,
@@ -190,6 +190,7 @@ pub struct ChapterEditor {
     hovered_spawn: Option<String>,
     script_open_error: Option<String>,
     selected_chapter_index: Option<usize>,
+    terrain_brush: TerrainBrush,
 
     terrain_content: ListEditorContent<IndexMap<String, TerrainData>, TerrainData, EditorState>,
     dispos_content: GroupEditorContent,
@@ -211,6 +212,7 @@ impl ChapterEditor {
             hovered_spawn: None,
             script_open_error: None,
             selected_chapter_index: None,
+            terrain_brush: Default::default(),
 
             terrain_content: ListEditorContent::new("chapter_terrain_list_editor")
                 .with_add_modal_content(keyed_add_modal_content),
@@ -454,7 +456,9 @@ impl ChapterEditor {
         ui.add_enabled_ui(config.has_configured_script_editor(), |ui| {
             let response = ui.button(label);
             let clicked = response.clicked();
-            response.on_disabled_hover_text("Please configure a script editor under File -> Preferences");
+            response.on_disabled_hover_text(
+                "Please configure a script editor under File -> Preferences",
+            );
             if clicked {
                 let result = astra.open_script(
                     script_name,
@@ -839,6 +843,15 @@ impl ChapterEditor {
             _ => None,
         };
         if let Some(chapter_terrain) = terrain {
+            SidePanel::right("terrain_right_panel")
+                .exact_width(30.)
+                .resizable(false)
+                .show(ctx, |ui| {
+                    // TODO: Find better icons.
+                    ui.selectable_value(&mut self.terrain_brush, TerrainBrush::Stamp, "🖊");
+                    ui.selectable_value(&mut self.terrain_brush, TerrainBrush::Fill, "💧");
+                });
+
             TopBottomPanel::bottom("dispos_bottom_panel").show(ctx, |ui| {
                 ui.horizontal(|ui| {
                     ui.label("Tile Brightness");
@@ -859,12 +872,11 @@ impl ChapterEditor {
                         self.terrain_content.selection(),
                         state,
                         config,
+                        self.terrain_brush,
                     );
                     self.hovered_tile = result.hovered_tile;
                     if let Some(selection) = result.selected_tile {
-                        let tile_index = state.terrain.read(|data| {
-                            data.get_index_of(&selection)
-                        });
+                        let tile_index = state.terrain.read(|data| data.get_index_of(&selection));
                         if let Some(index) = tile_index {
                             self.terrain_content.select(Some(index));
                         }
