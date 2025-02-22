@@ -861,6 +861,14 @@ impl ChapterEditor {
                         config,
                     );
                     self.hovered_tile = result.hovered_tile;
+                    if let Some(selection) = result.selected_tile {
+                        let tile_index = state.terrain.read(|data| {
+                            data.get_index_of(&selection)
+                        });
+                        if let Some(index) = tile_index {
+                            self.terrain_content.select(Some(index));
+                        }
+                    }
                     result.changed
                 });
             });

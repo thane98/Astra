@@ -10,6 +10,7 @@ use crate::{AppConfig, EditorState, ListModel};
 pub struct TerrainGridResult {
     pub changed: bool,
     pub hovered_tile: Option<String>,
+    pub selected_tile: Option<String>,
 }
 
 pub fn terrain_grid(
@@ -21,6 +22,7 @@ pub fn terrain_grid(
 ) -> TerrainGridResult {
     let mut changed = None;
     let mut hovered_tile = None;
+    let mut selected_tile = None;
     ScrollArea::both()
         .id_source("chapter_terrain_scroll")
         .show(ui, |ui| {
@@ -30,9 +32,8 @@ pub fn terrain_grid(
                 state.terrain.read(|data| {
                     for row in (0..(terrain.height as usize)).rev() {
                         for col in 0..(terrain.width as usize) {
-                            let (tile_name, fill) = terrain
-                                .terrains
-                                .get(row * 32 + col)
+                            let tid = terrain.terrains.get(row * 32 + col);
+                            let (tile_name, fill) = tid
                                 .and_then(|tid| data.get(tid.as_str()))
                                 .map(|tile| (tile.text(state), get_tile_color(tile, config)))
                                 .unwrap_or_else(|| (Cow::Borrowed("???"), Color32::from_gray(0)));
@@ -46,6 +47,9 @@ pub fn terrain_grid(
                                 if let Some(tid) = new_tid {
                                     changed = Some((row, col, tid));
                                 }
+                            }
+                            if response.secondary_clicked() {
+                                selected_tile = tid.map(|v| v.to_string());
                             }
                             if response.hovered() {
                                 egui::show_tooltip(ui.ctx(), ui.id(), |ui| {
@@ -67,10 +71,12 @@ pub fn terrain_grid(
         return TerrainGridResult {
             changed: true,
             hovered_tile,
+            selected_tile,
         };
     }
     TerrainGridResult {
         changed: false,
         hovered_tile,
+        selected_tile,
     }
 }
