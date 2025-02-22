@@ -48,6 +48,9 @@ pub fn terrain_grid(
                                 }
                             }
                             if response.hovered() {
+                                egui::show_tooltip(ui.ctx(), ui.id(), |ui| {
+                                    ui.label(tile_name.clone());
+                                });
                                 hovered_tile = Some(tile_name.into_owned());
                             }
                         }
