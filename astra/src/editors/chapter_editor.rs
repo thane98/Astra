@@ -850,6 +850,7 @@ impl ChapterEditor {
                     // TODO: Find better icons.
                     ui.selectable_value(&mut self.terrain_brush, TerrainBrush::Stamp, "🖊");
                     ui.selectable_value(&mut self.terrain_brush, TerrainBrush::Fill, "💧");
+                    ui.selectable_value(&mut self.terrain_brush, TerrainBrush::Box, "⬜");
                 });
 
             TopBottomPanel::bottom("dispos_bottom_panel").show(ctx, |ui| {

@@ -2,7 +2,7 @@ use std::borrow::Cow;
 use std::collections::HashSet;
 
 use astra_formats::{TerrainData, UString};
-use egui::{Button, Color32, Grid, ScrollArea, Ui, Vec2};
+use egui::{Button, Color32, Grid, ScrollArea, Sense, Ui, Vec2};
 
 use crate::model::ViewItem;
 use crate::util::get_tile_color;
@@ -13,6 +13,7 @@ pub enum TerrainBrush {
     #[default]
     Stamp,
     Fill,
+    Box,
 }
 
 pub struct TerrainGridResult {
@@ -32,6 +33,8 @@ pub fn terrain_grid(
     let mut changed = vec![];
     let mut hovered_tile = None;
     let mut selected_tile = None;
+    let mut drag_origin = None;
+    let mut drag_end = None;
     ScrollArea::both()
         .id_source("chapter_terrain_scroll")
         .show(ui, |ui| {
@@ -47,8 +50,16 @@ pub fn terrain_grid(
                                 .map(|tile| (tile.text(state), get_tile_color(tile, config)))
                                 .unwrap_or_else(|| (Cow::Borrowed("???"), Color32::from_gray(0)));
 
-                            let response =
-                                ui.add_sized([48., 48.], Button::new("").rounding(0.).fill(fill));
+                            let sense = if let TerrainBrush::Box = brush {
+                                Sense::click_and_drag()
+                            } else {
+                                Sense::click()
+                            };
+
+                            let response = ui.add_sized(
+                                [48., 48.],
+                                Button::new("").sense(sense).rounding(0.).fill(fill),
+                            );
                             if response.clicked() {
                                 if let Some(tid) = tid {
                                     match brush {
@@ -60,8 +71,15 @@ pub fn terrain_grid(
                                             row,
                                             col,
                                         ),
+                                        TerrainBrush::Box => {}
                                     }
                                 }
+                            }
+                            if response.drag_released() {
+                                drag_origin = Some((row, col));
+                            }
+                            if response.contains_pointer() {
+                                drag_end = Some((row, col));
                             }
                             if response.secondary_clicked() {
                                 selected_tile = tid.map(|v| v.to_string());
@@ -78,13 +96,27 @@ pub fn terrain_grid(
                 });
             });
         });
-    if !changed.is_empty() {
-        let new_tid = state.terrain.read(|data| {
-            selected_tile_index
-                .and_then(|index| data.item(index))
-                .map(|tile| tile.tid.clone())
-        });
-        if let Some(tid) = new_tid {
+
+    let new_tid = state.terrain.read(|data| {
+        selected_tile_index
+            .and_then(|index| data.item(index))
+            .map(|tile| tile.tid.clone())
+    });
+    if let Some(tid) = new_tid {
+        if let (Some((drag_start_row, drag_start_col)), Some((drag_end_row, drag_end_col))) =
+            (drag_origin, drag_end)
+        {
+            let min_row = drag_start_row.min(drag_end_row);
+            let max_row = drag_start_row.max(drag_end_row);
+            let min_col = drag_start_col.min(drag_end_col);
+            let max_col = drag_start_col.max(drag_end_col);
+            for row in min_row..=max_row {
+                for col in min_col..=max_col {
+                    changed.push((row, col));
+                }
+            }
+        }
+        if !changed.is_empty() {
             for (row, col) in &changed {
                 let index = row * 32 + col;
                 if index < terrain.terrains.len() {
