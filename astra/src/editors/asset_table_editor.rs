@@ -99,7 +99,7 @@ impl AssetTableEditor {
                         ui.text_edit_singleline(&mut def.acc_7_model)
                     })
                     .field("Accessory 7 Locator", |ui, def| {
-                        ui.text_edit_singleline(&mut def.acc_1_locator)
+                        ui.text_edit_singleline(&mut def.acc_7_locator)
                     })
                     .field("Accessory 8 Model", |ui, def| {
                         ui.text_edit_singleline(&mut def.acc_8_model)
