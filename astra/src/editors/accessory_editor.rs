@@ -1,6 +1,7 @@
 use astra_types::{Accessory, ItemBook};
 use indexmap::IndexMap;
 
+use crate::widgets::gender_drop_down;
 use crate::{
     gold_field, id_field, iron_field_i8, keyed_add_modal_content, model_drop_down,
     msbt_key_value_multiline, msbt_key_value_singleline, silver_field, steel_field, AccessorySheet,
@@ -63,6 +64,7 @@ impl AccessoryEditor {
                             ui.add(model_drop_down(data, state, &mut acc.condtion_cid))
                         })
                     })
+                    .field("Gender Condition", |ui, acc| ui.add(gender_drop_down(&mut acc.condtion_gender)))
                     .field("GID", |ui, acc| {
                         state
                             .god
