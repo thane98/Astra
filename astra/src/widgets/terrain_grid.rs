@@ -167,10 +167,10 @@ fn get_bucket_fill_tiles_recursive(
         if tid.as_str() == target_tid {
             // General case: note the tile and recurse to adjacent tiles
             output.push((row, col));
-            get_bucket_fill_tiles_recursive(checked, output, tiles, target_tid, row - 1, col);
+            get_bucket_fill_tiles_recursive(checked, output, tiles, target_tid, row.saturating_sub(1), col);
             get_bucket_fill_tiles_recursive(checked, output, tiles, target_tid, row + 1, col);
             get_bucket_fill_tiles_recursive(checked, output, tiles, target_tid, row, col + 1);
-            get_bucket_fill_tiles_recursive(checked, output, tiles, target_tid, row, col - 1);
+            get_bucket_fill_tiles_recursive(checked, output, tiles, target_tid, row, col.saturating_sub(1));
         }
     }
 }
