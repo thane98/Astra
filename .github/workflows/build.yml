@@ -1,0 +1,33 @@
+name: Python package
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+
+  steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+    
+    - name: Package Application (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        cargo build --release
+        mkdir dist
+        copy target/release/astra.exe dist/astra.exe
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Paragon-${{ runner.os }}
+        path: dist
