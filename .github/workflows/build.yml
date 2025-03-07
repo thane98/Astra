@@ -1,4 +1,4 @@
-name: Python package
+name: Astra
 
 on:
   push:
@@ -13,12 +13,12 @@ jobs:
         os: [windows-latest]
 
   steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
 
     - name: Set up Rust
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
+      uses: dtolnay/rust-toolchain@stable
     
     - name: Package Application (Windows)
       if: runner.os == 'Windows'
