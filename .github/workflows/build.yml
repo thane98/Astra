@@ -12,22 +12,22 @@ jobs:
       matrix:
         os: [windows-latest]
 
-  steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: recursive
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
-    - name: Set up Rust
-      uses: dtolnay/rust-toolchain@stable
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
 
-    - name: Package Application (Windows)
-      if: runner.os == 'Windows'
-      run: |
-        cargo build --release
-        mkdir dist
-        copy target/release/astra.exe dist/astra.exe
+      - name: Package Application (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          cargo build --release
+          mkdir dist
+          copy target/release/astra.exe dist/astra.exe
 
-    - uses: actions/upload-artifact@v2
-      with:
-        name: Paragon-${{ runner.os }}
-        path: dist
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Paragon-${{ runner.os }}
+          path: dist
