@@ -27,7 +27,7 @@ jobs:
           mkdir dist
           copy target/release/astra.exe dist/astra.exe
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
-          name: Paragon-${{ runner.os }}
+          name: Astra-${{ runner.os }}
           path: dist

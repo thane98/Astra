@@ -9,14 +9,14 @@ macro_rules! enum_combo_box {
                         .width(ui.spacing().text_edit_width)
                         .selected_text(match value {
                             $(
-                                $key => $label,
+                                $key => format!("{} - {}", $key, $label),
                             )+
-                            _ => "",
+                            _ => String::default(),
                         })
                         .show_ui(ui, |ui| {
                             let mut response: Option<egui::Response> = None;
                             $(
-                                let value_response = ui.selectable_value(value, $key, $label);
+                                let value_response = ui.selectable_value(value, $key, format!("{} - {}", $key, $label));
                                 changed |= value_response.changed();
                                 match response {
                                     Some(r) => response = Some(r.union(value_response)),
