@@ -1,5 +1,6 @@
-use egui::{FontData, FontDefinitions, FontFamily};
+use egui::{FontData, FontDefinitions, FontFamily, Style};
 
+use crate::model::Theme;
 use crate::{
     first_run, main_window, project_creator, project_loader, project_selector, AppConfig, AppState,
 };
@@ -12,7 +13,13 @@ pub struct AstraApp {
 
 impl AstraApp {
     pub fn new(cc: &eframe::CreationContext<'_>, config: AppConfig) -> Self {
-        catppuccin_egui::set_theme(&cc.egui_ctx, config.theme.into());
+        match config.theme {
+            Theme::Egui => cc.egui_ctx.set_style(Style::default()),
+            Theme::Latte => catppuccin_egui::set_theme(&cc.egui_ctx, catppuccin_egui::LATTE),
+            Theme::Frappe => catppuccin_egui::set_theme(&cc.egui_ctx, catppuccin_egui::FRAPPE),
+            Theme::Macchiato => catppuccin_egui::set_theme(&cc.egui_ctx, catppuccin_egui::MACCHIATO),
+            Theme::Mocha => catppuccin_egui::set_theme(&cc.egui_ctx, catppuccin_egui::MOCHA),
+        }
 
         let mut font_definitions = FontDefinitions::default();
         font_definitions.font_data.insert(

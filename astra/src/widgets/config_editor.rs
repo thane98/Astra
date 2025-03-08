@@ -1,5 +1,5 @@
 use catppuccin_egui::{FRAPPE, LATTE, MACCHIATO, MOCHA};
-use egui::{Grid, Ui};
+use egui::{Grid, Style, Ui};
 use egui_modal::Modal;
 
 use crate::{folder_picker, AppConfig, Theme};
@@ -22,6 +22,12 @@ pub fn config_editor(ui: &mut Ui, config: &mut AppConfig) {
             ui.label("Theme");
         });
         ui.vertical(|ui| {
+            if ui
+                .radio_value(&mut config.theme, Theme::Egui, "egui")
+                .clicked()
+            {
+                ui.ctx().set_style(Style::default());
+            }
             if ui
                 .radio_value(&mut config.theme, Theme::Latte, "Latte")
                 .clicked()

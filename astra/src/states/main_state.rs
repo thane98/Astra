@@ -2,6 +2,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::{Arc, OnceLock};
 
+use egui::Style;
 use egui_notify::Toasts;
 use parking_lot::{Mutex, RwLock};
 
@@ -736,6 +737,13 @@ pub fn main_window(
             ui.menu_button("View", |ui| {
                 ui.menu_button("Theme", |ui| {
                     if ui
+                        .selectable_label(matches!(config.theme, Theme::Egui), "egui")
+                        .clicked()
+                    {
+                        update_theme(config, ctx, Theme::Egui);
+                        ui.close_menu();
+                    }
+                    if ui
                         .selectable_label(matches!(config.theme, Theme::Latte), "Latte")
                         .clicked()
                     {
@@ -910,7 +918,7 @@ pub fn main_window(
         Screens::Save => state
             .save_screen
             .ui(&mut state.active_screen, ctx, &mut state.toasts),
-        Screens::Scripts => state.script_manager.ui(ctx, &config, &mut state.toasts),
+        Screens::Scripts => state.script_manager.ui(ctx, config, &mut state.toasts),
         Screens::Shop => state.shop_editor.show(ctx, &mut state.editor_state),
         Screens::Skill => state.skill_editor.show(ctx, &mut state.editor_state),
         Screens::Terrain => state.terrain_editor.show(ctx, &mut state.editor_state),
@@ -926,5 +934,11 @@ pub fn main_window(
 
 fn update_theme(config: &mut AppConfig, ctx: &egui::Context, new_theme: Theme) {
     config.theme = new_theme;
-    catppuccin_egui::set_theme(ctx, new_theme.into());
+    match new_theme {
+        Theme::Egui => ctx.set_style(Style::default()),
+        Theme::Latte => catppuccin_egui::set_theme(ctx, catppuccin_egui::LATTE),
+        Theme::Frappe => catppuccin_egui::set_theme(ctx, catppuccin_egui::FRAPPE),
+        Theme::Macchiato => catppuccin_egui::set_theme(ctx, catppuccin_egui::MACCHIATO),
+        Theme::Mocha => catppuccin_egui::set_theme(ctx, catppuccin_egui::MOCHA),
+    }
 }
