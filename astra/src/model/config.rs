@@ -172,7 +172,6 @@ pub enum ProjectOutputMode {
     Cobalt {
         data_path: String,
         patch_path: String,
-        output_msbt: Option<String>,
     },
 }
 
@@ -183,7 +182,6 @@ impl ProjectOutputMode {
             Self::Cobalt {
                 data_path,
                 patch_path,
-                output_msbt: _,
             } => !(data_path.is_empty() || patch_path.is_empty()),
         }
     }
@@ -194,20 +192,18 @@ impl Default for ProjectOutputMode {
         Self::Cobalt {
             data_path: String::new(),
             patch_path: String::new(),
-            output_msbt: None,
         }
     }
 }
 
 impl From<ProjectDef> for AstraProject {
     fn from(value: ProjectDef) -> Self {
-        let (output_dir, cobalt_dir, cobalt_msbt) = match value.output_mode {
-            ProjectOutputMode::Standard(output_dir) => (output_dir.into(), None, None),
+        let (output_dir, cobalt_dir) = match value.output_mode {
+            ProjectOutputMode::Standard(output_dir) => (output_dir.into(), None),
             ProjectOutputMode::Cobalt {
                 data_path,
                 patch_path,
-                output_msbt,
-            } => (data_path.into(), Some(patch_path.into()), output_msbt),
+            } => (data_path.into(), Some(patch_path.into())),
         };
         Self {
             backup_dir: PathBuf::from("Backups"),
@@ -219,7 +215,6 @@ impl From<ProjectDef> for AstraProject {
             },
             output_dir,
             cobalt_dir,
-            cobalt_msbt,
             localization: PathLocalizer::new(
                 value.active_country_dir_name,
                 value.active_language_dir_name,

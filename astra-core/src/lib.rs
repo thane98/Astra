@@ -1,12 +1,13 @@
 mod atlas_system;
 mod book_system;
 mod file_system;
+mod message_script;
 mod message_system;
 mod script_system;
 mod terrain_system;
 
 use std::collections::{BTreeSet, HashMap, HashSet};
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::sync::Arc;
 
 use anyhow::Result;
@@ -34,7 +35,8 @@ pub use book_system::OpenBook;
 pub use file_system::*;
 use image::DynamicImage;
 use message_system::MessageSystem;
-pub use message_system::{OpenMessageArchive, OpenMessageScript};
+pub use message_script::OpenMessageScript;
+pub use message_system::OpenMessageArchive;
 use script_system::ScriptSystem;
 pub use terrain_system::OpenTerrain;
 use terrain_system::TerrainSystem;
@@ -51,14 +53,12 @@ pub struct AstraProject {
     pub rom_source: RomSource,
     pub output_dir: PathBuf,
     pub cobalt_dir: Option<PathBuf>,
-    pub cobalt_msbt: Option<String>,
     pub localization: PathLocalizer,
 }
 
 pub struct Astra {
     project: AstraProject,
     backup_root: PathBuf,
-    cobalt_msbt: Option<String>,
     atlas_system: AtlasSystem,
     book_system: BookSystem,
     message_system: MessageSystem,
@@ -84,7 +84,6 @@ impl Astra {
         )?);
         Ok(Self {
             backup_root: project.backup_dir.clone(),
-            cobalt_msbt: project.cobalt_msbt.clone(),
             atlas_system: AtlasSystem::load(&file_system)
                 .context("Failed to load sprite atlases")?,
             book_system: BookSystem::load(cobalt_proxy.clone())
@@ -110,13 +109,6 @@ impl Astra {
         self.script_system.save(backup_path.as_path())?;
         self.terrain_system.save(backup_path.as_path())?;
         Ok(())
-    }
-
-    pub fn cobalt_msbt(&self) -> Option<String> {
-        self.cobalt_msbt
-            .as_deref()
-            .and_then(|path| Path::new(path).file_name())
-            .map(|file_name| file_name.to_string_lossy().to_string())
     }
 
     pub fn open_script(

@@ -166,7 +166,6 @@ pub struct MessageDb {
     messages: HashMap<String, KeyData>,
     archives: Vec<OpenMessageArchive>,
     archives_by_name: HashMap<String, usize>,
-    cobalt_msbt: Option<String>,
 }
 
 impl MessageDb {
@@ -196,7 +195,6 @@ impl MessageDb {
             messages,
             archives,
             archives_by_name,
-            cobalt_msbt: astra.cobalt_msbt(),
         }
     }
 
@@ -218,19 +216,9 @@ impl MessageDb {
         if let Some(mut data) = self.retrieve_data(key, default_archive) {
             let changed = consumer(Some(&mut data.value));
             if changed {
-                let archive_index = self
-                    .cobalt_msbt
-                    .as_deref()
-                    .and_then(|archive| self.archives_by_name.get(archive))
-                    .copied()
-                    .unwrap_or(data.archive);
-                if let Some(archive) = self.archives.get(archive_index) {
-                    data.archive = archive_index;
-                    archive.write(|message_map| {
-                        message_map.insert(key.to_string(), data.value.clone());
-                        self.messages.insert(key.to_string(), data);
-                        true
-                    });
+                if let Some(archive) = self.archives.get(data.archive) {
+                    archive.put(key.to_string(), data.value.clone());
+                    self.messages.insert(key.to_string(), data);
                 }
             }
         } else {
@@ -241,11 +229,7 @@ impl MessageDb {
     fn retrieve_data(&mut self, key: &str, default_archive: &str) -> Option<KeyData> {
         if !self.messages.contains_key(key) {
             let data = KeyData {
-                archive: *self
-                    .cobalt_msbt
-                    .as_deref()
-                    .and_then(|archive| self.archives_by_name.get(archive))
-                    .or_else(|| self.archives_by_name.get(default_archive))?,
+                archive: *self.archives_by_name.get(default_archive)?,
                 value: String::new(),
             };
             return Some(data);

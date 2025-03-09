@@ -7,7 +7,7 @@ use std::str::FromStr;
 use std::sync::Arc;
 use std::time::Duration;
 
-use anyhow::{bail, Context, Result};
+use anyhow::{anyhow, bail, Context, Result};
 use astra_formats::{Book, TextBundle};
 use indexmap::IndexMap;
 use normpath::PathExt;
@@ -623,7 +623,10 @@ impl CobaltFileSystemProxy {
                 );
                 let raw = self.main_file_system.read(&script_path, false)?;
                 cobalt.write(&path_in_cobalt, &raw)?;
-                info!("Successfully copied script to '{}'", path_in_cobalt.display());
+                info!(
+                    "Successfully copied script to '{}'",
+                    path_in_cobalt.display()
+                );
             }
             if cobalt.exists(&path_in_cobalt)? {
                 info!(
@@ -654,7 +657,10 @@ impl CobaltFileSystemProxy {
                 path_in_cobalt.display()
             );
             cobalt.write(&path_in_cobalt, &script_contents)?;
-            info!("Successfully wrote script to path '{}' in Cobalt", path_in_cobalt.display());
+            info!(
+                "Successfully wrote script to path '{}' in Cobalt",
+                path_in_cobalt.display()
+            );
             return Ok((
                 cobalt.root.join(&path_in_cobalt),
                 BundlePersistFormat::Cobalt {
@@ -817,20 +823,22 @@ impl CobaltFileSystemProxy {
         Ok(())
     }
 
-    pub fn read_cobalt_msbts(&self) -> Result<Vec<(PathBuf, IndexMap<String, String>)>> {
-        let mut files = vec![];
+    pub fn read_cobalt_msbt<P: AsRef<Path>>(
+        &self,
+        path: P,
+    ) -> Result<Option<IndexMap<String, String>>> {
+        let path: &Path = path.as_ref();
         if let Some(fs) = &self.cobalt_file_system {
-            if fs.exists(self.cobalt_msbt_dir())? {
-                for path in fs.list_files(self.cobalt_msbt_dir(), "*.txt")? {
-                    info!("Loading Cobalt MSBT from path {}", path.display());
-                    let raw = fs.read(&path)?;
-                    let script = String::from_utf8_lossy(&raw);
-                    let messages = astra_formats::convert_astra_script_to_entries(&script)?;
-                    files.push((path, messages))
-                }
+            let cobalt_path = self.to_cobalt_msbt_path(path)?;
+            if fs.exists(cobalt_path.as_path())? {
+                info!("Loading Cobalt MSBT from path {}", cobalt_path.display());
+                let raw = fs.read(&cobalt_path)?;
+                let script = String::from_utf8_lossy(&raw);
+                let messages = astra_formats::convert_astra_script_to_entries(&script)?;
+                return Ok(Some(messages));
             }
         }
-        Ok(files)
+        Ok(None)
     }
 
     pub fn save_msbt<P: AsRef<Path>>(
@@ -840,9 +848,10 @@ impl CobaltFileSystemProxy {
     ) -> Result<()> {
         if let Some(fs) = &self.cobalt_file_system {
             let p: &Path = path.as_ref();
-            info!("Saving MSBT to Cobalt folder at {}", p.display());
+            let cobalt_path = self.to_cobalt_msbt_path(p)?;
+            info!("Saving MSBT to Cobalt folder at {}", cobalt_path.display());
             let script = astra_formats::convert_entries_to_astra_script(msbt)?;
-            fs.write(p, script.as_bytes())?;
+            fs.write(cobalt_path, script.as_bytes())?;
         } else {
             bail!("Expected Cobalt folder but the project does not support it")
         }
@@ -855,11 +864,30 @@ impl CobaltFileSystemProxy {
         backup_root: U,
     ) -> Result<()> {
         if let Some(fs) = &self.cobalt_file_system {
-            fs.backup(path, backup_root)?;
+            let cobalt_path = self.to_cobalt_msbt_path(path.as_ref())?;
+            fs.backup(cobalt_path, backup_root)?;
         } else {
             bail!("Expected Cobalt folder but the project does not support it")
         }
         Ok(())
+    }
+
+    fn to_cobalt_msbt_path(&self, path: &Path) -> Result<PathBuf> {
+        info!("Attempting to convert RomFS path '{}' to Cobalt path", path.display());
+        let file_stem = path
+            .file_name()
+            .map(|name| {
+                name.to_string_lossy()
+                    .trim_end_matches(".bytes.bundle")
+                    .to_string()
+            })
+            .ok_or_else(|| {
+                anyhow!(
+                    "Could not convert path '{}' to a Cobalt path",
+                    path.display()
+                )
+            })?;
+        Ok(self.cobalt_msbt_dir().join(format!("{}.txt", file_stem)))
     }
 
     fn cobalt_msbt_dir(&self) -> PathBuf {
@@ -867,6 +895,10 @@ impl CobaltFileSystemProxy {
             .join("message")
             .join(&self.path_localizer.country_dir)
             .join(&self.path_localizer.language_dir)
+    }
+
+    pub fn is_cobalt_project(&self) -> bool {
+        self.cobalt_file_system.is_some()
     }
 }
 

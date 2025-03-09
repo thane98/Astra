@@ -212,7 +212,6 @@ fn create_cobalt_project(project: &mut ProjectDef, config: &AppConfig) -> Result
     if let ProjectOutputMode::Cobalt {
         data_path,
         patch_path,
-        output_msbt,
     } = &mut project.output_mode
     {
         // Sanity check: did the user set Cobalt's path directly?
@@ -249,14 +248,9 @@ fn create_cobalt_project(project: &mut ProjectDef, config: &AppConfig) -> Result
         if !msbt_folder_path.is_dir() {
             std::fs::create_dir_all(&msbt_folder_path)?;
         }
-        let msbt_path = msbt_folder_path.join("editedtext.txt");
-        if !msbt_path.is_file() {
-            std::fs::write(&msbt_path, "")?;
-        }
-
+        
         *data_path = new_data_path.to_string_lossy().to_string();
         *patch_path = patches_patch.to_string_lossy().to_string();
-        *output_msbt = Some(msbt_path.to_string_lossy().to_string());
     }
     Ok(())
 }

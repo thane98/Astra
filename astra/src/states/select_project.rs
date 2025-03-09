@@ -54,11 +54,7 @@ fn project_table(config: &mut AppConfig, next_state: &mut Option<AppState>, ui: 
                         ui.label("LayeredFS Only");
                         ui.label(data_path);
                     }
-                    ProjectOutputMode::Cobalt {
-                        data_path,
-                        patch_path: _,
-                        output_msbt: _,
-                    } => {
+                    ProjectOutputMode::Cobalt { data_path, .. } => {
                         ui.label("Cobalt");
                         ui.label(data_path);
                     }

@@ -1,13 +1,15 @@
 use std::collections::{BTreeSet, HashMap};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::sync::Arc;
 
 use anyhow::{anyhow, Context, Result};
 use astra_formats::indexmap::IndexMap;
 use astra_formats::MessageBundle;
+use indexmap::IndexSet;
 use parking_lot::RwLock;
 use tracing::{info, warn};
 
+use crate::message_script::OpenMessageScript;
 use crate::{CobaltFileSystemProxy, LocalizedFileSystem};
 
 pub struct MessageSystem {
@@ -154,19 +156,9 @@ impl MessageSystem {
         ];
         let mut archives = HashMap::new();
         for (key, path) in targets {
-            let archive = OpenMessageArchive::load(&file_system, path.to_string())
+            let archive = OpenMessageArchive::load(&file_system, &cobalt, path.to_string())
                 .with_context(|| format!("failed to read archive {}", path))?;
             archives.insert(key.to_string(), archive);
-        }
-        for (path, archive) in cobalt.read_cobalt_msbts()? {
-            let file_name = path
-                .file_name()
-                .map(|f| f.to_string_lossy().into_owned())
-                .ok_or_else(|| anyhow!("bad cobalt MSBT file name"))?;
-            archives.insert(
-                file_name,
-                OpenMessageArchive::new_cobalt(path.clone(), archive)?,
-            );
         }
         Ok(Self {
             scripts: HashMap::new(),
@@ -259,13 +251,12 @@ impl Clone for OpenMessageArchive {
 }
 
 impl OpenMessageArchive {
-    pub fn new_cobalt(path: PathBuf, message_map: IndexMap<String, String>) -> Result<Self> {
-        OpenMessageArchiveInner::new_cobalt(path, message_map)
-            .map(|archive| Self(Arc::new(RwLock::new(archive))))
-    }
-
-    pub fn load(file_system: &LocalizedFileSystem, path: String) -> Result<Self> {
-        OpenMessageArchiveInner::load(file_system, path)
+    pub fn load(
+        file_system: &LocalizedFileSystem,
+        cobalt: &CobaltFileSystemProxy,
+        path: String,
+    ) -> Result<Self> {
+        OpenMessageArchiveInner::load(file_system, cobalt, path)
             .map(|archive| Self(Arc::new(RwLock::new(archive))))
     }
 
@@ -286,39 +277,40 @@ impl OpenMessageArchive {
         consumer(&self.0.read().message_map)
     }
 
-    pub fn write(&self, consumer: impl FnOnce(&mut IndexMap<String, String>) -> bool) {
+    pub fn put(&self, key: String, value: String) {
         let mut archive = self.0.write();
-        if consumer(&mut archive.message_map) {
-            archive.dirty = true;
-        }
+        archive.put(key, value);
     }
 }
 
 struct OpenMessageArchiveInner {
     message_map: IndexMap<String, String>,
-    dirty: bool,
-    bundle: Option<MessageBundle>,
+    altered_keys: IndexSet<String>,
+    bundle: MessageBundle,
     path: String,
 }
 
 impl OpenMessageArchiveInner {
-    pub fn new_cobalt(path: PathBuf, message_map: IndexMap<String, String>) -> Result<Self> {
-        Ok(Self {
-            message_map,
-            dirty: false,
-            bundle: None,
-            path: path.to_string_lossy().into_owned(),
-        })
-    }
-
-    pub fn load(file_system: &LocalizedFileSystem, path: String) -> Result<Self> {
+    pub fn load(
+        file_system: &LocalizedFileSystem,
+        cobalt: &CobaltFileSystemProxy,
+        path: String,
+    ) -> Result<Self> {
         let contents = file_system.read(&path, true)?;
         let mut bundle = MessageBundle::from_slice(&contents)?;
+
+        let mut message_map = bundle.take_entries()?;
+        let mut altered_keys = IndexSet::new();
+        if let Some(messages) = cobalt.read_cobalt_msbt(&path)? {
+            altered_keys.extend(messages.keys().cloned());
+            message_map.extend(messages);
+        }
+
         Ok(Self {
-            message_map: bundle.take_entries()?,
-            bundle: Some(bundle),
+            message_map,
+            bundle,
             path,
-            dirty: false,
+            altered_keys,
         })
     }
 
@@ -328,81 +320,38 @@ impl OpenMessageArchiveInner {
         cobalt: &CobaltFileSystemProxy,
         backup_root: &Path,
     ) -> Result<()> {
-        if self.dirty {
-            if let Some(bundle) = &mut self.bundle {
-                file_system.backup(&self.path, backup_root, true)?;
-                bundle.replace_entries(self.message_map.clone())?;
-                let raw_bundle = bundle.serialize()?;
-                // Clear out data after building the bundle to avoid a memory leak.
-                bundle.replace_entries(IndexMap::new())?;
-                file_system.write(&self.path, &raw_bundle, true)?;
-            } else {
+        if !self.altered_keys.is_empty() {
+            if cobalt.is_cobalt_project() {
+                let mut changes = IndexMap::new();
+                for k in &self.altered_keys {
+                    let value = self
+                        .message_map
+                        .get(k)
+                        .cloned()
+                        .ok_or_else(|| anyhow!("Failed to find altered key '{}'", k))?;
+                    changes.insert(k.to_string(), value);
+                }
                 cobalt.backup_msbt(&self.path, backup_root)?;
-                cobalt.save_msbt(&self.path, &self.message_map)?;
+                cobalt.save_msbt(&self.path, &changes)?;
+            } else {
+                file_system.backup(&self.path, backup_root, true)?;
+                self.bundle.replace_entries(self.message_map.clone())?;
+                let raw_bundle = self.bundle.serialize()?;
+                // Clear out data after building the bundle to avoid a memory leak.
+                self.bundle.replace_entries(IndexMap::new())?;
+                file_system.write(&self.path, &raw_bundle, true)?;
             }
+        } else {
+            info!(
+                "Skipping updates to message archive '{}' since no edits were made.",
+                self.path
+            );
         }
         Ok(())
     }
-}
 
-pub struct OpenMessageScript(Arc<RwLock<OpenMessageScriptInner>>);
-
-impl Clone for OpenMessageScript {
-    fn clone(&self) -> Self {
-        Self(self.0.clone())
-    }
-}
-
-impl OpenMessageScript {
-    pub fn load(file_system: &LocalizedFileSystem, path: String) -> Result<Self> {
-        OpenMessageScriptInner::load(file_system, path)
-            .map(|script| Self(Arc::new(RwLock::new(script))))
-    }
-
-    pub fn save(&self, file_system: &LocalizedFileSystem, backup_root: &Path) -> Result<()> {
-        self.0.write().save(file_system, backup_root)
-    }
-
-    pub fn path(&self) -> String {
-        self.0.read().path.clone()
-    }
-
-    pub fn access(&self, consumer: impl FnOnce(&mut String) -> bool) {
-        let mut script = self.0.write();
-        if consumer(&mut script.script) {
-            script.dirty = true;
-        }
-    }
-}
-
-struct OpenMessageScriptInner {
-    pub script: String,
-    pub dirty: bool,
-    bundle: MessageBundle,
-    pub path: String,
-}
-
-impl OpenMessageScriptInner {
-    pub fn load(file_system: &LocalizedFileSystem, path: String) -> Result<Self> {
-        let contents = file_system.read(&path, false)?;
-        let mut bundle = MessageBundle::from_slice(&contents)?;
-        Ok(Self {
-            script: bundle.take_script()?,
-            bundle,
-            path,
-            dirty: false,
-        })
-    }
-
-    pub fn save(&mut self, file_system: &LocalizedFileSystem, backup_root: &Path) -> Result<()> {
-        if self.dirty {
-            file_system.backup(&self.path, backup_root, false)?;
-            self.bundle.replace_script(&self.script)?;
-            let raw_bundle = self.bundle.serialize()?;
-            // Clear out the data after building the bundle to avoid a memory leak.
-            self.bundle.replace_script("")?;
-            file_system.write(&self.path, &raw_bundle, false)?;
-        }
-        Ok(())
+    pub fn put(&mut self, key: String, value: String) {
+        self.altered_keys.insert(key.clone());
+        self.message_map.insert(key, value);
     }
 }

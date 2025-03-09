@@ -72,11 +72,7 @@ pub fn output_mode_drop_down(project: &mut ProjectDef) -> impl Widget + '_ {
             .width(300.)
             .selected_text(match &project.output_mode {
                 ProjectOutputMode::Standard(_) => "LayeredFS Only",
-                ProjectOutputMode::Cobalt {
-                    data_path: _,
-                    patch_path: _,
-                    output_msbt: _,
-                } => "Cobalt",
+                ProjectOutputMode::Cobalt { ..} => "Cobalt",
             })
             .show_ui(ui, |ui| {
                 ui.selectable_value(
@@ -103,7 +99,6 @@ pub fn output_mode_config(project: &mut ProjectDef) -> impl Widget + '_ {
         ProjectOutputMode::Cobalt {
             data_path,
             patch_path,
-            output_msbt,
         } => {
             // This *should* be the only field, but backwards compatibility...
             // Instead, we take a mod path and transform it into data + patch paths.
@@ -124,31 +119,7 @@ pub fn output_mode_config(project: &mut ProjectDef) -> impl Widget + '_ {
                     .to_string();
             }
             ui.end_row();
-
-            ui.label("Output MSBT");
-            ComboBox::from_id_source("output_msbt_combo")
-                .width(300.)
-                .selected_text(
-                    output_msbt
-                        .as_deref()
-                        .and_then(|msbt| Path::new(msbt).file_name().map(|p| p.to_string_lossy()))
-                        .unwrap_or_default(),
-                )
-                .show_ui(ui, |ui| {
-                    for msbt in get_cobalt_msbt_options(
-                        patch_path,
-                        &project.active_country_dir_name,
-                        &project.active_language_dir_name,
-                    ) {
-                        if ui
-                            .selectable_label(output_msbt.as_deref() == Some(msbt.as_str()), &msbt)
-                            .clicked()
-                        {
-                            *output_msbt = Some(msbt);
-                        }
-                    }
-                })
-                .response
+            response
         }
     }
 }
