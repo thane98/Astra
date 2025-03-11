@@ -181,9 +181,14 @@ impl ItemEditor {
                                     })
                                 })
                                 .field("Add", |ui, item| {
-                                    ui.add(editable_list(&mut item.add_sids, |_, value, ui| {
-                                        ui.add(model_drop_down(self.cache.get(), &(), value))
-                                    }))
+                                    state.skill.read(|data| {
+                                        ui.add(editable_list(
+                                            &mut item.add_sids,
+                                            |_, value, ui| {
+                                                ui.add(model_drop_down(data, state, value))
+                                            },
+                                        ))
+                                    })
                                 })
                                 .new_section("Other Effects")
                                 .default_field("Add Target", |item| &mut item.add_target)
