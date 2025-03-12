@@ -41,7 +41,9 @@ impl<'a, D> PropertyGridSection<'a, D> {
     }
 
     pub fn show(&self, ui: &mut Ui, data: &mut D, filter: &str) -> Response {
-        ui.add(raised_heading(self.name));
+        if !self.name.is_empty() {
+            ui.add(raised_heading(self.name));
+        }
         let mut changed = false;
         let mut response = Grid::new(ui.auto_id_with("property_grid"))
             .num_columns(self.num_columns * 2)

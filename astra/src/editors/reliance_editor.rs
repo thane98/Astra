@@ -61,7 +61,7 @@ impl RelianceEditor {
 
     fn exp_data_property_grid(ui: &mut Ui, data: &mut RelianceExpData) -> bool {
         PropertyGrid::new("reliance_exp_data", data)
-            .new_section("Data")
+            .new_section("")
             .field("REXID", |ui, data| ui.add(id_field(&mut data.rexid)))
             .field("C", |ui, data| ui.add(DragValue::new(&mut data.exp_c)))
             .field("B", |ui, data| ui.add(DragValue::new(&mut data.exp_b)))
@@ -72,7 +72,7 @@ impl RelianceEditor {
 
     fn bonuses_property_grid(ui: &mut Ui, data: &mut RelianceBonusData) -> bool {
         PropertyGrid::new("reliance_bonuses_data", data)
-            .new_section("Data")
+            .new_section("")
             .field("Level", |ui, data| ui.add(DragValue::new(&mut data.level)))
             .field("Hit", |ui, data| ui.add(DragValue::new(&mut data.hit)))
             .field("Crit", |ui, data| {

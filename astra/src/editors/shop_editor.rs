@@ -98,7 +98,7 @@ impl ShopEditor {
         state: &EditorState,
     ) -> bool {
         PropertyGrid::new(id_source, data)
-            .new_section("Data")
+            .new_section("")
             .field("Item", |ui, d| {
                 state
                     .item
@@ -117,7 +117,7 @@ impl ShopEditor {
         state: &EditorState,
     ) -> bool {
         PropertyGrid::new("accessory_shop", data)
-            .new_section("Data")
+            .new_section("")
             .field("Item", |ui, d| {
                 state
                     .accessory

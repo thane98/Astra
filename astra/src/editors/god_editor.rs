@@ -101,7 +101,7 @@ impl GodEditor {
         state: &EditorState,
     ) -> bool {
         PropertyGrid::new("gods", data)
-            .new_section("Data")
+            .new_section("")
             .field("GID", |ui, god| ui.add(id_field(&mut god.gid)))
             .field("MID", |ui, god| {
                 msbt_key_value_singleline!(ui, state, "gamedata", god.mid)
@@ -248,7 +248,7 @@ impl GodEditor {
 
     fn level_data_property_grid(ui: &mut Ui, data: &mut GodLevelData, state: &EditorState) -> bool {
         PropertyGrid::new("god_level_data", data)
-            .new_section("Data")
+            .new_section("")
             .field("Level", |ui, data| ui.add(DragValue::new(&mut data.level)))
             .field("Inheritance Skills", |ui, d| {
                 state.skill.read(|data| {
@@ -374,7 +374,7 @@ impl GodEditor {
 
     fn bond_level_data_property_grid(ui: &mut Ui, data: &mut GodBondLevelData) -> bool {
         PropertyGrid::new("god_bond_level_data", data)
-            .new_section("Data")
+            .new_section("")
             .default_field("Level", |d| &mut d.level)
             .default_field("Support Level", |d| &mut d.reliance_level)
             .default_field("Exp", |d| &mut d.exp)
