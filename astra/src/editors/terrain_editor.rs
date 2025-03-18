@@ -38,7 +38,7 @@ impl TerrainDataEditor {
         self.terrain.write(|data| {
             self.content.content(ctx, data, |ui, terraindata| {
                 PropertyGrid::new("terrain", terraindata)
-                    .new_section("Data")
+                    .new_section("")
                     .field("TID", |ui, tile| ui.add(id_field(&mut tile.tid)))
                     .field("Name", |ui, tile| {
                         msbt_key_value_singleline!(ui, state, "gamedata", tile.name)

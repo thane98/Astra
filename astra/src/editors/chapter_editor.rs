@@ -5,14 +5,17 @@ use std::sync::Arc;
 
 use astra_core::{Astra, OpenTerrain};
 use astra_types::{Chapter, ChapterBook, Spawn, TerrainData};
-use egui::{Button, CentralPanel, ComboBox, DragValue, SidePanel, Slider, TopBottomPanel, Ui};
+use egui::{
+    Button, CentralPanel, ComboBox, DragValue, SidePanel, Slider, TopBottomPanel, Ui,
+};
+use egui_extras::{Size, StripBuilder};
 use egui_modal::{Icon, Modal};
 use indexmap::IndexMap;
 use parking_lot::RwLock;
 
 use crate::widgets::{
-    bitgrid_i32, bitgrid_u16, chapter_encount_type, chapter_spot_state, force_drop_down, id_field,
-    keyed_add_modal_content, TerrainBrush,
+    bitgrid_i32, bitgrid_u16, chapter_encount_type, chapter_spot_state,
+    force_drop_down, id_field, keyed_add_modal_content, TerrainBrush,
 };
 use crate::{
     blank_slate, dispos_grid, editor_tab_strip, indexed_model_drop_down, model_drop_down,
@@ -843,15 +846,23 @@ impl ChapterEditor {
             _ => None,
         };
         if let Some(chapter_terrain) = terrain {
-            SidePanel::right("terrain_right_panel")
-                .exact_width(30.)
-                .resizable(false)
-                .show(ctx, |ui| {
-                    // TODO: Find better icons.
-                    ui.selectable_value(&mut self.terrain_brush, TerrainBrush::Stamp, "🖊");
-                    ui.selectable_value(&mut self.terrain_brush, TerrainBrush::Fill, "💧");
-                    ui.selectable_value(&mut self.terrain_brush, TerrainBrush::Box, "⬜");
-                });
+            SidePanel::right("terrain_right_panel").show(ctx, |ui| {
+                StripBuilder::new(ui)
+                    .size(Size::exact(200.))
+                    .size(Size::exact(5.))
+                    .size(Size::exact(20.))
+                    .horizontal(|mut strip| {
+                        strip.cell(|ui| Self::terrain_top_level_form(chapter_terrain, ui));
+                        strip.cell(|ui| {
+                            ui.horizontal_centered(|ui| ui.separator());
+                        });
+                        strip.cell(|ui| {
+                            ui.selectable_value(&mut self.terrain_brush, TerrainBrush::Stamp, "🖊");
+                            ui.selectable_value(&mut self.terrain_brush, TerrainBrush::Fill, "💧");
+                            ui.selectable_value(&mut self.terrain_brush, TerrainBrush::Box, "⬜");
+                        });
+                    });
+            });
 
             TopBottomPanel::bottom("dispos_bottom_panel").show(ctx, |ui| {
                 ui.horizontal(|ui| {
@@ -892,5 +903,18 @@ impl ChapterEditor {
                 });
             });
         }
+    }
+
+    fn terrain_top_level_form(chapter_terrain: &OpenTerrain, ui: &mut Ui) {
+        chapter_terrain.write(|data| {
+            PropertyGrid::new("terrain_top_level_property_grid", data)
+                .new_section("")
+                .default_field("X", |d| &mut d.x)
+                .default_field("Z", |d| &mut d.z)
+                .default_field("Playable Width", |d| &mut d.width)
+                .default_field("Playable Height", |d| &mut d.height)
+                .show(ui)
+                .changed()
+        });
     }
 }

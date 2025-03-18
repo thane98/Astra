@@ -22,7 +22,7 @@ impl GameParamEditor {
         self.param.write(|data| {
             self.content.content(ctx, data, |ui, param| {
                 PropertyGrid::new("param", param)
-                    .new_section("Data")
+                    .new_section("")
                     .field("Name", |ui, param| ui.text_edit_singleline(&mut param.name))
                     .field("English", |ui, param| {
                         ui.text_edit_singleline(&mut param.english)

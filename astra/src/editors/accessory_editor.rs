@@ -36,7 +36,7 @@ impl AccessoryEditor {
         self.accessory.write(|data| {
             self.content.content(ctx, data, |ui, accessory| {
                 PropertyGrid::new("accessory", accessory)
-                    .new_section("Data")
+                    .new_section("")
                     .field("AID", |ui, acc| ui.add(id_field(&mut acc.aid)))
                     .field("Name", |ui, acc| {
                         msbt_key_value_singleline!(ui, state, "accessory", acc.name)
