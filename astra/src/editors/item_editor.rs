@@ -194,6 +194,7 @@ impl ItemEditor {
                                 .default_field("Add Target", |item| &mut item.add_target)
                                 .default_field("Add Type", |item| &mut item.add_type)
                                 .default_field("Add Power", |item| &mut item.add_power)
+                                .default_field("Add Range", |item| &mut item.add_range)
                                 .default_field("Add Effect", |item| &mut item.add_effect)
                                 .field("Add Help", |ui, item| {
                                     ui.text_edit_singleline(&mut item.add_help) // TODO: Find the message archive for this key
