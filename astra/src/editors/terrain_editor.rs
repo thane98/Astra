@@ -64,7 +64,10 @@ impl TerrainDataEditor {
                     .field("Player Defense", |ui, tile| {
                         ui.add(DragValue::new(&mut tile.player_defense))
                     })
-                    .field("Player Avoid", |ui, tile| {
+                    .field("Enemy Defense", |ui, tile| {
+                        ui.add(DragValue::new(&mut tile.enemy_defense))
+                    })
+                   .field("Player Avoid", |ui, tile| {
                         ui.add(DragValue::new(&mut tile.player_avoid))
                     })
                     .field("Enemy Avoid", |ui, tile| {
