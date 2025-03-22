@@ -84,7 +84,7 @@ impl Astra {
         )?);
         Ok(Self {
             backup_root: project.backup_dir.clone(),
-            atlas_system: AtlasSystem::load(&file_system)
+            atlas_system: AtlasSystem::load(&file_system, &cobalt_proxy)
                 .context("Failed to load sprite atlases")?,
             book_system: BookSystem::load(cobalt_proxy.clone())
                 .context("Failed to load books (fe_assets_gamedata)")?,

@@ -823,6 +823,21 @@ impl CobaltFileSystemProxy {
         Ok(())
     }
 
+    pub fn list_cobalt_icons<P: AsRef<Path>>(&self, path: P) -> Result<HashSet<PathBuf>> {
+        if let Some(fs) = &self.cobalt_file_system {
+            let path = path.as_ref();
+            if fs.exists(path)? {
+                info!("Listing Cobalt icons under path {}", path.display());
+                return Ok(fs
+                    .list_files(path, "**/*.png")?
+                    .into_iter()
+                    .map(|p| fs.root.join(p))
+                    .collect());
+            }
+        }
+        Ok(Default::default())
+    }
+
     pub fn read_cobalt_msbt<P: AsRef<Path>>(
         &self,
         path: P,
@@ -873,7 +888,10 @@ impl CobaltFileSystemProxy {
     }
 
     fn to_cobalt_msbt_path(&self, path: &Path) -> Result<PathBuf> {
-        info!("Attempting to convert RomFS path '{}' to Cobalt path", path.display());
+        info!(
+            "Attempting to convert RomFS path '{}' to Cobalt path",
+            path.display()
+        );
         let file_stem = path
             .file_name()
             .map(|name| {
