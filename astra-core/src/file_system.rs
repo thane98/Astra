@@ -740,7 +740,7 @@ impl CobaltFileSystemProxy {
         }
 
         // Read a normal bundle.
-        let path_in_rom = Path::new(r"StreamingAssets\aa\Switch\fe_assets_gamedata\")
+        let path_in_rom = Path::new(r"StreamingAssets/aa/Switch/fe_assets_gamedata/")
             .join(&path)
             .with_extension("xml.bundle");
         info!("Loading bundled book from path {}", path_in_rom.display());
