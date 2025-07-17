@@ -129,7 +129,7 @@ pub fn region_dir_config(project: &mut ProjectDef) -> impl Widget + '_ {
         ComboBox::from_id_source("region_dir_combo")
             .width(300.)
             .selected_text(match project.active_country_dir_name.as_str() {
-                "ch" => "China",
+                "cn" => "China",
                 "eu" => "Europse",
                 "jp" => "Japan",
                 "kr" => "Korea",
@@ -140,7 +140,7 @@ pub fn region_dir_config(project: &mut ProjectDef) -> impl Widget + '_ {
             .show_ui(ui, |ui| {
                 let mut response = ui.selectable_value(
                     &mut project.active_country_dir_name,
-                    "ch".to_string(),
+                    "cn".to_string(),
                     "China",
                 );
                 response |= ui.selectable_value(
