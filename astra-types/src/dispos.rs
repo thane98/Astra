@@ -33,6 +33,10 @@ pub struct Spawn {
     pub level_h: u8,
     #[astra(key = "@LevelL")]
     pub level_l: u8,
+    #[astra(key = "@LevelMin", extractor = values.shift_remove("@LevelMin").unwrap_or_default())]
+    pub level_min: Option<u8>,
+    #[astra(key = "@LevelMax", extractor = values.shift_remove("@LevelMax").unwrap_or_default())]
+    pub level_max: Option<u8>,
     #[astra(key = "@Jid")]
     pub jid: String,
     #[astra(key = "@Item1.Iid")]

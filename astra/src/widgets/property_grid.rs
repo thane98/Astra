@@ -80,6 +80,7 @@ pub struct PropertyGrid<'a, D> {
     id: Id,
     data: &'a mut D,
     sections: Vec<PropertyGridSection<'a, D>>,
+    show_horizontal_scroll: bool,
 }
 
 impl<'a, D> PropertyGrid<'a, D> {
@@ -88,6 +89,7 @@ impl<'a, D> PropertyGrid<'a, D> {
             data,
             sections: vec![],
             id: Id::new(id_source).with("property_grid"),
+            show_horizontal_scroll: false,
         }
     }
 
@@ -113,6 +115,11 @@ impl<'a, D> PropertyGrid<'a, D> {
         self
     }
 
+    pub fn horizontal_scroll(mut self) -> Self {
+        self.show_horizontal_scroll = true;
+        self
+    }
+
     pub fn default_field<F>(
         mut self,
         label: &'a str,
@@ -134,7 +141,11 @@ impl<'a, D> PropertyGrid<'a, D> {
             std::mem::take(mem.data.get_persisted_mut_or_default::<String>(self.id))
         });
         let mut changed = false;
-        let mut response = ScrollArea::vertical()
+        let mut scroll_area = ScrollArea::vertical();
+        if self.show_horizontal_scroll {
+            scroll_area = scroll_area.hscroll(true);
+        }
+        let mut response = scroll_area
             .auto_shrink([false, false])
             .show(ui, |ui| {
                 ui.vertical_centered_justified(|ui| {

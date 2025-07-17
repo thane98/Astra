@@ -40,6 +40,7 @@ pub use message_system::OpenMessageArchive;
 use script_system::ScriptSystem;
 pub use terrain_system::OpenTerrain;
 use terrain_system::TerrainSystem;
+use tracing::error;
 
 #[derive(Debug)]
 pub enum RomSource {
@@ -157,11 +158,23 @@ impl Astra {
     }
 
     pub fn get_chapter_terrain(&mut self, terrain_name: &str) -> Option<OpenTerrain> {
-        self.terrain_system.open(terrain_name).ok() // TODO: Log the error
+        match self.terrain_system.open(terrain_name) {
+            Ok(terrain) => Some(terrain),
+            Err(err) => {
+                error!("Unable to load terrain due to error: {:?}", err);
+                None
+            }
+        }
     }
 
     pub fn get_dispos(&mut self, dispos_name: &str) -> Option<OpenBook<DisposBook>> {
-        self.book_system.open_dispos(dispos_name).ok() // TODO: Log the error
+        match self.book_system.open_dispos(dispos_name) {
+            Ok(book) => Some(book),
+            Err(err) => {
+                error!("Unable to load dispos due to error: {:?}", err);
+                None
+            }
+        }
     }
 
     pub fn get_achieve_book(&self) -> OpenBook<AchievementBook> {

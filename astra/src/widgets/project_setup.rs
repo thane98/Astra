@@ -124,29 +124,6 @@ pub fn output_mode_config(project: &mut ProjectDef) -> impl Widget + '_ {
     }
 }
 
-fn get_cobalt_msbt_options(cobalt_path: &str, region_dir: &str, language_dir: &str) -> Vec<String> {
-    if region_dir.is_empty() || language_dir.is_empty() {
-        return vec![];
-    }
-    let path = Path::new(cobalt_path)
-        .join("msbt")
-        .join("message")
-        .join(region_dir)
-        .join(language_dir);
-    std::fs::read_dir(path)
-        .ok()
-        .map(|entries| {
-            let mut dirs = vec![];
-            for entry in entries.flatten() {
-                if entry.path().is_file() {
-                    dirs.push(entry.file_name().to_string_lossy().to_string());
-                }
-            }
-            dirs
-        })
-        .unwrap_or_default()
-}
-
 pub fn region_dir_config(project: &mut ProjectDef) -> impl Widget + '_ {
     move |ui: &mut Ui| {
         ComboBox::from_id_source("region_dir_combo")

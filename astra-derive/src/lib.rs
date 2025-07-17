@@ -1,7 +1,7 @@
 use darling::FromField;
 use quote::{quote, quote_spanned};
 use syn::spanned::Spanned;
-use syn::{parse_macro_input, Fields, Item};
+use syn::{parse_macro_input, Expr, Fields, Item};
 
 #[derive(Debug, FromField)]
 #[darling(attributes(astra))]
@@ -11,6 +11,8 @@ struct FieldOptions {
     pub public_array: bool,
     #[darling(default)]
     pub id: bool,
+    #[darling(default)]
+    pub extractor: Option<Expr>,
 }
 
 #[proc_macro_derive(Astra, attributes(astra))]
@@ -72,14 +74,24 @@ pub fn astra(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                 }
             };
         }
-        extractors.push(quote! {
-            let raw_value = values.remove(#key)
-                .ok_or_else(|| astra_formats::error::anyhow!("expected value for '{}'", #key))?;
-            let #ident = astra_formats::FromSheetParamAttribute::from_sheet_param_attribute(raw_value)?;
-        });
+        if let Some(extractor) = &options.extractor {
+            extractors.push(quote! {
+                let raw_value = #extractor;
+                let #ident = astra_formats::FromSheetParamAttribute::from_sheet_param_attribute(raw_value)?;
+            });
+        } else {
+            extractors.push(quote! {
+                let raw_value = values.remove(#key)
+                    .ok_or_else(|| astra_formats::error::anyhow!("expected value for '{}'", #key))?;
+                let #ident = astra_formats::FromSheetParamAttribute::from_sheet_param_attribute(raw_value)?;
+            });
+        }
+
         initializers.push(quote! { #ident, });
         setters.push(quote! {
-            map.insert(#key.to_string(), self.#ident.to_sheet_param_attribute());
+            if let Some(value) = self.#ident.to_sheet_param_attribute() {
+                map.insert(#key.to_string(), value);
+            }
         });
         field_options.push(options);
     }

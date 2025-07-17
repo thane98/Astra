@@ -20,6 +20,7 @@ impl AstraApp {
             Theme::Macchiato => catppuccin_egui::set_theme(&cc.egui_ctx, catppuccin_egui::MACCHIATO),
             Theme::Mocha => catppuccin_egui::set_theme(&cc.egui_ctx, catppuccin_egui::MOCHA),
         }
+        
 
         let mut font_definitions = FontDefinitions::default();
         font_definitions.font_data.insert(

@@ -5,17 +5,15 @@ use std::sync::Arc;
 
 use astra_core::{Astra, OpenTerrain};
 use astra_types::{Chapter, ChapterBook, Spawn, TerrainData};
-use egui::{
-    Button, CentralPanel, ComboBox, DragValue, SidePanel, Slider, TopBottomPanel, Ui,
-};
+use egui::{Button, CentralPanel, ComboBox, DragValue, SidePanel, Slider, TopBottomPanel, Ui};
 use egui_extras::{Size, StripBuilder};
 use egui_modal::{Icon, Modal};
 use indexmap::IndexMap;
 use parking_lot::RwLock;
 
 use crate::widgets::{
-    bitgrid_i32, bitgrid_u16, chapter_encount_type, chapter_spot_state,
-    force_drop_down, id_field, keyed_add_modal_content, TerrainBrush,
+    bitgrid_i32, bitgrid_u16, chapter_encount_type, chapter_spot_state, force_drop_down, id_field,
+    keyed_add_modal_content, optional_u8_drag, TerrainBrush,
 };
 use crate::{
     blank_slate, dispos_grid, editor_tab_strip, indexed_model_drop_down, model_drop_down,
@@ -666,6 +664,7 @@ impl ChapterEditor {
 
     fn spawn_property_grid(ui: &mut Ui, spawn: &mut Spawn, state: &EditorState) -> bool {
         PropertyGrid::new("spawn", spawn)
+            .horizontal_scroll()
             .new_section("Core")
             .field("PID", |ui, spawn| ui.text_edit_singleline(&mut spawn.pid))
             .field("Class", |ui, spawn| {
@@ -713,6 +712,12 @@ impl ChapterEditor {
             })
             .field("Level (L)", |ui, spawn| {
                 ui.add(DragValue::new(&mut spawn.level_l))
+            })
+            .field("Level Min", |ui, spawn| {
+                ui.add(optional_u8_drag(&mut spawn.level_min))
+            })
+            .field("Level Max", |ui, spawn| {
+                ui.add(optional_u8_drag(&mut spawn.level_max))
             })
             .field("HP Stock Count", |ui, spawn| {
                 ui.add(DragValue::new(&mut spawn.hp_stock_count))

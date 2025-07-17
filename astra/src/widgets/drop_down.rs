@@ -1,4 +1,4 @@
-use egui::{AboveOrBelow, Grid, Image, Response, ScrollArea, Sense, Ui, Widget};
+use egui::{AboveOrBelow, Grid, Image, Response, ScrollArea, Sense, Ui, Vec2, Widget};
 
 use crate::{
     queue_transition, DecorationKind, KeyedListModel, KeyedViewItem, ListModel, Transition,
@@ -212,6 +212,7 @@ impl<'a> ModelDropDown<'a> {
             None => model.index_of(key),
         };
 
+        ui.spacing_mut().item_spacing = Vec2::new(1.0, ui.spacing().item_spacing.y);
         ui.horizontal(|ui| {
             let (response, selection) = Self::show_impl(ui, model, dependencies, index);
             if let Some(i) = selection {
@@ -221,6 +222,9 @@ impl<'a> ModelDropDown<'a> {
                         None => new_key.to_string(),
                     };
                 }
+            }
+            if ui.button("❌").clicked() {
+                *key = String::new();
             }
             if let Some(index) = selection.or(index) {
                 if let Some(screen) = I::screen() {
