@@ -136,9 +136,22 @@ pub struct DirectoryFileSystemLayer {
 
 impl DirectoryFileSystemLayer {
     pub fn new(root: impl Into<PathBuf>) -> Result<Self> {
-        let root: PathBuf = root.into().normalize()?.into();
-        if !root.is_dir() {
-            bail!("path '{}' is not a directory", root.display());
+        let root = root.into();
+        let root: PathBuf = match root.normalize() {
+            Ok(value) => value.into_path_buf(),
+            Err(_) => {
+                warn!("failed to normalize path '{}'", root.display());
+                root
+            }
+        };
+        if !root.exists() {
+            warn!(
+                "using root '{}' even though it does not exist",
+                root.display()
+            );
+        }
+        if root.is_file() {
+            bail!("root '{}' is not a directory", root.display());
         }
         Ok(DirectoryFileSystemLayer { root })
     }
