@@ -957,6 +957,7 @@ impl ViewItem for Skill {
         let mut texture_cache = dependencies.texture_cache.borrow_mut();
         let decoration = texture_cache
             .get_skill(&self.icon_label)
+            .or_else(|| texture_cache.get_skill(self.sid.trim_start_matches("SID_")))
             .or_else(|| texture_cache.get_skill("Empty"))?;
         match kind {
             DecorationKind::Other("portrait") => Some((decoration, 1.)),
