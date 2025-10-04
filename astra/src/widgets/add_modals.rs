@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use egui::{Button, ComboBox, Id, Ui};
+use egui::{Button, ComboBox, Id, Key, Ui};
 use egui_modal::Modal;
 use indexmap::IndexMap;
 
@@ -155,27 +155,50 @@ where
     M: KeyedListModel<I>,
     I: KeyedViewItem + Default + Clone,
 {
-    let mut changed = false;
     let id = Id::new(id_source).with("add_modal");
+    if ui.input(|input| input.key_pressed(Key::Escape)) {
+        modal.close();
+        ui.memory_mut(|mem| {
+            mem.data.insert_persisted(id, true);
+        });
+        return false;
+    }
+
+    let mut changed = false;
     let mut item_id = ui.memory_mut(|mem| {
         mem.data
             .get_persisted_mut_or_default::<String>(id)
             .to_owned()
     });
+    let is_autofocus = ui.memory_mut(|mem| *mem.data.get_persisted_mut_or(id, true));
     let valid = !item_id.is_empty() && !model.contains(&item_id);
-    ui.horizontal_top(|ui| {
-        ui.label("ID");
-        ui.vertical(|ui| {
-            ui.text_edit_singleline(&mut item_id);
-            if !valid && !item_id.is_empty() {
-                ui.colored_label(ui.visuals().error_fg_color, "ID must be unique.");
-            }
+    let response = ui
+        .horizontal_top(|ui| {
+            ui.label("ID");
+            ui.vertical(|ui| {
+                let response = ui.text_edit_singleline(&mut item_id);
+                if !valid && !item_id.is_empty() {
+                    ui.colored_label(ui.visuals().error_fg_color, "ID must be unique.");
+                }
+                response
+            })
+            .inner
+        })
+        .inner;
+    if is_autofocus {
+        response.request_focus();
+        ui.memory_mut(|mem| {
+            mem.data.insert_persisted(id, false);
         });
-    });
+    }
+    let is_submitting_input = valid && ui.input(|input| input.key_pressed(Key::Enter));
     modal.buttons(ui, |ui| {
         modal.button(ui, "Close");
-        if ui.add_enabled(valid, Button::new("Add")).clicked() {
+        if ui.add_enabled(valid, Button::new("Add")).clicked() || is_submitting_input {
             changed = command.act(model, item_id.clone());
+            ui.memory_mut(|mem| {
+                mem.data.insert_persisted(id, true);
+            });
             modal.close();
             item_id = String::new();
         }
@@ -205,9 +228,11 @@ where
     ui.add(indexed_model_drop_down(model, dependencies, &mut selected));
     modal.buttons(ui, |ui| {
         modal.button(ui, "Close");
+        let is_submitting_input = ui.input(|input| input.key_pressed(Key::Enter));
         if ui
             .add_enabled(selected.is_some(), Button::new("Ok"))
             .clicked()
+            || is_submitting_input
         {
             model.copy(source_index, selected.unwrap());
             modal.close();
@@ -279,27 +304,50 @@ pub fn group_add_modal_content<I>(
 where
     I: Default + Clone,
 {
-    let mut changed = false;
     let id = Id::new(id_source).with("group_add_modal");
+    if ui.input(|input| input.key_pressed(Key::Escape)) {
+        ui.memory_mut(|mem| {
+            mem.data.insert_persisted(id, true);
+        });
+        modal.close();
+        return false;
+    }
+
+    let mut changed = false;
     let mut item_id = ui.memory_mut(|mem| {
         mem.data
             .get_persisted_mut_or_default::<String>(id)
             .to_owned()
     });
+    let is_autofocus = ui.memory_mut(|mem| *mem.data.get_persisted_mut_or(id, true));
     let valid = !item_id.is_empty() && !model.contains_key(&item_id);
-    ui.horizontal_top(|ui| {
-        ui.label("ID");
-        ui.vertical(|ui| {
-            ui.text_edit_singleline(&mut item_id);
-            if !valid && !item_id.is_empty() {
-                ui.colored_label(ui.visuals().error_fg_color, "ID must be unique.");
-            }
+    let response = ui
+        .horizontal_top(|ui| {
+            ui.label("ID");
+            ui.vertical(|ui| {
+                let response = ui.text_edit_singleline(&mut item_id);
+                if !valid && !item_id.is_empty() {
+                    ui.colored_label(ui.visuals().error_fg_color, "ID must be unique.");
+                }
+                response
+            })
+            .inner
+        })
+        .inner;
+    if is_autofocus {
+        response.request_focus();
+        ui.memory_mut(|mem| {
+            mem.data.insert_persisted(id, false);
         });
-    });
+    }
+    let is_submitting_input = valid && ui.input(|input| input.key_pressed(Key::Enter));
     modal.buttons(ui, |ui| {
         modal.button(ui, "Close");
-        if ui.add_enabled(valid, Button::new("Add")).clicked() {
+        if ui.add_enabled(valid, Button::new("Add")).clicked() || is_submitting_input {
             changed = command.act(model, item_id.clone());
+            ui.memory_mut(|mem| {
+                mem.data.insert_persisted(id, true);
+            });
             modal.close();
             item_id = String::new();
         }
@@ -352,9 +400,11 @@ where
         });
     modal.buttons(ui, |ui| {
         modal.button(ui, "Close");
+        let is_submitting_input = ui.input(|input| input.key_pressed(Key::Enter));
         if ui
             .add_enabled(selection.is_some(), Button::new("Ok"))
             .clicked()
+            || is_submitting_input
         {
             let (group, index) = selection.clone().unwrap();
             if let Some(source) = model
