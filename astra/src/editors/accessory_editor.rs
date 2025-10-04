@@ -35,26 +35,26 @@ impl AccessoryEditor {
 
         self.accessory.write(|data| {
             self.content.content(ctx, data, |ui, accessory| {
-                PropertyGrid::new("accessory", accessory)
+                PropertyGrid::new("accessories", accessory)
                     .new_section("")
                     .field("AID", |ui, acc| ui.add(id_field(&mut acc.aid)))
                     .field("Name", |ui, acc| {
-                        msbt_key_value_singleline!(ui, state, "accessory", acc.name)
+                        msbt_key_value_singleline!(ui, state, "accessories", acc.name)
                     })
                     .field("Help", |ui, acc| {
-                        msbt_key_value_multiline!(ui, state, "accessory", acc.help)
+                        msbt_key_value_multiline!(ui, state, "accessories", acc.help)
                     })
                     .field("Name (M)", |ui, acc| {
-                        msbt_key_value_singleline!(ui, state, "accessory", acc.name_m)
+                        msbt_key_value_singleline!(ui, state, "accessories", acc.name_m)
                     })
                     .field("Help (M)", |ui, acc| {
-                        msbt_key_value_multiline!(ui, state, "accessory", acc.help_m)
+                        msbt_key_value_multiline!(ui, state, "accessories", acc.help_m)
                     })
                     .field("Name (F)", |ui, acc| {
-                        msbt_key_value_singleline!(ui, state, "accessory", acc.name_f)
+                        msbt_key_value_singleline!(ui, state, "accessories", acc.name_f)
                     })
                     .field("Help (F)", |ui, acc| {
-                        msbt_key_value_multiline!(ui, state, "accessory", acc.help_f)
+                        msbt_key_value_multiline!(ui, state, "accessories", acc.help_f)
                     })
                     .default_field("First", |acc| &mut acc.first)
                     .default_field("Amiibo", |acc| &mut acc.amiibo)
