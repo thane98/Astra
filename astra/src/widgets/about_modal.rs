@@ -36,27 +36,6 @@ pub fn about_modal(ctx: &egui::Context) -> Modal {
                 "https://github.com/Perfare",
             ));
         });
-        ui.horizontal(|ui| {
-            ui.label("•");
-            ui.add(Hyperlink::from_label_and_url(
-                "MistressAshai",
-                "https://github.com/MistressAshai",
-            ));
-        });
-        ui.horizontal(|ui| {
-            ui.label("•");
-            ui.add(Hyperlink::from_label_and_url(
-                "Core-Bear",
-                "https://github.com/Core-Bear",
-            ));
-        });
-        ui.horizontal(|ui| {
-            ui.label("•");
-            ui.add(Hyperlink::from_label_and_url(
-                "DogeThis",
-                "https://github.com/DogeThis",
-            ));
-        });
         modal.buttons(ui, |ui| {
             modal.button(ui, "Close");
         });

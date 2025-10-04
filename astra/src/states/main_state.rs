@@ -774,9 +774,6 @@ pub fn main_window(
                 });
             });
             ui.menu_button("Help", |ui| {
-                if ui.hyperlink_to("Submit an issue", "https://github.com/thane98/Astra/issues/new").clicked() {
-                    ui.close_menu();
-                }
                 if ui.button("About").clicked() {
                     about_modal.open();
                     ui.close_menu();
