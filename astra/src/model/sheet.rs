@@ -211,9 +211,7 @@ where
         Self {
             book: self.book.clone(),
             retriever: self.retriever.clone(),
-            revision_number: Arc::new(AtomicUsize::new(
-                self.revision_number.load(Ordering::Relaxed),
-            )),
+            revision_number: self.revision_number.clone(),
             phantom: PhantomData,
         }
     }
