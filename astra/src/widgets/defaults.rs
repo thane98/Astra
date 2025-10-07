@@ -27,7 +27,9 @@ impl DefaultWidget for Option<String> {
                 response | button_response
             }
             None => {
-                let response = ui.text_edit_singleline(&mut String::default());
+                let response = ui
+                    .add_enabled_ui(false, |ui| ui.text_edit_singleline(&mut String::default()))
+                    .inner;
                 let button_response = ui.button("➕");
                 if button_response.clicked() {
                     *self = Some(Default::default());
