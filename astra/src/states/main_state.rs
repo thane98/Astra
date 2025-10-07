@@ -11,14 +11,15 @@ use astra_core::{Astra, RomSource};
 use crate::widgets::{about_modal, config_editor_modal};
 use crate::{
     AccessoryEditor, AchieveEditor, AiEditor, AnimSetEditor, AnimalEditor, AppConfig, AppState,
-    ArenaEditor, AssetTableEditor, CalculatorEditor, ChapterEditor, ChartEditor, CookEditor,
-    DragonRideEditor, EditorState, EffectEditor, EncountEditor, FishingFishEditor, ForgeEditor,
-    FriendListEditor, GameParamEditor, GodDataSheetRetriever, GodEditor, HubAreaEditor, ItemEditor,
-    JobEditor, KillBonusEditor, LaterTalkEditor, MapEditorEditor, MascotEditor, MessageDb,
-    MessageDbWrapper, MiscEditor, MovieEditor, MuscleExerciseDataEditor, MusicEditor, PersonEditor,
-    PhotographSpotEditor, ProfileCardEditor, RelayEditor, RelianceEditor, RingEditor, SaveScreen,
-    ScriptManager, SheetHandle, ShopEditor, SkillEditor, TerrainDataEditor, TextDataEditor,
-    TextureCache, Theme, TitleEditor, TutorialEditor, NEXT_TAB_SHORTCUT, PREV_TAB_SHORTCUT,
+    ArenaEditor, AssetTableEditor, CalculatorEditor, ChapterEditor, ChartEditor,
+    CobaltConfigEditor, CookEditor, DragonRideEditor, EditorState, EffectEditor, EncountEditor,
+    FishingFishEditor, ForgeEditor, FriendListEditor, GameParamEditor, GodDataSheetRetriever,
+    GodEditor, HubAreaEditor, ItemEditor, JobEditor, KillBonusEditor, LaterTalkEditor,
+    MapEditorEditor, MascotEditor, MessageDb, MessageDbWrapper, MiscEditor, MovieEditor,
+    MuscleExerciseDataEditor, MusicEditor, PersonEditor, PhotographSpotEditor, ProfileCardEditor,
+    RelayEditor, RelianceEditor, RingEditor, SaveScreen, ScriptManager, SheetHandle, ShopEditor,
+    SkillEditor, TerrainDataEditor, TextDataEditor, TextureCache, Theme, TitleEditor,
+    TutorialEditor, NEXT_TAB_SHORTCUT, PREV_TAB_SHORTCUT,
 };
 
 static TRANSITION: OnceLock<Mutex<Option<Transition>>> = OnceLock::new();
@@ -103,6 +104,7 @@ pub enum Screens {
     Text,
     Title,
     Tutorial,
+    CobaltConfig,
 }
 
 impl Screens {
@@ -151,6 +153,7 @@ impl Screens {
             40 => Some(Screens::Title),
             41 => Some(Screens::Tutorial),
             42 => Some(Screens::DragonRide),
+            43 => Some(Screens::CobaltConfig),
             _ => None,
         }
     }
@@ -201,17 +204,18 @@ impl Screens {
             Screens::Title => Some(40),
             Screens::Tutorial => Some(41),
             Screens::DragonRide => Some(42),
+            Screens::CobaltConfig => Some(43),
         }
     }
 
     pub fn next_tab(&self) -> Option<Self> {
         self.get_tab_index()
-            .and_then(|index| Self::from_tab_index(if index + 1 < 43 { index + 1 } else { 0 }))
+            .and_then(|index| Self::from_tab_index(if index + 1 < 44 { index + 1 } else { 0 }))
     }
 
     pub fn prev_tab(&self) -> Option<Self> {
         self.get_tab_index()
-            .and_then(|index| Self::from_tab_index(if index > 0 { index - 1 } else { 42 }))
+            .and_then(|index| Self::from_tab_index(if index > 0 { index - 1 } else { 43 }))
     }
 }
 
@@ -230,6 +234,7 @@ pub struct MainState {
     calculator_editor: CalculatorEditor,
     chart_editor: ChartEditor,
     chapter_editor: ChapterEditor,
+    cobalt_config_editor: CobaltConfigEditor,
     cook_editor: CookEditor,
     dragon_ride_editor: DragonRideEditor,
     effect_editor: EffectEditor,
@@ -615,6 +620,7 @@ impl MainState {
             calculator_editor: CalculatorEditor::new(&state),
             chart_editor: ChartEditor::new(&state),
             chapter_editor: ChapterEditor::new(&state),
+            cobalt_config_editor: CobaltConfigEditor::new(&state),
             cook_editor: CookEditor::new(&state),
             dragon_ride_editor: DragonRideEditor::new(&state),
             effect_editor: EffectEditor::new(&state),
@@ -830,6 +836,11 @@ pub fn main_window(
             ui.selectable_value(&mut state.active_screen, Screens::Title, "Title");
             ui.selectable_value(&mut state.active_screen, Screens::Tutorial, "Tutorial");
             ui.selectable_value(&mut state.active_screen, Screens::DragonRide, "Wyvern Ride");
+            ui.selectable_value(
+                &mut state.active_screen,
+                Screens::CobaltConfig,
+                "Cobalt Config",
+            );
         });
         if state.active_screen != prev {
             state.on_leave_tab(prev);
@@ -927,6 +938,7 @@ pub fn main_window(
             .show(ctx, &mut state.editor_state, config),
         Screens::Title => state.title_editor.show(ctx, &state.editor_state),
         Screens::Tutorial => state.tutorial_editor.show(ctx, &state.editor_state),
+        Screens::CobaltConfig => state.cobalt_config_editor.show(ctx, &mut state.toasts),
     }
 
     state.toasts.show(ctx);

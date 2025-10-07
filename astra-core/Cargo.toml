@@ -10,6 +10,8 @@ image = { workspace = true }
 parking_lot = { workspace = true }
 indexmap = { workspace = true }
 tracing = { workspace = true }
+serde = { workspace = true }
+serde_yaml ={ workspace = true }
 
 astra-types = { path = "../astra-types" }
 astra_formats = { path = "../astra-formats" }

@@ -928,6 +928,27 @@ impl CobaltFileSystemProxy {
             .join(&self.path_localizer.language_dir)
     }
 
+    pub fn read_cobalt_config(&self) -> Option<String> {
+        if let Some(fs) = &self.cobalt_file_system {
+            match fs.read("../config.yaml") {
+                Ok(text) => return Some(String::from_utf8_lossy(&text).into_owned()),
+                Err(err) => {
+                    error!("Failed to read cobalt config.yaml, swallowing error '{:?}'", err);
+                }
+            }
+        }
+        None
+    }
+
+    pub fn save_cobalt_config(&self, raw_config: &str, backup_root: &Path) -> Result<()> {
+        if let Some(fs) = &self.cobalt_file_system {
+            fs.backup("../config.yaml", backup_root)?; // TODO: Rework backups so this goes to the right location.
+            fs.write("../config.yaml", raw_config.as_bytes())
+        } else {
+            bail!("Attempted to save Cobalt config.yaml, but this is not a Cobalt project.")
+        }
+    }
+
     pub fn is_cobalt_project(&self) -> bool {
         self.cobalt_file_system.is_some()
     }

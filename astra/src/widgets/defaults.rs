@@ -15,6 +15,29 @@ impl DefaultWidget for String {
     }
 }
 
+impl DefaultWidget for Option<String> {
+    fn default_widget(&mut self, ui: &mut Ui) -> Response {
+        match self {
+            Some(value) => {
+                let response = ui.text_edit_singleline(value);
+                let button_response = ui.button("❌");
+                if button_response.clicked() {
+                    *self = None;
+                }
+                response | button_response
+            }
+            None => {
+                let response = ui.text_edit_singleline(&mut String::default());
+                let button_response = ui.button("➕");
+                if button_response.clicked() {
+                    *self = Some(Default::default());
+                }
+                response | button_response
+            }
+        }
+    }
+}
+
 impl DefaultWidget for bool {
     fn default_widget(&mut self, ui: &mut Ui) -> Response {
         ui.checkbox(self, "")

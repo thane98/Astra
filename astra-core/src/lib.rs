@@ -1,5 +1,6 @@
 mod atlas_system;
 mod book_system;
+mod cobalt_config_system;
 mod file_system;
 mod message_script;
 mod message_system;
@@ -34,13 +35,16 @@ use book_system::BookSystem;
 pub use book_system::OpenBook;
 pub use file_system::*;
 use image::DynamicImage;
-use message_system::MessageSystem;
 pub use message_script::OpenMessageScript;
+use message_system::MessageSystem;
 pub use message_system::OpenMessageArchive;
 use script_system::ScriptSystem;
 pub use terrain_system::OpenTerrain;
 use terrain_system::TerrainSystem;
 use tracing::error;
+
+use cobalt_config_system::CobaltConfigSystem;
+pub use cobalt_config_system::ModConfig;
 
 #[derive(Debug)]
 pub enum RomSource {
@@ -65,6 +69,7 @@ pub struct Astra {
     message_system: MessageSystem,
     script_system: ScriptSystem,
     terrain_system: TerrainSystem,
+    config_system: CobaltConfigSystem,
 }
 
 impl Astra {
@@ -90,6 +95,7 @@ impl Astra {
             book_system: BookSystem::load(cobalt_proxy.clone())
                 .context("Failed to load books (fe_assets_gamedata)")?,
             script_system: ScriptSystem::new(cobalt_proxy.clone()),
+            config_system: CobaltConfigSystem::load(cobalt_proxy.clone())?,
             message_system: MessageSystem::load(file_system.clone(), cobalt_proxy)
                 .context("Failed to load text data (MSBT)")?,
             terrain_system: TerrainSystem::load(file_system)
@@ -109,6 +115,7 @@ impl Astra {
         self.message_system.save(backup_path.as_path())?;
         self.script_system.save(backup_path.as_path())?;
         self.terrain_system.save(backup_path.as_path())?;
+        self.config_system.save(backup_path.as_path())?;
         Ok(())
     }
 
@@ -148,6 +155,14 @@ impl Astra {
 
     pub fn open_msbt_script(&mut self, archive_name: &str) -> Result<OpenMessageScript> {
         self.message_system.open_script(archive_name)
+    }
+
+    pub fn get_cobalt_config(&mut self) -> Option<&mut ModConfig> {
+        self.config_system.get_config_mut()
+    }
+
+    pub fn create_cobalt_config(&mut self) -> Result<()> {
+        self.config_system.create_config()
     }
 
     pub fn consume_sprite_atlas(
