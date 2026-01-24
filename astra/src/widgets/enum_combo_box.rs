@@ -81,6 +81,23 @@ enum_combo_box!(item_kind_drop_down, i8,
     19 => "Num",
 );
 
+enum_combo_box!(item_add_target_drop_down, i8,
+    0 => "None",
+    1 => "Self",
+    2 => "Around",
+    3 => "Whole",
+);
+
+enum_combo_box!(item_weapon_attrs_drop_down, i8,
+    0 => "None",
+    1 => "Fire",
+    2 => "Thunder",
+    3 => "Wind",
+    4 => "Ice",
+    5 => "Dark",
+    6 => "Light",
+);
+
 enum_combo_box!(item_use_type_drop_down, i8,
     0 => "N/A",
     1 => "Attack",

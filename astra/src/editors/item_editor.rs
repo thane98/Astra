@@ -3,7 +3,9 @@ use egui::Grid;
 use egui_extras::Size;
 use indexmap::IndexMap;
 
-use crate::widgets::{id_field, keyed_add_modal_content};
+use crate::widgets::{
+    id_field, item_add_target_drop_down, item_weapon_attrs_drop_down, keyed_add_modal_content,
+};
 use crate::{
     bitgrid_i32, editable_list, item_kind_drop_down, item_use_type_drop_down, model_drop_down,
     msbt_key_value_multiline, msbt_key_value_singleline, optional_image, staff_type_drop_down,
@@ -132,7 +134,9 @@ impl ItemEditor {
                                 .field("Weapon Rank", |ui, item| {
                                     ui.add(weapon_rank_drop_down(&mut item.weapon_level))
                                 })
-                                .default_field("Weapon Attr", |item| &mut item.weapon_attr)
+                                .field("Weapon Attr", |ui, item| {
+                                    ui.add(item_weapon_attrs_drop_down(&mut item.weapon_attr))
+                                })
                                 .default_field("Uses", |item| &mut item.endurance)
                                 .default_field("Power", |item| &mut item.power)
                                 .default_field("Weight", |item| &mut item.weight)
@@ -182,17 +186,18 @@ impl ItemEditor {
                                 })
                                 .field("Add", |ui, item| {
                                     state.skill.read(|data| {
-                                        ui.add(editable_list(
-                                            &mut item.add_sids,
-                                            |_, value, ui| {
-                                                ui.add(model_drop_down(data, state, value))
-                                            },
-                                        ))
+                                        ui.add(editable_list(&mut item.add_sids, |_, value, ui| {
+                                            ui.add(model_drop_down(data, state, value))
+                                        }))
                                     })
                                 })
                                 .new_section("Other Effects")
-                                .default_field("Add Target", |item| &mut item.add_target)
-                                .default_field("Add Type", |item| &mut item.add_type)
+                                .field("Add Target", |ui, item| {
+                                    ui.add(item_add_target_drop_down(&mut item.add_target))
+                                })
+                                .field("Add Type", |ui, item| {
+                                    ui.add(item_use_type_drop_down(&mut item.add_type))
+                                })
                                 .default_field("Add Power", |item| &mut item.add_power)
                                 .default_field("Add Range", |item| &mut item.add_range)
                                 .default_field("Add Effect", |item| &mut item.add_effect)
