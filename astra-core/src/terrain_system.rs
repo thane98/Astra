@@ -25,7 +25,7 @@ impl TerrainSystem {
         if let Some(terrain) = self.terrain.get(terrain_name).cloned() {
             Ok(terrain)
         } else {
-            let path = Path::new(r"StreamingAssets\aa\Switch\fe_assets_gamedata\terrains")
+            let path = Path::new(r"StreamingAssets/aa/Switch/fe_assets_gamedata/terrains")
                 .join(terrain_name.to_lowercase())
                 .with_extension("bundle");
             let open_bundle = OpenTerrain::load(&self.file_system, path)?;

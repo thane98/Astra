@@ -118,9 +118,9 @@ macro_rules! optional_numeric_get_set {
 }
 
 optional_numeric_get_set!(u8_numeric_get_set, optional_u8_drag, u8);
-optional_numeric_get_set!(u16_numeric_get_set, optional_u16_drag, u16);
-optional_numeric_get_set!(u32_numeric_get_set, optional_u32_drag, u32);
-optional_numeric_get_set!(i8_numeric_get_set, optional_i8_drag, i8);
-optional_numeric_get_set!(i16_numeric_get_set, optional_i16_drag, i16);
-optional_numeric_get_set!(i32_numeric_get_set, optional_i32_drag, i32);
-optional_numeric_get_set!(f32_numeric_get_set, optional_f32_drag, f32);
+// optional_numeric_get_set!(u16_numeric_get_set, optional_u16_drag, u16);
+// optional_numeric_get_set!(u32_numeric_get_set, optional_u32_drag, u32);
+// optional_numeric_get_set!(i8_numeric_get_set, optional_i8_drag, i8);
+// optional_numeric_get_set!(i16_numeric_get_set, optional_i16_drag, i16);
+// optional_numeric_get_set!(i32_numeric_get_set, optional_i32_drag, i32);
+// optional_numeric_get_set!(f32_numeric_get_set, optional_f32_drag, f32);

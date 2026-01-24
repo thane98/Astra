@@ -214,6 +214,7 @@ pub trait KeyedListModel<I>: ListModel<I> {
     /// Retrieve the kind of a [ViewItem] from its key.
     fn index_of(&self, key: &str) -> Option<usize>;
 
+    #[allow(unused)]
     fn item_keyed(&self, key: &str) -> Option<&I> {
         self.index_of(key).and_then(|index| self.item(index))
     }
@@ -315,7 +316,7 @@ impl FilterProxyBuilder {
         requires_refresh: bool,
         model: &'a M,
         dependencies: &D,
-    ) -> FilterProxyModel<'_, M>
+    ) -> FilterProxyModel<'a, M>
     where
         M: ListModel<I>,
         I: ViewItem<Dependencies = D>,
