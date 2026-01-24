@@ -194,7 +194,8 @@ where
                         &mut proxy_index,
                     ));
                     self.selection = proxy_index
-                        .and_then(|proxy_index| self.filter_proxy.source_index(proxy_index, data));
+                        .and_then(|proxy_index| self.filter_proxy.source_index(proxy_index, data))
+                        .or(self.selection);
                 });
 
                 let no_widgets_focused = ctx.memory(|mem| mem.focus().is_none());
