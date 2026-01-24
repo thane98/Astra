@@ -34,6 +34,10 @@ impl MessageSystem {
                 "StreamingAssets/aa/Switch/fe_assets_message/achieve.bytes.bundle",
             ),
             (
+                "battlestyle",
+                "StreamingAssets/aa/Switch/fe_assets_message/battlestyle.bytes.bundle",
+            ),
+            (
                 "bondsring",
                 "StreamingAssets/aa/Switch/fe_assets_message/bondsring.bytes.bundle",
             ),

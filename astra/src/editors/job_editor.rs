@@ -409,10 +409,10 @@ impl JobEditor {
                                 .new_section("")
                                 .field("Style", |ui, d| ui.add(id_field(&mut d.style)))
                                 .field("Name", |ui, d| {
-                                    msbt_key_value_singleline!(ui, state, "job", d.name)
+                                    msbt_key_value_singleline!(ui, state, "battlestyle", d.name)
                                 })
                                 .field("Help", |ui, d| {
-                                    msbt_key_value_multiline!(ui, state, "job", d.help)
+                                    msbt_key_value_multiline!(ui, state, "battlestyle", d.help)
                                 })
                                 .field("Skills", |ui, d| {
                                     ui.add(editable_list(&mut d.skills, |_, value, ui| {
