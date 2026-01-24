@@ -47,7 +47,7 @@ use crate::{
     RelayAwardDataSheet, RelayClearAwardDataSheet, RelayDataSheet, RelayStampDataSheet,
     RingDataSheet, RingPolishVoiceDataSheet, Screens, SoundEventSheet, TasteConditionSheet,
     TasteSheet, TextureCache, TipDataSheet, TitleCallDataSheet, TitlePedestalDataSheet,
-    TutorialDataSheet, VibrationDefineDataSheet, ViewItem,
+    TutorialDataSheet, VibrationDefineDataSheet, ViewItem, FightingStyleSheet
 };
 
 use super::GroupViewItem;
@@ -128,6 +128,7 @@ pub struct EditorState {
     pub item_shop: ItemShopSheet,
     pub ingredient: IngredientSheet,
     pub job: JobSheet,
+    pub job_fighting_styles: FightingStyleSheet,
     pub jukebox_data: JukeboxDataSheet,
     pub key_help_data: KeyHelpDataSheet,
     pub kill_bonuses_1: KillBonus1Sheet,

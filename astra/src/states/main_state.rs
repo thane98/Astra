@@ -438,6 +438,7 @@ impl MainState {
             item: SheetHandle::new(astra.read().get_item_book(), Default::default()),
             ingredient: SheetHandle::new(astra.read().get_cook_book(), Default::default()),
             job: SheetHandle::new(astra.read().get_job_book(), Default::default()),
+            job_fighting_styles: SheetHandle::new(astra.read().get_job_book(), Default::default()),
             jukebox_data: SheetHandle::new(astra.read().get_jukebox_book(), Default::default()),
             key_help_data: SheetHandle::new(astra.read().get_key_help_book(), Default::default()),
             kill_bonuses_1: SheetHandle::new(
@@ -858,6 +859,7 @@ pub fn main_window(
             Screens::Forge => state.forge_editor.tab_strip(ui),
             Screens::God => state.god_editor.tab_strip(ui),
             Screens::Hub => state.hub_editor.tab_strip(ui),
+            Screens::Job => state.job_editor.tab_strip(ui),
             Screens::KillBonus => state.kill_bonus_editor.tab_strip(ui),
             Screens::MapEditor => state.map_editor_editor.tab_strip(ui),
             Screens::Mascot => state.mascot_editor.tab_strip(ui),
