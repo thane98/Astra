@@ -973,7 +973,10 @@ impl HubAreaEditor {
                             .default_field("Priority", |d| &mut d.priority)
                             .field("Chapter", |ui, d| {
                                 state.chapter.read(|data| {
-                                    ui.add(model_drop_down(data, state, &mut d.chapter))
+                                    let mut cid = format!("CID_{}", d.chapter);
+                                    let response = ui.add(model_drop_down(data, state, &mut cid));
+                                    d.chapter = cid.trim_start_matches("CID_").to_string();
+                                    response
                                 })
                             })
                             .default_field("Phase", |d| &mut d.phase)
