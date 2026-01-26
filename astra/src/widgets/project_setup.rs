@@ -192,7 +192,7 @@ pub fn language_dir_config(project: &mut ProjectDef) -> impl Widget + '_ {
                 _ => "",
             })
             .show_ui(ui, |ui| match project.active_country_dir_name.as_str() {
-                "ch" => {
+                "cn" => {
                     ui.selectable_value(
                         &mut project.active_language_dir_name,
                         "cnch".to_string(),
